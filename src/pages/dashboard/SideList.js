@@ -123,32 +123,34 @@ const SideList = ({ open, setOpen }) => {
       {
         title: "Transactions",
         icon: <AttachMoneyOutlined />,
-        link: "users",
-        component: <Transactions {...{ setSelectedLink, link: "users" }} />,
+        link: "transactions",
+        component: (
+          <Transactions {...{ setSelectedLink, link: "transactions" }} />
+        ),
       },
       {
         title: "Sales",
         icon: <TrendingUpOutlined />,
-        link: "users",
-        component: <Sales {...{ setSelectedLink, link: "users" }} />,
+        link: "sales",
+        component: <Sales {...{ setSelectedLink, link: "sales" }} />,
       },
       {
         title: "Analytics",
         icon: <TimelineOutlined />,
-        link: "users",
-        component: <Analytics {...{ setSelectedLink, link: "users" }} />,
+        link: "analytics",
+        component: <Analytics {...{ setSelectedLink, link: "analytics" }} />,
       },
       {
         title: "Reports",
         icon: <BarChartOutlined />,
-        link: "users",
-        component: <Reports {...{ setSelectedLink, link: "users" }} />,
+        link: "reports",
+        component: <Reports {...{ setSelectedLink, link: "reports" }} />,
       },
       {
         title: "Manage Staff",
         icon: <WorkOutlineOutlined />,
-        link: "users",
-        component: <Reports {...{ setSelectedLink, link: "users" }} />,
+        link: "managestaff",
+        component: <Reports {...{ setSelectedLink, link: "managestaff" }} />,
       },
     ],
     []
