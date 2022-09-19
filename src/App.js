@@ -8,13 +8,14 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="dashboard/*" element={<Dashboard />} />
-          <Route path="*" element={<Dashboard />} />
+          <Route path="dashboard/*" element={<Dashboard />}>
+            {/* <Route path="/" element={<Dashboard />} /> */}
+          </Route>
         </Routes>
       </BrowserRouter>
-      ;
     </>
   );
 };
 
 export default App;
+3;
