@@ -87,7 +87,7 @@ export default function Dashboard() {
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Water Refilling Station System
+              Fairways Purified Water Station
             </Typography>
             {/* <IconButton onClick={() => setDark(!dark)}>
               {dark ? <Brightness7 /> : <Brightness4 />}

@@ -18,6 +18,7 @@ import {
   TimelineOutlined,
   TrendingUpOutlined,
   WorkOutlineOutlined,
+  AccountBoxOutlined,
 } from "@mui/icons-material";
 import BadgeIcon from "@mui/icons-material/Badge";
 import {
@@ -38,6 +39,7 @@ import MuiDrawer from "@mui/material/Drawer";
 import { useMemo, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useValue } from "../../context/ContextProvider";
+import Customer from "./customer/Customer";
 import Main from "./main/Main";
 
 import Products from "./products/Products";
@@ -151,6 +153,14 @@ const SideList = ({ open, setOpen }) => {
         icon: <WorkOutlineOutlined />,
         link: "managestaff",
         component: <Reports {...{ setSelectedLink, link: "managestaff" }} />,
+      },
+      {
+        title: "Customer Profile",
+        icon: <AccountBoxOutlined />,
+        link: "customerProfile",
+        component: (
+          <Customer {...{ setSelectedLink, link: "customerProfile" }} />
+        ),
       },
     ],
     []
