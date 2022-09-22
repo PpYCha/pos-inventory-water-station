@@ -41,7 +41,13 @@ export default function Dashboard() {
     () =>
       createTheme({
         palette: {
-          mode: dark ? "dark" : "light",
+          type: "light",
+          primary: {
+            main: "#e85611",
+          },
+          secondary: {
+            main: "#f50057",
+          },
         },
       }),
     [dark]
@@ -70,11 +76,11 @@ export default function Dashboard() {
             >
               <Menu />
             </IconButton>
-            <Tooltip title="Go back to home page">
+            {/* <Tooltip title="Go back to home page">
               <IconButton sx={{ mr: 1 }} onClick={() => {}}>
                 <Home />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             <Typography
               variant="h6"
               noWrap
@@ -83,9 +89,9 @@ export default function Dashboard() {
             >
               Water Refilling Station System
             </Typography>
-            <IconButton onClick={() => setDark(!dark)}>
+            {/* <IconButton onClick={() => setDark(!dark)}>
               {dark ? <Brightness7 /> : <Brightness4 />}
-            </IconButton>
+            </IconButton> */}
           </Toolbar>
         </AppBar>
         <SideList {...{ open, setOpen }} />
