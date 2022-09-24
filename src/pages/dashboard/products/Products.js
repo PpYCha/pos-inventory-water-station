@@ -40,7 +40,7 @@ const Products = ({ setSelectedLink, link }) => {
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Product List</Typography>
-          <Link to="/add-infrastructure" style={{ textDecoration: "none" }}>
+          <Link to="/add-product" style={{ textDecoration: "none" }}>
             <Button variant="contained">Add New Product</Button>
           </Link>
         </Stack>
