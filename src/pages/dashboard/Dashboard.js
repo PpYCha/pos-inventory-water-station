@@ -41,12 +41,13 @@ export default function Dashboard() {
     () =>
       createTheme({
         palette: {
+          mode: dark ? "dark" : "light",
           type: "light",
           primary: {
-            main: "#e85611",
+            main: "#000080",
           },
           secondary: {
-            main: "#f50057",
+            main: "#e85611",
           },
         },
       }),
@@ -89,9 +90,9 @@ export default function Dashboard() {
             >
               Fairways Purified Water Station
             </Typography>
-            {/* <IconButton onClick={() => setDark(!dark)}>
+            <IconButton onClick={() => setDark(!dark)}>
               {dark ? <Brightness7 /> : <Brightness4 />}
-            </IconButton> */}
+            </IconButton>
           </Toolbar>
         </AppBar>
         <SideList {...{ open, setOpen }} />
