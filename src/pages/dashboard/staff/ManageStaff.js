@@ -1,5 +1,6 @@
-import { Close, Send } from "@mui/icons-material";
+import { Close, Delete, Edit } from "@mui/icons-material";
 import {
+  Avatar,
   Box,
   Button,
   CircularProgress,
@@ -14,66 +15,92 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
 import { useValue } from "../../../context/ContextProvider";
-import { customerData } from "../../../data";
+import { employeeData } from "../../../data";
 
-const Customer = ({ setSelectedLink, link }) => {
-  const [customerList, setCustomerList] = useState([{}]);
-  const [loading, setLoading] = useState(true);
+const ManageStaff = ({ setSelectedLink, link }) => {
+  //   console.log(employeeData);
 
   const {
-    state: { openLogin },
+    state: { openLogin, loading },
     dispatch,
   } = useValue();
 
-  const fullNameRef = useRef();
-  const addressRef = useRef();
-  const orderedRef = useRef();
+  const productNameRef = useRef();
+  const priceRef = useRef();
+  const stockRef = useRef();
 
   const handleClose = () => {
     dispatch({ type: "CLOSE_LOGIN" });
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
   };
 
-  useEffect(() => {
-    setSelectedLink(link);
-    fetchAPI();
-  }, []);
-
-  const fetchAPI = async () => {
-    setLoading(true);
-    setCustomerList(customerData);
-    setLoading(false);
-  };
-
   const columns = [
-    { field: "id", headerName: "ID" },
-    { field: "full_name", headerName: "Full Name", flex: 1 },
+    { field: "id", headerName: "ID", flex: 1, hide: true },
+    {
+      field: "avatarUrl",
+      headerName: "",
+      minWidth: 30,
+      renderCell: (params) => {
+        console.log(params.value);
+        return (
+          <>
+            <Avatar alt={params.avatarUrl} src={params.value} />
+          </>
+        );
+      },
+    },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "position", headerName: "Position", minWidth: 50 },
     { field: "address", headerName: "Address", flex: 1 },
-    { field: "ordered", headerName: "Ordered", flex: 1 },
+    { field: "phoneNumber", headerName: "Phone#", minWidth: 150 },
+    { field: "sex", headerName: "Sex", minWidth: 10 },
+    { field: "birthdate", headerName: "Birthdate", flex: 1 },
+    {
+      field: "action",
+      headerName: "Action",
+      minWidth: 240,
+      renderCell: (params) => {
+        return (
+          <>
+            <Stack direction="row" spacing={1}>
+              <IconButton aria-label="edit">
+                <Edit />
+              </IconButton>
+
+              <IconButton aria-label="delete">
+                <Delete sx={{ color: "red" }} />
+              </IconButton>
+            </Stack>
+          </>
+        );
+      },
+    },
   ];
 
+  useEffect(() => {
+    setSelectedLink(link);
+  }, []);
   return (
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
-          <Typography variant="h5">Customer List</Typography>
+          <Typography variant="h5">Employee List</Typography>
 
           <Button
             variant="contained"
             onClick={() => dispatch({ type: "OPEN_LOGIN" })}
           >
-            Add New Customer
+            Add New Employee
           </Button>
         </Stack>
         <Dialog open={openLogin} onClose={handleClose}>
           <DialogTitle>
-            Customer Information
+            Employee Information
             <IconButton
               sx={{
                 position: "absolute",
@@ -85,7 +112,7 @@ const Customer = ({ setSelectedLink, link }) => {
             >
               <Close />
             </IconButton>
-            <form onSubmit={handleSubmit}>
+            {/* <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <DialogContentText>
                   Please fill customer information in the fields below:
@@ -130,7 +157,7 @@ const Customer = ({ setSelectedLink, link }) => {
                   Submit
                 </Button>
               </DialogActions>
-            </form>
+            </form> */}
           </DialogTitle>
         </Dialog>
         <Box m={2}>
@@ -138,7 +165,7 @@ const Customer = ({ setSelectedLink, link }) => {
             <CircularProgress color="secondary" />
           ) : (
             <>
-              <DataGridComponent rows={customerList} columns={columns} />
+              <DataGridComponent rows={employeeData} columns={columns} />
             </>
           )}
         </Box>
@@ -146,5 +173,4 @@ const Customer = ({ setSelectedLink, link }) => {
     </Box>
   );
 };
-
-export default Customer;
+export default ManageStaff;

@@ -46,6 +46,7 @@ import Products from "./products/Products";
 import Reports from "./reports/Reports";
 
 import Sales from "./sales/Sales";
+import ManageStaff from "./staff/ManageStaff";
 import Transactions from "./transactions/Transactions";
 
 import Users from "./users/Users";
@@ -152,7 +153,9 @@ const SideList = ({ open, setOpen }) => {
         title: "Manage Staff",
         icon: <WorkOutlineOutlined />,
         link: "managestaff",
-        component: <Reports {...{ setSelectedLink, link: "managestaff" }} />,
+        component: (
+          <ManageStaff {...{ setSelectedLink, link: "managestaff" }} />
+        ),
       },
       {
         title: "Customer Profile",

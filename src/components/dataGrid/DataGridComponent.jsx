@@ -26,28 +26,29 @@ const DataGridComponent = ({ rows, columns, loading }) => {
       rows={rows}
       columns={columns}
       sx={{
-        "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
-          py: "8px",
+        "& .MuiDataGrid-row": {
+          maxHeight: "none !important",
         },
-        "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
-          py: "15px",
+        "& .MuiDataGrid-renderingZone": {
+          maxHeight: "none !important",
         },
-        "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
-          py: "22px",
+        "& .MuiDataGrid-cell": {
+          lineHeight: "unset !important",
+          maxHeight: "none !important",
+          whiteSpace: "normal",
         },
-        height: "500px",
+        "&  .MuiDataGrid-cell:focus-within": {
+          outline: "none !important",
+        },
         // width: "500px",
-        [`& .${gridClasses.row}`]: {
-          bgcolor: (theme) =>
-            theme.palette.mode === "light" ? grey[200] : grey[900],
-        },
       }}
       components={{ Toolbar: GridToolbar, LoadingOverlay: LinearProgress }}
       // disableSelectionOnClick
       pageSize={pageSize}
       onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-      rowsPerPageOptions={[5, 10, 20]}
+      rowsPerPageOptions={[10, 50, 100]}
       pagination
+      autoHeight
       getRowSpacing={(params) => ({
         top: params.isFirstVisible ? 0 : 5,
         bottom: params.isLastVisible ? 0 : 5,
