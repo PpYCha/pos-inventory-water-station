@@ -6,9 +6,17 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  MenuItem,
+  Menu,
 } from "@mui/material";
 import MuiAppBar from "@mui/material/AppBar";
-import { Brightness4, Brightness7, Home, Menu } from "@mui/icons-material";
+import {
+  AccountCircle,
+  Brightness4,
+  Brightness7,
+  Home,
+} from "@mui/icons-material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SideList from "./SideList";
@@ -36,6 +44,7 @@ const AppBar = styled(MuiAppBar, {
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const darkTheme = useMemo(
     () =>
@@ -58,7 +67,14 @@ export default function Dashboard() {
     setOpen(true);
   };
 
-  //   const navigate = useNavigate();
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <ThemeProvider theme={darkTheme}>
       <Box sx={{ display: "flex" }}>
@@ -75,7 +91,7 @@ export default function Dashboard() {
                 ...(open && { display: "none" }),
               }}
             >
-              <Menu />
+              <MenuIcon />
             </IconButton>
             {/* <Tooltip title="Go back to home page">
               <IconButton sx={{ mr: 1 }} onClick={() => {}}>
@@ -90,6 +106,34 @@ export default function Dashboard() {
             >
               Fairways Purified Water Station
             </Typography>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>Logout</MenuItem>
+            </Menu>
             <IconButton onClick={() => setDark(!dark)}>
               {dark ? <Brightness7 /> : <Brightness4 />}
             </IconButton>

@@ -1,64 +1,61 @@
 import { faker } from "@faker-js/faker";
 import { sample } from "lodash";
 
-export const productData = [
-  { id: 1, product_name: "Gallon", price: 12, stock: 1 },
-];
+export const usersData = [...Array(10)].map((_, index) => ({
+  id: faker.datatype.uuid(),
+  avatarUrl: faker.image.avatar(),
+  name: faker.name.fullName(),
+  email: faker.internet.email(),
+  username: faker.internet.userName(),
+  password: faker.internet.password(),
+  phoneNumber: faker.phone.phoneNumber("(+63)9##-###-####"),
+  status: sample(["active", "banned"]),
+  role: sample(["Admin", "Cashier"]),
+}));
 
-// export const customerData = [
-//   {
-//     id: 1,
-//     full_name: "Phoebekim Cano",
-//     address: "Bobon",
-//     ordered: 133,
-//   },
-//   {
-//     id: 2,
-//     full_name: "Juby Ann Delos Santos",
-//     address: "Bobon",
-//     ordered: 133,
-//   },
-// ];
+export const productData = [...Array(100)].map((_, index) => ({
+  id: faker.datatype.uuid(),
+  productName: faker.commerce.productName(),
+  productDescription: faker.commerce.productDescription(),
+  price: faker.commerce.price(100, 200, 0, "₱"),
+  stock: faker.datatype.number(),
+}));
 
-// export const employeeData = [
-//   {
-//     id: 1,
-//     employee_name: "Jason Olesco",
-//     position: "Casher",
-//     employee_address: "Catarman",
-//     salary: 450,
-//     date_hired: "August 21, 2022",
-//     branch_assigned: "Dalakit Branch",
-//   },
-//   {
-//     id: 2,
-//     employee_name: "Frank Esteron",
-//     position: "Driver",
-//     employee_address: "Catarman",
-//     salary: 350,
-//     date_hired: "August 21, 2022",
-//     branch_assigned: "Dalakit Branch",
-//   },
-//   {
-//     id: 3,
-//     employee_name: "Frank Esteron",
-//     position: "Driver",
-//     employee_address: "Catarman",
-//     salary: 350,
-//     date_hired: "August 21, 2022",
-//     branch_assigned: "Dalakit Branch",
-//   },
-// ];
+export const transactionsData = [...Array(100)].map((_, index) => ({
+  id: faker.datatype.uuid(),
 
-export const customerData = [...Array(20)].map((_, index) => ({
+  productName: faker.commerce.productName(),
+  customerName: faker.name.fullName(),
+
+  amount: faker.finance.amount(),
+  transactionDescription: faker.finance.transactionDescription(),
+  transactionDate: faker.date.birthdate({ min: 1980, max: 2008, mode: "year" }),
+  transactionType: sample(["Cheque", "Cash", "Debit"]),
+}));
+
+export const salesData = [...Array(100)].map((_, index) => ({
+  id: faker.datatype.uuid(),
+  dateOfPurchase: faker.date.birthdate({
+    min: 2021,
+    max: 2022,
+    mode: "year",
+  }),
+  customerName: faker.name.fullName(),
+  productName: faker.commerce.productName(),
+  quantity: faker.datatype.number(),
+  price: faker.commerce.price(100, 200, 0, "₱"),
+  amount: faker.finance.amount(),
+}));
+
+export const customerData = [...Array(100)].map((_, index) => ({
   id: faker.datatype.uuid(),
   avatarUrl: faker.image.avatar(),
   full_name: faker.name.fullName(),
   email: faker.internet.email(),
   address: faker.address.country(),
   phoneNumber: faker.phone.phoneNumber("(+63)9##-###-####"),
-  sex: faker.name.sexType(),
   birthdate: faker.date.birthdate({ min: 1980, max: 2008, mode: "year" }),
+  sex: faker.name.sexType(),
   ordered: faker.datatype.number(2000),
   debit: faker.datatype.number({ min: 1000, max: 50000 }),
 }));
@@ -74,14 +71,4 @@ export const employeeData = [...Array(20)].map((_, index) => ({
   sex: faker.name.sexType(),
   birthdate: faker.date.birthdate({ min: 1980, max: 2008, mode: "year" }),
   salary: faker.datatype.number({ min: 350, max: 700 }),
-}));
-
-export const usersData = [...Array(24)].map((_, index) => ({
-  id: faker.datatype.uuid(),
-  avatarUrl: `/static/mock-images/avatars/avatar_${index + 1}.jpg`,
-  name: faker.name.fullName(),
-  sex: faker.name.sexType(),
-  isVerified: faker.datatype.boolean(),
-  status: sample(["active", "banned"]),
-  role: sample(["Admin", "Cashier"]),
 }));

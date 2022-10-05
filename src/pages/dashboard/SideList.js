@@ -1,5 +1,4 @@
 import {
-  Analytics,
   Assessment,
   AttachMoneyOutlined,
   BarChartOutlined,
@@ -39,6 +38,7 @@ import MuiDrawer from "@mui/material/Drawer";
 import { useMemo, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useValue } from "../../context/ContextProvider";
+import Analytics from "./analytics/Analytics";
 import Customer from "./customer/Customer";
 import Main from "./main/Main";
 
@@ -211,7 +211,7 @@ const SideList = ({ open, setOpen }) => {
           ))}
         </List>
         <Divider />
-        <Box sx={{ mx: "auto", mt: 3, mb: 1 }}>
+        {/* <Box sx={{ mx: "auto", mt: 3, mb: 1 }}>
           <Tooltip title={"ADMIN NAME"}>
             <Avatar
               src={""}
@@ -228,7 +228,7 @@ const SideList = ({ open, setOpen }) => {
               <Logout />
             </IconButton>
           </Tooltip>
-        </Box>
+        </Box> */}
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />

@@ -31,8 +31,13 @@ const Customer = ({ setSelectedLink, link }) => {
   } = useValue();
 
   const fullNameRef = useRef();
+  const emailRef = useRef();
   const addressRef = useRef();
+  const phoneNumberRef = useRef();
+  const birthdateRef = useRef();
+  const sexRef = useRef();
   const orderedRef = useRef();
+  const debitRef = useRef();
 
   const handleClose = () => {
     dispatch({ type: "CLOSE_LOGIN" });
@@ -90,7 +95,7 @@ const Customer = ({ setSelectedLink, link }) => {
     {
       field: "action",
       headerName: "Action",
-      flex: 1,
+      minWidth: 150,
       renderCell: (params) => {
         return (
           <>
@@ -156,6 +161,17 @@ const Customer = ({ setSelectedLink, link }) => {
                 <TextField
                   margin="normal"
                   variant="standard"
+                  id="emailRef"
+                  label="Email Address"
+                  type="email"
+                  fullWidth
+                  inputRef={emailRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
                   id="addressRef"
                   label="Address"
                   type="text"
@@ -167,11 +183,56 @@ const Customer = ({ setSelectedLink, link }) => {
                 <TextField
                   margin="normal"
                   variant="standard"
+                  id="phoneNumberRef"
+                  label="Phone Number"
+                  type="text"
+                  fullWidth
+                  inputRef={phoneNumberRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="birthdateRef"
+                  label="Birthdate"
+                  InputLabelProps={{ shrink: true }}
+                  type="date"
+                  fullWidth
+                  inputRef={birthdateRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="sexRef"
+                  label="Sex"
+                  type="text"
+                  fullWidth
+                  inputRef={sexRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
                   id="orderedRef"
                   label="Ordered"
                   type="number"
                   fullWidth
                   inputRef={orderedRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="debitRef"
+                  label="Debit"
+                  type="number"
+                  fullWidth
+                  inputRef={debitRef}
                   inputProps={{ minLength: 2 }}
                   required
                 />
