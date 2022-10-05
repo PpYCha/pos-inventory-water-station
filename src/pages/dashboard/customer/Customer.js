@@ -1,5 +1,6 @@
-import { Close, Send } from "@mui/icons-material";
+import { Close, Delete, Edit, Send } from "@mui/icons-material";
 import {
+  Avatar,
   Box,
   Button,
   CircularProgress,
@@ -18,6 +19,7 @@ import React, { useEffect, useRef, useState } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { customerData } from "../../../data";
+import { fDate } from "../../../utils/formatTime";
 
 const Customer = ({ setSelectedLink, link }) => {
   const [customerList, setCustomerList] = useState([{}]);
@@ -52,10 +54,59 @@ const Customer = ({ setSelectedLink, link }) => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID" },
-    { field: "full_name", headerName: "Full Name", flex: 1 },
-    { field: "address", headerName: "Address", flex: 1 },
-    { field: "ordered", headerName: "Ordered", flex: 1 },
+    { field: "id", headerName: "ID", hide: true },
+    {
+      field: "avatarUrl",
+      headerName: "",
+      minWidth: 30,
+      renderCell: (params) => {
+        console.log(params.value);
+        return (
+          <>
+            <Avatar alt={params.avatarUrl} src={params.value} />
+          </>
+        );
+      },
+    },
+    { field: "full_name", headerName: "Full Name", minWidth: 250 },
+    { field: "email", headerName: "Email Address", minWidth: 250 },
+    { field: "address", headerName: "Address", minWidth: 200 },
+    { field: "phoneNumber", headerName: "Phone Number", minWidth: 200 },
+    { field: "sex", headerName: "Sex", minWidth: 150 },
+    {
+      field: "birthdate",
+      headerName: "Birthdate",
+      minWidth: 150,
+      renderCell: (params) => {
+        return (
+          <>
+            <Typography>{fDate(params.value)}</Typography>
+          </>
+        );
+      },
+    },
+    { field: "ordered", headerName: "Ordered", minWidth: 150 },
+    { field: "debit", headerName: "Debit", minWidth: 150 },
+    {
+      field: "action",
+      headerName: "Action",
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <>
+            <Stack direction="row" spacing={1}>
+              <IconButton aria-label="edit">
+                <Edit />
+              </IconButton>
+
+              <IconButton aria-label="delete">
+                <Delete sx={{ color: "red" }} />
+              </IconButton>
+            </Stack>
+          </>
+        );
+      },
+    },
   ];
 
   return (

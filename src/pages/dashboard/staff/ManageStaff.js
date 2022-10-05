@@ -1,4 +1,4 @@
-import { Close, Delete, Edit } from "@mui/icons-material";
+import { Close, Delete, Edit, Send } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -19,6 +19,7 @@ import React, { useEffect, useRef } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { employeeData } from "../../../data";
+import { fDate } from "../../../utils/formatTime";
 
 const ManageStaff = ({ setSelectedLink, link }) => {
   //   console.log(employeeData);
@@ -28,9 +29,14 @@ const ManageStaff = ({ setSelectedLink, link }) => {
     dispatch,
   } = useValue();
 
-  const productNameRef = useRef();
-  const priceRef = useRef();
-  const stockRef = useRef();
+  const nameEmployeeRef = useRef();
+  const emailRef = useRef();
+  const positionRef = useRef();
+  const addressRef = useRef();
+  const phoneNumberRef = useRef();
+  const sexRef = useRef();
+  const birthdateRef = useRef();
+  const salaryRef = useRef();
 
   const handleClose = () => {
     dispatch({ type: "CLOSE_LOGIN" });
@@ -54,16 +60,30 @@ const ManageStaff = ({ setSelectedLink, link }) => {
         );
       },
     },
-    { field: "name", headerName: "Name", flex: 1 },
+    { field: "name", headerName: "Name", minWidth: 250 },
+    { field: "email", headerName: "Email Address", minWidth: 250 },
     { field: "position", headerName: "Position", minWidth: 50 },
-    { field: "address", headerName: "Address", flex: 1 },
+    { field: "address", headerName: "Address", minWidth: 200 },
     { field: "phoneNumber", headerName: "Phone#", minWidth: 150 },
     { field: "sex", headerName: "Sex", minWidth: 10 },
-    { field: "birthdate", headerName: "Birthdate", flex: 1 },
+    {
+      field: "birthdate",
+      headerName: "Birthdate",
+      minWidth: 150,
+      renderCell: (params) => {
+        return (
+          <>
+            <Typography>{fDate(params.value)}</Typography>
+          </>
+        );
+      },
+    },
+
+    { field: "salary", headerName: "Salary", minWidth: 10 },
     {
       field: "action",
       headerName: "Action",
-      minWidth: 240,
+      flex: 1,
       renderCell: (params) => {
         return (
           <>
@@ -112,7 +132,7 @@ const ManageStaff = ({ setSelectedLink, link }) => {
             >
               <Close />
             </IconButton>
-            {/* <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <DialogContentText>
                   Please fill customer information in the fields below:
@@ -121,11 +141,22 @@ const ManageStaff = ({ setSelectedLink, link }) => {
                   autoFocus
                   margin="normal"
                   variant="standard"
-                  id="fullNameRef"
+                  id="nameEmployeeRef"
                   label="Full Name"
                   type="text"
                   fullWidth
-                  inputRef={fullNameRef}
+                  inputRef={nameEmployeeRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="emailRef"
+                  label="Email Address"
+                  type="email"
+                  fullWidth
+                  inputRef={emailRef}
                   inputProps={{ minLength: 2 }}
                   required
                 />
@@ -143,11 +174,56 @@ const ManageStaff = ({ setSelectedLink, link }) => {
                 <TextField
                   margin="normal"
                   variant="standard"
-                  id="orderedRef"
-                  label="Ordered"
+                  id="positionRef"
+                  label="Position"
+                  type="text"
+                  fullWidth
+                  inputRef={positionRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="phoneNumberRef"
+                  label="Phone#"
                   type="number"
                   fullWidth
-                  inputRef={orderedRef}
+                  inputRef={phoneNumberRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="sexRef"
+                  label="Sex"
+                  type="text"
+                  fullWidth
+                  inputRef={sexRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="birthdateRef"
+                  label="Birthdate"
+                  InputLabelProps={{ shrink: true }}
+                  type="date"
+                  fullWidth
+                  inputRef={birthdateRef}
+                  inputProps={{ minLength: 2 }}
+                  required
+                />
+                <TextField
+                  margin="normal"
+                  variant="standard"
+                  id="salary"
+                  label="Salary"
+                  type="number"
+                  fullWidth
+                  inputRef={salaryRef}
                   inputProps={{ minLength: 2 }}
                   required
                 />
@@ -157,7 +233,7 @@ const ManageStaff = ({ setSelectedLink, link }) => {
                   Submit
                 </Button>
               </DialogActions>
-            </form> */}
+            </form>
           </DialogTitle>
         </Dialog>
         <Box m={2}>
