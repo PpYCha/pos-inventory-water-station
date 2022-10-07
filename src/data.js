@@ -20,8 +20,32 @@ export const productData = [...Array(100)].map((_, index) => ({
   price: faker.commerce.price(100, 200, 0, "₱"),
   stock: faker.datatype.number(),
 }));
+//Sample data static.  for Product List
+export const productDataList = [
+  {
+    id: 1,
+    productName: "Product ine",
+    productDescription: "Description ine",
+    price: 1020,
+    stock: 122,
+  },
+  {
+    id: 2,
+    productName: "Product ine",
+    productDescription: "Description ine",
+    price: 100,
+    stock: 3,
+  },
+  {
+    id: 3,
+    productName: "Product ine",
+    productDescription: "Description ine",
+    price: 13100,
+    stock: 112,
+  },
+];
 
-export const transactionsData = [...Array(100)].map((_, index) => ({
+export const transactionsData = [...Array(100)].map((s_, index) => ({
   id: faker.datatype.uuid(),
 
   productName: faker.commerce.productName(),
