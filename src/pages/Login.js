@@ -13,9 +13,14 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Link from "@mui/material/Link";
 import React, { useState } from "react";
 import FormInput from "../components/form/FormInput";
+import useWindowDimensions from "../utils/useWindowDimensions";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { height, width } = useWindowDimensions();
+
+  console.log("h:" + height);
+  console.log("w:" + width);
 
   const [user, setUser] = useState({
     email: "",
@@ -72,7 +77,7 @@ const Login = () => {
   ];
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" fixed maxWidth="sm">
       <CssBaseline />
       <Paper elevation={6}>
         <Box
@@ -115,18 +120,6 @@ const Login = () => {
             >
               Sign In
             </Button>
-            <Grid container>
-              <Grid item xs={12} sm={6}>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Link component={RouterLink} to="/user-signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Paper>

@@ -42,6 +42,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -132,7 +133,7 @@ export default function Dashboard() {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <MenuItem onClick={() => navigate("/")}>Logout</MenuItem>
             </Menu>
             <IconButton onClick={() => setDark(!dark)}>
               {dark ? <Brightness7 /> : <Brightness4 />}

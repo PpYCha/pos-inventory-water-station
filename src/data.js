@@ -96,3 +96,24 @@ export const employeeData = [...Array(20)].map((_, index) => ({
   birthdate: faker.date.birthdate({ min: 1980, max: 2008, mode: "year" }),
   salary: faker.datatype.number({ min: 350, max: 700 }),
 }));
+
+//Home
+export const homeData = [...Array(1)].map((_, index) => ({
+  transactionCount: faker.datatype.number({ min: 1000, max: 5000 }),
+  netSales: faker.finance.amount(1, 100000, 2),
+  costOfProductSold: faker.finance.amount(1, 100000, 2),
+  margin: faker.finance.amount(1, 100000, 2),
+  expenses: faker.finance.amount(1, 100000, 2),
+  profit: faker.finance.amount(1, 100000, 2),
+  meterReadingYesterday: faker.datatype.number({ min: 1000, max: 40000 }),
+  totalMeterReading: faker.datatype.number({ min: 1000, max: 50000 }),
+}));
+
+export const homeColorData = [...Array(8)].map((_, index) => ({
+  cardColor: faker.color.rgb(),
+}));
+
+// , "₱"
+// , "₱"
+// , "₱"
+// , "₱"
