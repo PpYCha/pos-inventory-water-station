@@ -64,14 +64,14 @@ const Signin = () => {
                 name="email"
                 label="Email Address"
                 fullWidth
-                required
+                // required
               />
               <TextField
                 name="password"
                 label="Password"
                 fullWidth
                 type="password"
-                required
+                // required
               />
             </Stack>
             <Stack
@@ -81,10 +81,10 @@ const Signin = () => {
               sx={{ my: 2 }}
             >
               <Button
-                type="submit"
+                // type="submit"
                 variant="contained"
                 fullWidth
-                onSubmit={handleSubmit()}
+                onClick={handleSubmit}
               >
                 Login
               </Button>
