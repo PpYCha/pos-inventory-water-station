@@ -1,4 +1,4 @@
-import { Close, Delete, Edit, Send } from "@mui/icons-material";
+import { Add, Close, Delete, Edit, Send } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Fab,
   IconButton,
   Paper,
   Stack,
@@ -17,6 +18,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
+import DialogComponent from "../../../components/form/DialogComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { usersData } from "../../../data";
 import { fDate } from "../../../utils/formatTime";
@@ -87,6 +89,75 @@ const Users = ({ setSelectedLink, link }) => {
     },
   ];
 
+  const inputs = [
+    {
+      id: "id",
+      label: "ID",
+      name: "id",
+      xs: 12,
+      sm: 12,
+      type: "text",
+    },
+    {
+      id: "name",
+      label: "Name",
+      name: "name",
+
+      xs: 12,
+      sm: 12,
+      type: "text",
+    },
+    {
+      id: "email",
+      label: "Email Address",
+      name: "email",
+      pattern: "^[A-Za-z0-9]{3,16}$",
+      xs: 12,
+      sm: 12,
+      type: "email",
+    },
+    {
+      id: "username",
+      label: "Username",
+      name: "username",
+      xs: 12,
+      sm: 12,
+      type: "text",
+    },
+    {
+      id: "password",
+      label: "Password",
+      name: "password",
+      type: "password",
+      xs: 12,
+      sm: 12,
+    },
+    {
+      id: "phoneNumber",
+      label: "Phone Number",
+      name: "phoneNumber",
+      type: "text",
+      xs: 12,
+      sm: 12,
+    },
+    {
+      id: "status",
+      label: "Status",
+      name: "status",
+      xs: 12,
+      sm: 12,
+      type: "text",
+    },
+    {
+      id: "role",
+      label: "Role",
+      name: "role",
+      xs: 12,
+      sm: 12,
+      type: "text",
+    },
+  ];
+
   useEffect(() => {
     setSelectedLink(link);
   }, []);
@@ -96,14 +167,9 @@ const Users = ({ setSelectedLink, link }) => {
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Users List</Typography>
 
-          <Button
-            variant="contained"
-            onClick={() => dispatch({ type: "OPEN_LOGIN" })}
-          >
-            Add New User
-          </Button>
+          {/* <Button variant="contained">Add New User</Button> */}
         </Stack>
-        <Dialog open={openLogin} onClose={handleClose}>
+        {/* <Dialog open={openLogin} onClose={handleClose}>
           <DialogTitle>
             User Information
             <IconButton
@@ -202,13 +268,26 @@ const Users = ({ setSelectedLink, link }) => {
                 />
               </DialogContent>
               <DialogActions sx={{ px: "19px" }}>
-                <Button type="submit" variant="contained" endIcon={<Send />}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  endIcon={<Send />}
+                >
                   Submit
                 </Button>
               </DialogActions>
             </form>
+            
           </DialogTitle>
-        </Dialog>
+        </Dialog> */}
+
+        <DialogComponent
+          open={openLogin}
+          onClose={handleClose}
+          title="User Information"
+          inputs={inputs}
+        />
         <Box m={2}>
           {loading ? (
             <CircularProgress color="secondary" />
@@ -219,6 +298,14 @@ const Users = ({ setSelectedLink, link }) => {
           )}
         </Box>
       </Paper>
+      <Fab
+        color="primary"
+        aria-label="add"
+        sx={{ position: "fixed", bottom: 16, right: 16 }}
+        onClick={() => dispatch({ type: "OPEN_LOGIN" })}
+      >
+        <Add />
+      </Fab>
     </Box>
   );
 };

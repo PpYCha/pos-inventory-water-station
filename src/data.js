@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { sample } from "lodash";
 
-export const usersData = [...Array(10)].map((_, index) => ({
+export const usersData = [...Array(100)].map((_, index) => ({
   id: faker.datatype.uuid(),
   avatarUrl: faker.image.avatar(),
   name: faker.name.fullName(),
