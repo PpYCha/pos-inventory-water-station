@@ -9,15 +9,15 @@ const FormInput = (props) => {
     setFocused(true);
   };
   return (
-    <Grid item xs={props.xs} sm={props.sm}>
+    <Grid item xs={props.xs} sm={props.sm} p={1}>
       <TextField
         id={props.id}
         label={props.label}
         name={props.name}
-        type={props.type}
-        margin="normal"
         value={props.value}
         fullWidth
+        disabled={props.disabled}
+        {...props}
         // InputLabelProps={
         //   typeof props.value === "undefined"
         //     ? { shrink: false }

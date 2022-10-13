@@ -11,9 +11,10 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useValue } from "../../context/ContextProvider";
+import AutocompleteComponent from "./AutocompleteComponent";
 import FormInput from "./FormInput";
 
-const DialogComponent = ({ open, title, inputs }) => {
+const DialogComponent = ({ open, title, inputs, autoCompleteInputs }) => {
   const [value, setValue] = useState();
 
   const { dispatch } = useValue();
@@ -42,13 +43,24 @@ const DialogComponent = ({ open, title, inputs }) => {
         <DialogContentText>
           Please fill product information in the fields :
         </DialogContentText>
-        <Grid>
-          <form>
+        <form>
+          <Grid container>
             {inputs.map((input) => (
               <FormInput key={input.id} {...input} />
             ))}
-          </form>
-        </Grid>
+
+            {autoCompleteInputs?.map((autoCompleteInput, index) => {
+              return (
+                <AutocompleteComponent
+                  key={index}
+                  options={autoCompleteInput.label}
+                  label={autoCompleteInput.name}
+                  id={autoCompleteInput.name}
+                />
+              );
+            })}
+          </Grid>
+        </form>
       </DialogContent>
       <DialogActions sx={{ px: "19px" }}>
         <Button

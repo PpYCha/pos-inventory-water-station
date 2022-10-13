@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { DataGrid, GridToolbar, gridClasses } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbar,
+  gridClasses,
+  GridToolbarContainer,
+} from "@mui/x-data-grid";
 import LinearProgress from "@mui/material/LinearProgress";
 
 import {
@@ -10,12 +15,27 @@ import {
   Stack,
   Typography,
   styled,
+  Toolbar,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import { Delete, Edit, RemoveRedEyeRounded } from "@mui/icons-material";
 
 const StyledToolbar = styled(DataGrid)({
   height: 52,
 });
+const NewToolbar = () => {
+  return (
+    <GridToolbarContainer>
+      <Button startIcon={<RemoveRedEyeRounded />} color="info">
+        View
+      </Button>
+      <Button startIcon={<Edit />}>Edit</Button>
+      <Button startIcon={<Delete />} color="warning">
+        Delete
+      </Button>
+    </GridToolbarContainer>
+  );
+};
 
 const DataGridComponent = ({ rows, columns, loading }) => {
   const [pageSize, setPageSize] = useState(10);
@@ -42,7 +62,8 @@ const DataGridComponent = ({ rows, columns, loading }) => {
         },
         // width: "500px",
       }}
-      components={{ Toolbar: GridToolbar, LoadingOverlay: LinearProgress }}
+      // Toolbar: NewToolbar,
+      components={{ LoadingOverlay: LinearProgress }}
       // disableSelectionOnClick
       pageSize={pageSize}
       onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}

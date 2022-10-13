@@ -1,8 +1,20 @@
-import { Add, Close, Delete, Edit, Send } from "@mui/icons-material";
+import {
+  Add,
+  Close,
+  Delete,
+  Edit,
+  FileCopy,
+  Print,
+  RemoveRedEye,
+  Save,
+  Send,
+  Share,
+} from "@mui/icons-material";
 import {
   Avatar,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -12,16 +24,30 @@ import {
   Fab,
   IconButton,
   Paper,
+  SpeedDial,
+  SpeedDialAction,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
 import DialogComponent from "../../../components/form/DialogComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { usersData } from "../../../data";
 import { fDate } from "../../../utils/formatTime";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
+import AutocompleteComponent from "../../../components/form/AutocompleteComponent";
+import SpeedialComponent from "../../../components/SpeedialComponent";
+import { sentenceCase } from "change-case";
+
+const actions = [
+  { icon: <Add />, name: "Add" },
+  { icon: <RemoveRedEye />, name: "View" },
+  { icon: <Edit />, name: "Edit" },
+  { icon: <Delete />, name: "Delete" },
+];
 
 const Users = ({ setSelectedLink, link }) => {
   const fullNameRef = useRef();
@@ -31,6 +57,12 @@ const Users = ({ setSelectedLink, link }) => {
   const phoneNumberRef = useRef();
   const statusRef = useRef();
   const roleRef = useRef();
+
+  const [open, setOpen] = useState(false);
+  const handleOpenSpeedial = () => setOpen(true);
+  const handleCloseSpeedial = () => {
+    setOpen(false);
+  };
 
   const {
     state: { openLogin, loading },
@@ -43,6 +75,14 @@ const Users = ({ setSelectedLink, link }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  };
+
+  const handleAction = (e) => {
+    // console.log(e.target.dataset.testid);
+
+    if (e.target.dataset.testid === "AddIcon") {
+      dispatch({ type: "OPEN_LOGIN" });
+    }
   };
 
   const columns = [
@@ -64,29 +104,25 @@ const Users = ({ setSelectedLink, link }) => {
     { field: "username", headerName: "Username", minWidth: 250 },
     { field: "password", headerName: "Password", minWidth: 200, hide: true },
     { field: "phoneNumber", headerName: "Phone#", minWidth: 150 },
-    { field: "status", headerName: "Status", minWidth: 10 },
-
-    { field: "role", headerName: "Role", minWidth: 10 },
     {
-      field: "action",
-      headerName: "Action",
-      flex: 1,
+      field: "status",
+      headerName: "Status",
+      minWidth: 100,
       renderCell: (params) => {
         return (
           <>
-            <Stack direction="row" spacing={1}>
-              <IconButton aria-label="edit">
-                <Edit />
-              </IconButton>
-
-              <IconButton aria-label="delete">
-                <Delete sx={{ color: "red" }} />
-              </IconButton>
-            </Stack>
+            <Chip
+              variant="ghost"
+              color={(params.value === "banned" && "error") || "success"}
+              label={sentenceCase(params.value)}
+              sx={{ minWidth: 70 }}
+            />
           </>
         );
       },
     },
+
+    { field: "role", headerName: "Role", minWidth: 10 },
   ];
 
   const inputs = [
@@ -97,6 +133,7 @@ const Users = ({ setSelectedLink, link }) => {
       xs: 12,
       sm: 12,
       type: "text",
+      disabled: true,
     },
     {
       id: "name",
@@ -140,21 +177,32 @@ const Users = ({ setSelectedLink, link }) => {
       xs: 12,
       sm: 12,
     },
+    // {
+    //   id: "status",
+    //   label: "Status",
+    //   name: "status",
+    //   xs: 6,
+    //   sm: 6,
+    //   type: "text",
+    // },
+    // {
+    //   id: "role",
+    //   label: "Role",
+    //   name: "role",
+    //   xs: 6,
+    //   sm: 6,
+    //   type: "text",
+    // },
+  ];
+
+  const autoCompleteInputs = [
     {
-      id: "status",
-      label: "Status",
-      name: "status",
-      xs: 12,
-      sm: 12,
-      type: "text",
+      name: "Role",
+      label: ["Admin", "Cashier"],
     },
     {
-      id: "role",
-      label: "Role",
-      name: "role",
-      xs: 12,
-      sm: 12,
-      type: "text",
+      name: "Status",
+      label: ["Active", "Banned"],
     },
   ];
 
@@ -163,7 +211,7 @@ const Users = ({ setSelectedLink, link }) => {
   }, []);
   return (
     <Box display="flex" flexDirection="column">
-      <Paper elevation={3}>
+      <Paper elevation={24}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Users List</Typography>
 
@@ -287,7 +335,9 @@ const Users = ({ setSelectedLink, link }) => {
           onClose={handleClose}
           title="User Information"
           inputs={inputs}
+          autoCompleteInputs={autoCompleteInputs}
         />
+
         <Box m={2}>
           {loading ? (
             <CircularProgress color="secondary" />
@@ -298,16 +348,17 @@ const Users = ({ setSelectedLink, link }) => {
           )}
         </Box>
       </Paper>
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
-        onClick={() => dispatch({ type: "OPEN_LOGIN" })}
-      >
-        <Add />
-      </Fab>
+      <SpeedialComponent
+        handleCloseSpeedial={handleCloseSpeedial}
+        handleOpenSpeedial={handleOpenSpeedial}
+        handleAction={handleAction}
+        actions={actions}
+        open={open}
+      />
     </Box>
   );
 };
 
 export default Users;
+
+const roleBox = [{ label: "Admin" }, { label: "Endcoder" }];
