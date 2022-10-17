@@ -7,6 +7,7 @@ import {
   Print,
   RemoveRedEye,
   Save,
+  SaveOutlined,
   Send,
   Share,
 } from "@mui/icons-material";
@@ -22,6 +23,7 @@ import {
   DialogContentText,
   DialogTitle,
   Fab,
+  Grid,
   IconButton,
   Paper,
   SpeedDial,
@@ -41,6 +43,8 @@ import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
 import AutocompleteComponent from "../../../components/form/AutocompleteComponent";
 import SpeedialComponent from "../../../components/SpeedialComponent";
 import { sentenceCase } from "change-case";
+import FormInput from "../../../components/form/FormInput";
+import Swal from "sweetalert2";
 
 const actions = [
   { icon: <Add />, name: "Add" },
@@ -59,8 +63,10 @@ const Users = ({ setSelectedLink, link }) => {
   const roleRef = useRef();
 
   const [open, setOpen] = useState(false);
-  const handleOpenSpeedial = () => setOpen(true);
-  const handleCloseSpeedial = () => {
+  const handleOpenSpeedial = (e) => {
+    setOpen(true);
+  };
+  const handleCloseSpeedial = (e) => {
     setOpen(false);
   };
 
@@ -75,12 +81,28 @@ const Users = ({ setSelectedLink, link }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    handleClose();
+    Swal.fire({
+      title: "Success",
+      text: "User successfully added",
+      icon: "success",
+      confirmButtonText: "OK!",
+    });
   };
 
   const handleAction = (e) => {
-    // console.log(e.target.dataset.testid);
+    console.log(e.target);
 
     if (e.target.dataset.testid === "AddIcon") {
+      dispatch({ type: "OPEN_LOGIN" });
+    }
+    if (e.target.dataset.testid === "RemoveEyeIcon") {
+      dispatch({ type: "OPEN_LOGIN" });
+    }
+    if (e.target.dataset.testid === "EditIcon") {
+      dispatch({ type: "OPEN_LOGIN" });
+    }
+    if (e.target.dataset.testid === "DeleteIcon") {
       dispatch({ type: "OPEN_LOGIN" });
     }
   };
@@ -101,7 +123,7 @@ const Users = ({ setSelectedLink, link }) => {
     },
     { field: "name", headerName: "Name", minWidth: 250 },
     { field: "email", headerName: "Email Address", minWidth: 250 },
-    { field: "username", headerName: "Username", minWidth: 250 },
+
     { field: "password", headerName: "Password", minWidth: 200, hide: true },
     { field: "phoneNumber", headerName: "Phone#", minWidth: 150 },
     {
@@ -126,23 +148,23 @@ const Users = ({ setSelectedLink, link }) => {
   ];
 
   const inputs = [
-    {
-      id: "id",
-      label: "ID",
-      name: "id",
-      xs: 12,
-      sm: 12,
-      type: "text",
-      disabled: true,
-    },
+    // {
+    //   id: "id",
+    //   label: "ID",
+    //   name: "id",
+    //   xs: 12,
+    //   sm: 12,
+    //   type: "text",
+    //   disabled: true,
+    // },
     {
       id: "name",
       label: "Name",
       name: "name",
-
       xs: 12,
       sm: 12,
       type: "text",
+      required: true,
     },
     {
       id: "email",
@@ -152,22 +174,16 @@ const Users = ({ setSelectedLink, link }) => {
       xs: 12,
       sm: 12,
       type: "email",
-    },
-    {
-      id: "username",
-      label: "Username",
-      name: "username",
-      xs: 12,
-      sm: 12,
-      type: "text",
+      required: true,
     },
     {
       id: "password",
       label: "Password",
       name: "password",
-      type: "password",
       xs: 12,
       sm: 12,
+      type: "password",
+      required: true,
     },
     {
       id: "phoneNumber",
@@ -176,23 +192,8 @@ const Users = ({ setSelectedLink, link }) => {
       type: "text",
       xs: 12,
       sm: 12,
+      required: true,
     },
-    // {
-    //   id: "status",
-    //   label: "Status",
-    //   name: "status",
-    //   xs: 6,
-    //   sm: 6,
-    //   type: "text",
-    // },
-    // {
-    //   id: "role",
-    //   label: "Role",
-    //   name: "role",
-    //   xs: 6,
-    //   sm: 6,
-    //   type: "text",
-    // },
   ];
 
   const autoCompleteInputs = [
@@ -214,8 +215,6 @@ const Users = ({ setSelectedLink, link }) => {
       <Paper elevation={24}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Users List</Typography>
-
-          {/* <Button variant="contained">Add New User</Button> */}
         </Stack>
         {/* <Dialog open={openLogin} onClose={handleClose}>
           <DialogTitle>
@@ -330,13 +329,55 @@ const Users = ({ setSelectedLink, link }) => {
           </DialogTitle>
         </Dialog> */}
 
-        <DialogComponent
-          open={openLogin}
-          onClose={handleClose}
-          title="User Information"
-          inputs={inputs}
-          autoCompleteInputs={autoCompleteInputs}
-        />
+        <Dialog onClose={handleClose} open={openLogin} fullWidth maxWidth="lg">
+          <DialogTitle>
+            User Information
+            <IconButton
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+              onClick={handleClose}
+            >
+              <Close />
+            </IconButton>
+          </DialogTitle>
+          <form onSubmit={handleSubmit} action="#">
+            <DialogContent dividers>
+              <DialogContentText>
+                Please fill product information in the fields :
+              </DialogContentText>
+              <Grid container>
+                {inputs.map((input) => (
+                  <FormInput key={input.id} {...input} />
+                ))}
+
+                {autoCompleteInputs?.map((autoCompleteInput, index) => {
+                  return (
+                    <AutocompleteComponent
+                      key={index}
+                      options={autoCompleteInput.label}
+                      label={autoCompleteInput.name}
+                      id={autoCompleteInput.name}
+                    />
+                  );
+                })}
+              </Grid>
+            </DialogContent>
+            <DialogActions sx={{ px: "19px" }}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="success"
+                endIcon={<SaveOutlined />}
+              >
+                Submit
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
 
         <Box m={2}>
           {loading ? (

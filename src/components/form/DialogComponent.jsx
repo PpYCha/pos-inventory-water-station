@@ -1,4 +1,9 @@
-import { Close, Send } from "@mui/icons-material";
+import {
+  Close,
+  SaveAltOutlined,
+  SaveOutlined,
+  Send,
+} from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -14,7 +19,13 @@ import { useValue } from "../../context/ContextProvider";
 import AutocompleteComponent from "./AutocompleteComponent";
 import FormInput from "./FormInput";
 
-const DialogComponent = ({ open, title, inputs, autoCompleteInputs }) => {
+const DialogComponent = ({
+  open,
+  title,
+  inputs,
+  autoCompleteInputs,
+  handleSave,
+}) => {
   const [value, setValue] = useState();
 
   const { dispatch } = useValue();
@@ -67,7 +78,8 @@ const DialogComponent = ({ open, title, inputs, autoCompleteInputs }) => {
           type="submit"
           variant="contained"
           color="success"
-          endIcon={<Send />}
+          endIcon={<SaveOutlined />}
+          onClick={handleSave}
         >
           Submit
         </Button>

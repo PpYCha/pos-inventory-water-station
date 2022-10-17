@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { sample } from "lodash";
+import logo1 from "./assets/Fairways.jpg";
 
 export const usersData = [...Array(100)].map((_, index) => ({
   id: faker.datatype.uuid(),
@@ -12,6 +13,20 @@ export const usersData = [...Array(100)].map((_, index) => ({
   status: sample(["active", "banned"]),
   role: sample(["Admin", "Cashier"]),
 }));
+
+export const usersDatass = [
+  {
+    id: 1,
+    avatarUrl: logo1,
+    name: "dddd",
+    email: "ddd",
+    username: "dd",
+    password: "dd",
+    phoneNumber: "dd",
+    status: "dd",
+    role: "dd",
+  },
+];
 
 export const productData = [...Array(100)].map((_, index) => ({
   id: faker.datatype.uuid(),
@@ -109,7 +124,7 @@ export const homeData = [...Array(1)].map((_, index) => ({
   totalMeterReading: faker.datatype.number({ min: 1000, max: 50000 }),
 }));
 
-export const homeColorData = [...Array(8)].map((_, index) => ({
+export const homeColorData = [...Array(15)].map((_, index) => ({
   cardColor: faker.color.rgb(),
 }));
 
