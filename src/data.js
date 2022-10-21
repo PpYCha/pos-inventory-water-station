@@ -129,6 +129,15 @@ export const homeColorData = [...Array(15)].map((_, index) => ({
 }));
 
 // , "₱"
-// , "₱"
-// , "₱"
-// , "₱"
+
+//Meter Reading
+
+export const meterData = [...Array(30)].map((_, index) => ({
+  id: faker.datatype.uuid(),
+  dateAM: faker.datatype.datetime(),
+  meterAM: faker.datatype.number(),
+  imageUrlAM: faker.image.cats(),
+  datePM: faker.datatype.datetime(),
+  meterPM: faker.datatype.number(),
+  imageUrlPM: faker.image.animals(),
+}));

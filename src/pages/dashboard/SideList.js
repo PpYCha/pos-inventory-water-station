@@ -18,6 +18,7 @@ import {
   TrendingUpOutlined,
   WorkOutlineOutlined,
   AccountBoxOutlined,
+  SpeedOutlined,
 } from "@mui/icons-material";
 import BadgeIcon from "@mui/icons-material/Badge";
 import {
@@ -41,6 +42,7 @@ import { useValue } from "../../context/ContextProvider";
 import Analytics from "./analytics/Analytics";
 import Customer from "./customer/Customer";
 import Main from "./main/Main";
+import Meter from "./meter/Meter";
 
 import Products from "./products/Products";
 import Reports from "./reports/Reports";
@@ -169,13 +171,18 @@ const SideList = ({ open, setOpen }) => {
           <Customer {...{ setSelectedLink, link: "customerProfile" }} />
         ),
       },
+      {
+        title: "Meter Reading",
+        icon: <SpeedOutlined />,
+        link: "meterReading",
+        component: <Meter {...{ setSelectedLink, link: "meterReading" }} />,
+      },
     ],
     []
   );
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {};
   return (
     <>
       <Drawer variant="permanent" open={open}>
