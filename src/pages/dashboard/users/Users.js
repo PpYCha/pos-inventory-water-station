@@ -45,6 +45,7 @@ import SpeedialComponent from "../../../components/SpeedialComponent";
 import { sentenceCase } from "change-case";
 import FormInput from "../../../components/form/FormInput";
 import Swal from "sweetalert2";
+import * as Yup from "yup";
 
 const actions = [
   { icon: <Add />, name: "Add" },
@@ -71,7 +72,11 @@ const Users = ({ setSelectedLink, link }) => {
   };
 
   const {
-    state: { openLogin, loading },
+    state: {
+      openLogin,
+      loading,
+      user: { id, name, email, password, phoneNumber, role, status },
+    },
     dispatch,
   } = useValue();
 
@@ -200,10 +205,12 @@ const Users = ({ setSelectedLink, link }) => {
     {
       name: "Role",
       label: ["Admin", "Cashier"],
+      value1: role,
     },
     {
       name: "Status",
       label: ["Active", "Banned"],
+      value1: status,
     },
   ];
 
@@ -216,118 +223,6 @@ const Users = ({ setSelectedLink, link }) => {
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Users List</Typography>
         </Stack>
-        {/* <Dialog open={openLogin} onClose={handleClose}>
-          <DialogTitle>
-            User Information
-            <IconButton
-              sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
-              onClick={handleClose}
-            >
-              <Close />
-            </IconButton>
-            <form onSubmit={handleSubmit}>
-              <DialogContent dividers>
-                <DialogContentText>
-                  Please fill product information in the fields below:
-                </DialogContentText>
-                <TextField
-                  autoFocus
-                  margin="normal"
-                  variant="standard"
-                  id="fullNameRef"
-                  label="Name"
-                  type="text"
-                  fullWidth
-                  inputRef={fullNameRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="emailRef"
-                  label="Email Address"
-                  type="email"
-                  fullWidth
-                  inputRef={emailRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="usernameRef"
-                  label="Username"
-                  type="text"
-                  fullWidth
-                  inputRef={usernameRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="passwordRef"
-                  label="Password"
-                  type="password"
-                  fullWidth
-                  inputRef={passwordRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="phoneNumberRef"
-                  label="Phone#"
-                  type="text"
-                  fullWidth
-                  inputRef={phoneNumberRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="statusRef"
-                  label="Status"
-                  type="text"
-                  fullWidth
-                  inputRef={statusRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="roleRef"
-                  label="Role"
-                  type="text"
-                  fullWidth
-                  inputRef={roleRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-              </DialogContent>
-              <DialogActions sx={{ px: "19px" }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="success"
-                  endIcon={<Send />}
-                >
-                  Submit
-                </Button>
-              </DialogActions>
-            </form>
-            
-          </DialogTitle>
-        </Dialog> */}
 
         <Dialog onClose={handleClose} open={openLogin} fullWidth maxWidth="lg">
           <DialogTitle>
@@ -361,6 +256,7 @@ const Users = ({ setSelectedLink, link }) => {
                       options={autoCompleteInput.label}
                       label={autoCompleteInput.name}
                       id={autoCompleteInput.name}
+                      value1={autoCompleteInput.value}
                     />
                   );
                 })}

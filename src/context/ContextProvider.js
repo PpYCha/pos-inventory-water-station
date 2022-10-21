@@ -11,9 +11,15 @@ const initialState = {
   currentUser: null,
   openLogin: false,
   loading: false,
-  alert: { open: false, severity: "info", message: "" },
-  profile: { open: false, file: null, photoURL: "" },
-  images: [],
+  user: {
+    id: "",
+    name: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    role: "",
+    status: "",
+  },
 };
 
 const Context = createContext(initialState);

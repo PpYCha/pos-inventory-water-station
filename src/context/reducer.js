@@ -10,15 +10,25 @@ const reducer = (state, action) => {
     case "END_LOADING":
       return { ...state, loading: false };
 
-    case "UPDATE_ALERT":
-      return { ...state, alert: action.payload };
-
-    case "UPDATE_PROFILE":
-      return { ...state, profile: action.payload };
-
     case "UPDATE_USER":
-      localStorage.setItem("currentUser", JSON.stringify(action.payload));
-      return { ...state, currentUser: action.payload };
+      return {
+        ...state,
+        user: { ...state.user, ...action.payload },
+      };
+
+    case "RESET_USER":
+      return {
+        ...state,
+        user: {
+          id: "",
+          name: "",
+          email: "",
+          password: "",
+          phoneNumber: "",
+          role: "",
+          status: "",
+        },
+      };
 
     default:
       throw new Error("No matched action!");
