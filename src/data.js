@@ -30,10 +30,19 @@ export const usersDatass = [
 
 export const productData = [...Array(100)].map((_, index) => ({
   id: faker.datatype.uuid(),
+  productPicture: faker.image.cats(),
   productName: faker.commerce.productName(),
   productDescription: faker.commerce.productDescription(),
+  unitOfMeasurement: sample([
+    "Kilogram (kg)",
+    "Liters (l)",
+    "Meter (m)",
+    "Per pieces (pcs)",
+  ]),
   price: faker.commerce.price(100, 200, 0, "₱"),
+  cost: faker.commerce.price(100, 200, 0, "₱"),
   stock: faker.datatype.number(),
+  lowStockLevel: faker.datatype.number(),
 }));
 //Sample data static.  for Product List
 export const productDataList = [

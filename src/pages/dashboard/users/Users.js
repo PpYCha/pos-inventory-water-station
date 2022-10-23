@@ -32,7 +32,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
 import DialogComponent from "../../../components/form/DialogComponent";
 import { useValue } from "../../../context/ContextProvider";
@@ -46,6 +46,8 @@ import { sentenceCase } from "change-case";
 import FormInput from "../../../components/form/FormInput";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
+import ImageComponent from "../../../components/image/ImageComponent";
+import MaterialReactTable from "material-react-table";
 
 const actions = [
   { icon: <Add />, name: "Add" },
@@ -112,45 +114,76 @@ const Users = ({ setSelectedLink, link }) => {
     }
   };
 
-  const columns = [
-    { field: "id", headerName: "ID", flex: 1, hide: true },
-    {
-      field: "avatarUrl",
-      headerName: "",
-      minWidth: 30,
-      renderCell: (params) => {
-        return (
-          <>
-            <Avatar alt={params.avatarUrl} src={params.value} />
-          </>
-        );
-      },
-    },
-    { field: "name", headerName: "Name", minWidth: 250 },
-    { field: "email", headerName: "Email Address", minWidth: 250 },
+  // const columns = [
+  //   { field: "id", headerName: "ID", flex: 1, hide: true },
+  //   {
+  //     field: "avatarUrl",
+  //     headerName: "",
+  //     minWidth: 30,
+  //     renderCell: (params) => {
+  //       return (
+  //         <>
+  //           <Avatar alt={params.avatarUrl} src={params.value} />
+  //         </>
+  //       );
+  //     },
+  //   },
+  //   { field: "name", headerName: "Name", minWidth: 250 },
+  //   { field: "email", headerName: "Email Address", minWidth: 250 },
 
-    { field: "password", headerName: "Password", minWidth: 200, hide: true },
-    { field: "phoneNumber", headerName: "Phone#", minWidth: 150 },
+  //   { field: "password", headerName: "Password", minWidth: 200, hide: true },
+  //   { field: "phoneNumber", headerName: "Phone#", minWidth: 150 },
+  //   {
+  //     field: "status",
+  //     headerName: "Status",
+  //     minWidth: 100,
+  //     renderCell: (params) => {
+  //       return (
+  //         <>
+  //           <Chip
+  //             variant="ghost"
+  //             color={(params.value === "banned" && "error") || "success"}
+  //             label={sentenceCase(params.value)}
+  //             sx={{ minWidth: 70 }}
+  //           />
+  //         </>
+  //       );
+  //     },
+  //   },
+
+  //   { field: "role", headerName: "Role", minWidth: 10 },
+  // ];
+
+  const columns = useMemo(() => [
     {
-      field: "status",
-      headerName: "Status",
-      minWidth: 100,
-      renderCell: (params) => {
-        return (
-          <>
-            <Chip
-              variant="ghost"
-              color={(params.value === "banned" && "error") || "success"}
-              label={sentenceCase(params.value)}
-              sx={{ minWidth: 70 }}
-            />
-          </>
-        );
-      },
+      accessorKey: "id",
+      header: "ID",
     },
 
-    { field: "role", headerName: "Role", minWidth: 10 },
-  ];
+    {
+      accessorKey: "name",
+      header: "Name",
+      Cell: ({ cell, row }) => (
+        <>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
+            <Avatar alt={cell.avatarUrl} src={row.original.avatarUrl} />
+            <Typography>{cell.getValue()}</Typography>
+          </Box>
+        </>
+      ),
+    },
+    { accessorKey: "email", header: "Email" },
+    { accessorKey: "username", header: "Password" },
+    { accessorKey: "phoneNumber", header: "Phone Number" },
+    { accessorKey: "status", header: "Status" },
+    { accessorKey: "role", header: "Role" },
+  ]);
 
   const inputs = [
     // {
@@ -239,12 +272,16 @@ const Users = ({ setSelectedLink, link }) => {
               <Close />
             </IconButton>
           </DialogTitle>
+
           <form onSubmit={handleSubmit} action="#">
             <DialogContent dividers>
               <DialogContentText>
                 Please fill product information in the fields :
               </DialogContentText>
               <Grid container>
+                <Grid item>
+                  <ImageComponent />
+                </Grid>
                 {inputs.map((input) => (
                   <FormInput key={input.id} {...input} />
                 ))}
@@ -280,7 +317,8 @@ const Users = ({ setSelectedLink, link }) => {
             <CircularProgress color="secondary" />
           ) : (
             <>
-              <DataGridComponent rows={usersData} columns={columns} />
+              <MaterialReactTable columns={columns} data={usersData} />
+              {/* <DataGridComponent rows={usersData} columns={columns} /> */}
             </>
           )}
         </Box>
