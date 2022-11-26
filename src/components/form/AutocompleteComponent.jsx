@@ -6,21 +6,26 @@ const AutocompleteComponent = ({
   options,
   label,
   id,
-
+  size,
+  inputRef,
   value1,
+  required,
 }) => {
   const { dispatch } = useValue();
   const [value, setValue] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+
+  // console.log(value);
 
   const handleChange = (e, newValue) => {
-    setValue(newValue);
+    setValue(newValue.label);
     const str = e.target.id;
-    const newStr = str.split("-")[0];
 
-    console.log(newValue);
+    const newStr = str.split("-")[0];
+    console.log(newValue.label);
     dispatch({
-      type: "UPDATE_USER",
-      payload: { [newStr]: newValue },
+      type: "UPDATE_USER_PROFILE",
+      payload: { [newStr]: newValue.label },
     });
   };
 
@@ -38,8 +43,9 @@ const AutocompleteComponent = ({
 
   return (
     <>
-      <Grid item xs={6} sm={6} p={1}>
+      <Grid item md={size ? size : 3}>
         <Autocomplete
+          required={required}
           options={options}
           renderInput={(params) => (
             <TextField required {...params} label={label} />

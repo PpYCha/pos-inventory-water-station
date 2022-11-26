@@ -14,6 +14,8 @@ const initialState = {
   user: {
     id: "",
     name: "",
+    photoUrl: "",
+    file: null,
     email: "",
     password: "",
     phoneNumber: "",

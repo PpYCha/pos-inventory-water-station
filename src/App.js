@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Home from "./pages/Home";
 import Signin from "./pages/Signin";
+import "./index.css";
 
 const App = () => {
   return (

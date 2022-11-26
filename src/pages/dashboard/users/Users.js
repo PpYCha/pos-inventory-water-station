@@ -12,6 +12,7 @@ import {
   Share,
 } from "@mui/icons-material";
 import {
+  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -36,10 +37,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
 import DialogComponent from "../../../components/form/DialogComponent";
 import { useValue } from "../../../context/ContextProvider";
-import { usersData } from "../../../data";
+
 import { fDate } from "../../../utils/formatTime";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
-import { GRID_CHECKBOX_SELECTION_COL_DEF } from "@mui/x-data-grid";
+import { GRID_CHECKBOX_SELECTION_COL_DEF, trTR } from "@mui/x-data-grid";
 import AutocompleteComponent from "../../../components/form/AutocompleteComponent";
 import SpeedialComponent from "../../../components/SpeedialComponent";
 import { sentenceCase } from "change-case";
@@ -48,111 +49,159 @@ import Swal from "sweetalert2";
 import * as Yup from "yup";
 import ImageComponent from "../../../components/image/ImageComponent";
 import MaterialReactTable from "material-react-table";
+import { values } from "lodash";
+
+import { db_firestore, auth } from "../../../api/firebase";
+import {
+  addDoc,
+  collection,
+  setDoc,
+  doc,
+  getDocs,
+  deleteDoc,
+} from "@firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth } from "@firebase/auth";
+import { async } from "@firebase/util";
 
 const actions = [
-  { icon: <Add />, name: "Add" },
-  { icon: <RemoveRedEye />, name: "View" },
-  { icon: <Edit />, name: "Edit" },
-  { icon: <Delete />, name: "Delete" },
+  {
+    icon: <Add />,
+    name: "Add",
+    operation: "add",
+  },
+  { icon: <RemoveRedEye />, name: "View", operation: "view" },
+  { icon: <Edit />, name: "Edit", operation: "edit" },
+  { icon: <Delete />, name: "Delete", operation: "delete" },
 ];
 
 const Users = ({ setSelectedLink, link }) => {
-  const fullNameRef = useRef();
+  const nameRef = useRef();
   const emailRef = useRef();
   const usernameRef = useRef();
   const passwordRef = useRef();
   const phoneNumberRef = useRef();
-  const statusRef = useRef();
-  const roleRef = useRef();
 
+  const [usersData, setUsersData] = useState([{}]);
+  const [roleValue, setRoleValue] = useState(null);
+  const [statusValue, setStatusValue] = useState(null);
+  const [optionsValue, setOptionsValue] = useState(null);
   const [open, setOpen] = useState(false);
-  const handleOpenSpeedial = (e) => {
-    setOpen(true);
-  };
-  const handleCloseSpeedial = (e) => {
-    setOpen(false);
-  };
+  const [rowSelection, setRowSelection] = useState({});
+  // const handleOpenSpeedial = (e) => {
+  //   setOpen(true);
+  // };
+  // const handleCloseSpeedial = (e) => {
+  //   setOpen(false);
+  // };
 
   const {
-    state: {
-      openLogin,
-      loading,
-      user: { id, name, email, password, phoneNumber, role, status },
-    },
+    state: { openLogin, loading, user },
     dispatch,
   } = useValue();
 
   const handleClose = () => {
     dispatch({ type: "CLOSE_LOGIN" });
+    dispatch({ type: "RESET_USER" });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleClose();
-    Swal.fire({
-      title: "Success",
-      text: "User successfully added",
-      icon: "success",
-      confirmButtonText: "OK!",
-    });
+
+    console.log(user);
+
+    try {
+      const auth = getAuth();
+      createUserWithEmailAndPassword(auth, user.email, user.password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          setDoc(doc(db_firestore, "users", uid), {
+            id: uid,
+            email: user.email,
+            // file: user.file,
+            name: user.name,
+            password: user.password,
+            phoneNumber: user.phoneNumber,
+            photoUrl: user.photoUrl,
+            role: user.role,
+            status: user.role,
+          }).then((result) => {
+            Swal.fire({
+              text: "Successfully Save",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+            fetchUsers();
+            handleClose();
+          });
+        })
+        .catch((e) => {
+          const textMessage = e.code;
+          Swal.fire({
+            text: textMessage.split("/").pop(),
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleAction = (e) => {
-    console.log(e.target);
-
-    if (e.target.dataset.testid === "AddIcon") {
+    if (e === "add") {
       dispatch({ type: "OPEN_LOGIN" });
     }
-    if (e.target.dataset.testid === "RemoveEyeIcon") {
+    if (e === "view") {
       dispatch({ type: "OPEN_LOGIN" });
     }
-    if (e.target.dataset.testid === "EditIcon") {
-      dispatch({ type: "OPEN_LOGIN" });
+    if (e === "edit") {
+      // dispatch({ type: "OPEN_LOGIN" });
+      // const docRef = doc(db, "cities", "SF");
+      // const docSnap = getDoc(docRef);
+      // if (docSnap.exists()) {
+      //   console.log("Document data:", docSnap.data());
+      // } else {
+      //   // doc.data() will be undefined in this case
+      //   console.log("No such document!");
+      // }
+      // console.log("edit", (user.name = "Diasan"));
     }
-    if (e.target.dataset.testid === "DeleteIcon") {
-      dispatch({ type: "OPEN_LOGIN" });
+    if (e === "delete") {
+      console.log(JSON.stringify(rowSelection));
+      const rowUserId = convertUserId();
+      try {
+        deleteDoc(doc(db_firestore, "users", rowUserId));
+        fetchUsers();
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
-  // const columns = [
-  //   { field: "id", headerName: "ID", flex: 1, hide: true },
-  //   {
-  //     field: "avatarUrl",
-  //     headerName: "",
-  //     minWidth: 30,
-  //     renderCell: (params) => {
-  //       return (
-  //         <>
-  //           <Avatar alt={params.avatarUrl} src={params.value} />
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   { field: "name", headerName: "Name", minWidth: 250 },
-  //   { field: "email", headerName: "Email Address", minWidth: 250 },
+  const convertUserId = () => {
+    const obj = JSON.stringify(rowSelection);
+    const rowUserId = obj.substring(obj.indexOf(`"`) + 1, obj.lastIndexOf(`"`));
+    return rowUserId;
+  };
 
-  //   { field: "password", headerName: "Password", minWidth: 200, hide: true },
-  //   { field: "phoneNumber", headerName: "Phone#", minWidth: 150 },
-  //   {
-  //     field: "status",
-  //     headerName: "Status",
-  //     minWidth: 100,
-  //     renderCell: (params) => {
-  //       return (
-  //         <>
-  //           <Chip
-  //             variant="ghost"
-  //             color={(params.value === "banned" && "error") || "success"}
-  //             label={sentenceCase(params.value)}
-  //             sx={{ minWidth: 70 }}
-  //           />
-  //         </>
-  //       );
-  //     },
-  //   },
+  const handleChangeImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const photoUrl = URL.createObjectURL(file);
+      console.log(photoUrl);
+      dispatch({
+        type: "UPDATE_USER",
+        payload: { ...user, file, photoUrl },
+      });
+    }
+  };
 
-  //   { field: "role", headerName: "Role", minWidth: 10 },
-  // ];
+  const handleChange = (e) => {
+    dispatch({
+      type: "UPDATE_USER",
+      payload: { [e.target.id]: e.target.value },
+    });
+  };
 
   const columns = useMemo(() => [
     {
@@ -179,76 +228,58 @@ const Users = ({ setSelectedLink, link }) => {
       ),
     },
     { accessorKey: "email", header: "Email" },
-    { accessorKey: "username", header: "Password" },
+    // { accessorKey: "username", header: "Password" },
     { accessorKey: "phoneNumber", header: "Phone Number" },
     { accessorKey: "status", header: "Status" },
     { accessorKey: "role", header: "Role" },
   ]);
 
-  const inputs = [
-    // {
-    //   id: "id",
-    //   label: "ID",
-    //   name: "id",
-    //   xs: 12,
-    //   sm: 12,
-    //   type: "text",
-    //   disabled: true,
-    // },
-    {
-      id: "name",
-      label: "Name",
-      name: "name",
-      xs: 12,
-      sm: 12,
-      type: "text",
-      required: true,
-    },
-    {
-      id: "email",
-      label: "Email Address",
-      name: "email",
-      pattern: "^[A-Za-z0-9]{3,16}$",
-      xs: 12,
-      sm: 12,
-      type: "email",
-      required: true,
-    },
-    {
-      id: "password",
-      label: "Password",
-      name: "password",
-      xs: 12,
-      sm: 12,
-      type: "password",
-      required: true,
-    },
-    {
-      id: "phoneNumber",
-      label: "Phone Number",
-      name: "phoneNumber",
-      type: "text",
-      xs: 12,
-      sm: 12,
-      required: true,
-    },
-  ];
+  const handleChangeAutoComplete = (e, newValue) => {
+    setRoleValue(newValue.label);
+    const str = e.target.id;
 
-  const autoCompleteInputs = [
-    {
-      name: "Role",
-      label: ["Admin", "Cashier"],
-      value1: role,
-    },
-    {
-      name: "Status",
-      label: ["Active", "Banned"],
-      value1: status,
-    },
-  ];
+    const newStr = str.split("-")[0];
+    console.log(newValue);
+
+    dispatch({
+      type: "UPDATE_USER",
+      payload: { [newStr]: newValue.label },
+    });
+  };
+
+  const fetchUsers = async () => {
+    try {
+      dispatch({ type: "START_LOADING" });
+      const list = [];
+      const querySnapshot = await getDocs(collection(db_firestore, "users"));
+
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc.id, " => ", doc.data().email);
+        // console.log("doc data:", doc.data());
+
+        list.push({
+          id: doc.data().id,
+          name: doc.data().name,
+          email: doc.data().email,
+          // password: doc.data().password,
+          phoneNumber: doc.data().phoneNumber,
+          status: doc.data().status,
+          role: doc.data().role,
+        });
+      });
+
+      setUsersData(list);
+      dispatch({ type: "END_LOADING" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     setSelectedLink(link);
+
+    fetchUsers();
   }, []);
   return (
     <Box display="flex" flexDirection="column">
@@ -273,30 +304,98 @@ const Users = ({ setSelectedLink, link }) => {
             </IconButton>
           </DialogTitle>
 
-          <form onSubmit={handleSubmit} action="#">
+          <form onSubmit={handleSubmit}>
             <DialogContent dividers>
               <DialogContentText>
-                Please fill product information in the fields :
+                Please fill user information in the fields :
               </DialogContentText>
               <Grid container>
                 <Grid item>
-                  <ImageComponent />
-                </Grid>
-                {inputs.map((input) => (
-                  <FormInput key={input.id} {...input} />
-                ))}
-
-                {autoCompleteInputs?.map((autoCompleteInput, index) => {
-                  return (
-                    <AutocompleteComponent
-                      key={index}
-                      options={autoCompleteInput.label}
-                      label={autoCompleteInput.name}
-                      id={autoCompleteInput.name}
-                      value1={autoCompleteInput.value}
+                  <label htmlFor="profilePhoto">
+                    <input
+                      accept="image/*"
+                      id="profilePhoto"
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={handleChangeImage}
                     />
-                  );
-                })}
+                    <Avatar
+                      src={user.photoUrl}
+                      sx={{ width: 250, height: 250, cursor: "pointer" }}
+                    />
+                  </label>
+                </Grid>
+
+                <FormInput
+                  required
+                  fullWidth
+                  type="text"
+                  id="name"
+                  label="Name"
+                  name="name"
+                  onChange={handleChange}
+                  value={user.name}
+                  inputRef={nameRef}
+                />
+                <FormInput
+                  required
+                  fullWidth
+                  type="email"
+                  id="email"
+                  label="email"
+                  name="email"
+                  onChange={handleChange}
+                  value={user.email}
+                  inputRef={emailRef}
+                />
+                <FormInput
+                  required
+                  fullWidth
+                  type="password"
+                  id="password"
+                  label="Password"
+                  name="password"
+                  onChange={handleChange}
+                  value={user.password}
+                  inputRef={passwordRef}
+                />
+                <FormInput
+                  required
+                  fullWidth
+                  type="phoneNumber"
+                  id="phoneNumber"
+                  label="phoneNumber"
+                  name="phoneNumber"
+                  onChange={handleChange}
+                  value={user.phoneNumber}
+                  inputRef={phoneNumberRef}
+                />
+                <Grid item xs={6} sm={6} p={1}>
+                  <Autocomplete
+                    options={roleBox}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Role" />
+                    )}
+                    value={user.role ? user.role : roleValue}
+                    onChange={(e, newValue) =>
+                      handleChangeAutoComplete(e, newValue)
+                    }
+                    disablePortal
+                    id="role"
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} p={1}>
+                  <Autocomplete
+                    options={statusOption}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Status" />
+                    )}
+                    value={user.status ? user.status : statusValue}
+                    onChange={(e, newValue) => (e, newValue)}
+                    disablePortal
+                    id="status"
+                  />
+                </Grid>
               </Grid>
             </DialogContent>
             <DialogActions sx={{ px: "19px" }}>
@@ -306,7 +405,7 @@ const Users = ({ setSelectedLink, link }) => {
                 color="success"
                 endIcon={<SaveOutlined />}
               >
-                Submit
+                Save
               </Button>
             </DialogActions>
           </form>
@@ -317,18 +416,36 @@ const Users = ({ setSelectedLink, link }) => {
             <CircularProgress color="secondary" />
           ) : (
             <>
-              <MaterialReactTable columns={columns} data={usersData} />
+              <MaterialReactTable
+                columns={columns}
+                data={usersData}
+                initialState={{ columnVisibility: { id: false } }}
+                getRowId={(row) => row.id}
+                muiTableBodyRowProps={({ row }) => ({
+                  //implement row selection click events manually
+                  onClick: () =>
+                    setRowSelection((prev) => ({
+                      [row.id]: !prev[row.id],
+                    })),
+                  selected: rowSelection[row.id],
+                  sx: {
+                    cursor: "pointer",
+                  },
+                })}
+                state={{ rowSelection }}
+              />
               {/* <DataGridComponent rows={usersData} columns={columns} /> */}
             </>
           )}
         </Box>
       </Paper>
       <SpeedialComponent
-        handleCloseSpeedial={handleCloseSpeedial}
-        handleOpenSpeedial={handleOpenSpeedial}
+        // handleCloseSpeedial={handleCloseSpeedial}
+        // handleOpenSpeedial={handleOpenSpeedial}
         handleAction={handleAction}
         actions={actions}
-        open={open}
+
+        // open={open}
       />
     </Box>
   );
@@ -337,3 +454,5 @@ const Users = ({ setSelectedLink, link }) => {
 export default Users;
 
 const roleBox = [{ label: "Admin" }, { label: "Endcoder" }];
+
+const statusOption = [{ label: "Active" }, { label: "Banned" }];

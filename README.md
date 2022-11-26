@@ -1,8 +1,6 @@
-# Getting Started with Create React App
+# Water Refilling Station Web
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
+## Changelog
 
 In the project directory, you can run:
 

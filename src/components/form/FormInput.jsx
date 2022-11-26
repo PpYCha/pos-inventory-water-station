@@ -2,14 +2,8 @@ import { Grid, TextField } from "@mui/material";
 import React, { useState } from "react";
 
 const FormInput = (props) => {
-  const [focused, setFocused] = useState(false);
-  const [isFormInvalid, setIsFormInvalid] = useState(false);
-
-  const handleFocus = (e) => {
-    setFocused(true);
-  };
   return (
-    <Grid item xs={props.xs} sm={props.sm} p={1}>
+    <Grid item xs={12} sm={12} p={1}>
       <TextField
         id={props.id}
         label={props.label}
@@ -17,12 +11,8 @@ const FormInput = (props) => {
         value={props.value}
         fullWidth
         disabled={props.disabled}
+        onChange={props.onChange}
         {...props}
-        // InputLabelProps={
-        //   typeof props.value === "undefined"
-        //     ? { shrink: false }
-        //     : { shrink: true }
-        // }
       />
     </Grid>
   );

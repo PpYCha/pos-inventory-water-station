@@ -22,6 +22,8 @@ const reducer = (state, action) => {
         user: {
           id: "",
           name: "",
+          photoUrl: "",
+          file: null,
           email: "",
           password: "",
           phoneNumber: "",
