@@ -8,7 +8,8 @@ const FormInput = (props) => {
         id={props.id}
         label={props.label}
         name={props.name}
-        value={props.value}
+        // value={props.value}
+        // inputRef={props.inputRef}
         fullWidth
         disabled={props.disabled}
         onChange={props.onChange}

@@ -59,20 +59,11 @@ import {
   doc,
   getDocs,
   deleteDoc,
+  getDoc,
+  updateDoc,
 } from "@firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth } from "@firebase/auth";
 import { async } from "@firebase/util";
-
-const actions = [
-  {
-    icon: <Add />,
-    name: "Add",
-    operation: "add",
-  },
-  { icon: <RemoveRedEye />, name: "View", operation: "view" },
-  { icon: <Edit />, name: "Edit", operation: "edit" },
-  { icon: <Delete />, name: "Delete", operation: "delete" },
-];
 
 const Users = ({ setSelectedLink, link }) => {
   const nameRef = useRef();
@@ -87,12 +78,6 @@ const Users = ({ setSelectedLink, link }) => {
   const [optionsValue, setOptionsValue] = useState(null);
   const [open, setOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState({});
-  // const handleOpenSpeedial = (e) => {
-  //   setOpen(true);
-  // };
-  // const handleCloseSpeedial = (e) => {
-  //   setOpen(false);
-  // };
 
   const {
     state: { openLogin, loading, user },
@@ -107,8 +92,14 @@ const Users = ({ setSelectedLink, link }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(user);
+    if (user.id) {
+      handleUpdate();
+    } else {
+      handleSave();
+    }
+  };
 
+  const handleSave = () => {
     try {
       const auth = getAuth();
       createUserWithEmailAndPassword(auth, user.email, user.password)
@@ -123,7 +114,7 @@ const Users = ({ setSelectedLink, link }) => {
             phoneNumber: user.phoneNumber,
             photoUrl: user.photoUrl,
             role: user.role,
-            status: user.role,
+            status: user.status,
           }).then((result) => {
             Swal.fire({
               text: "Successfully Save",
@@ -147,24 +138,69 @@ const Users = ({ setSelectedLink, link }) => {
     }
   };
 
-  const handleAction = (e) => {
+  const handleUpdate = async () => {
+    try {
+      const rowUserId = convertUserId();
+      const washingtonRef = doc(db_firestore, "users", rowUserId);
+
+      await updateDoc(washingtonRef, {
+        email: user.email,
+
+        name: user.name,
+        password: user.password,
+        phoneNumber: user.phoneNumber,
+        photoUrl: user.photoUrl,
+        role: user.role,
+        status: user.status,
+      })
+        .then((result) => {
+          Swal.fire({
+            text: "Successfully Save",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          fetchUsers();
+          handleClose();
+        })
+        .catch((e) => {
+          const textMessage = e.code;
+          Swal.fire({
+            text: textMessage.split("/").pop(),
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAction = async (e) => {
     if (e === "add") {
       dispatch({ type: "OPEN_LOGIN" });
     }
-    if (e === "view") {
-      dispatch({ type: "OPEN_LOGIN" });
-    }
+
     if (e === "edit") {
-      // dispatch({ type: "OPEN_LOGIN" });
-      // const docRef = doc(db, "cities", "SF");
-      // const docSnap = getDoc(docRef);
-      // if (docSnap.exists()) {
-      //   console.log("Document data:", docSnap.data());
-      // } else {
-      //   // doc.data() will be undefined in this case
-      //   console.log("No such document!");
-      // }
-      // console.log("edit", (user.name = "Diasan"));
+      const rowUserId = convertUserId();
+      const docRef = doc(db_firestore, "users", rowUserId);
+      const docSnap = await getDoc(docRef);
+      console.log(docSnap);
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        user.id = docSnap.data().id;
+        user.name = docSnap.data().name;
+
+        user.email = docSnap.data().email;
+        user.password = docSnap.data().password;
+        user.phoneNumber = docSnap.data().phoneNumber;
+        user.photoUrl = docSnap.data().photoUrl;
+        user.role = docSnap.data().role;
+        user.status = docSnap.data().status;
+        dispatch({ type: "OPEN_LOGIN" });
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
     }
     if (e === "delete") {
       console.log(JSON.stringify(rowSelection));
@@ -230,8 +266,8 @@ const Users = ({ setSelectedLink, link }) => {
     { accessorKey: "email", header: "Email" },
     // { accessorKey: "username", header: "Password" },
     { accessorKey: "phoneNumber", header: "Phone Number" },
-    { accessorKey: "status", header: "Status" },
     { accessorKey: "role", header: "Role" },
+    { accessorKey: "status", header: "Status" },
   ]);
 
   const handleChangeAutoComplete = (e, newValue) => {
@@ -239,7 +275,18 @@ const Users = ({ setSelectedLink, link }) => {
     const str = e.target.id;
 
     const newStr = str.split("-")[0];
-    console.log(newValue);
+
+    dispatch({
+      type: "UPDATE_USER",
+      payload: { [newStr]: newValue.label },
+    });
+  };
+
+  const handleChangeAutoComplete2 = (e, newValue) => {
+    setStatusValue(newValue.label);
+    const str = e.target.id;
+
+    const newStr = str.split("-")[0];
 
     dispatch({
       type: "UPDATE_USER",
@@ -335,7 +382,7 @@ const Users = ({ setSelectedLink, link }) => {
                   name="name"
                   onChange={handleChange}
                   value={user.name}
-                  inputRef={nameRef}
+                  // inputRef={nameRef}
                 />
                 <FormInput
                   required
@@ -391,7 +438,9 @@ const Users = ({ setSelectedLink, link }) => {
                       <TextField {...params} label="Status" />
                     )}
                     value={user.status ? user.status : statusValue}
-                    onChange={(e, newValue) => (e, newValue)}
+                    onChange={(e, newValue) =>
+                      handleChangeAutoComplete2(e, newValue)
+                    }
                     disablePortal
                     id="status"
                   />
@@ -439,14 +488,7 @@ const Users = ({ setSelectedLink, link }) => {
           )}
         </Box>
       </Paper>
-      <SpeedialComponent
-        // handleCloseSpeedial={handleCloseSpeedial}
-        // handleOpenSpeedial={handleOpenSpeedial}
-        handleAction={handleAction}
-        actions={actions}
-
-        // open={open}
-      />
+      <SpeedialComponent handleAction={handleAction} />
     </Box>
   );
 };

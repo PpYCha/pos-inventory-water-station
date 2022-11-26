@@ -203,7 +203,36 @@ const SideList = ({ open, setOpen }) => {
         <List>
           {list.map((item) => (
             <ListItem key={item.title} disablePadding sx={{ display: "block" }}>
-              /
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                  borderRadius: 3,
+                  marginLeft: 1,
+                  marginRight: 1,
+                }}
+                onClick={() => navigate(item.link)}
+                selected={selectedLink === item.link}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                    color: selectedLink === item.link ? "#2065D1" : "",
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.title}
+                  sx={{
+                    opacity: open ? 1 : 0,
+                    color: selectedLink === item.link ? "#2065D1" : "",
+                  }}
+                />
+              </ListItemButton>
             </ListItem>
           ))}
         </List>

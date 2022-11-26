@@ -22,6 +22,16 @@ const initialState = {
     role: "",
     status: "",
   },
+  product: {
+    id: "",
+    productPicture: "",
+    productName: "",
+    productDescription: "",
+    price: "",
+    cost: "",
+    stock: "",
+    lowStockLevel: "",
+  },
 };
 
 const Context = createContext(initialState);

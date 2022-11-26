@@ -24,7 +24,8 @@ const DialogComponent = ({
   title,
   inputs,
   autoCompleteInputs,
-  handleSave,
+  handleSubmit,
+  handleChange,
 }) => {
   const [value, setValue] = useState();
 
@@ -50,14 +51,14 @@ const DialogComponent = ({
           <Close />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
-        <DialogContentText>
-          Please fill product information in the fields :
-        </DialogContentText>
-        <form>
+      <form onSubmit={handleSubmit}>
+        <DialogContent dividers>
+          <DialogContentText>
+            Please fill product information in the fields :
+          </DialogContentText>
           <Grid container>
             {inputs.map((input) => (
-              <FormInput key={input.id} {...input} />
+              <FormInput key={input.id} {...input} onChange={handleChange} />
             ))}
 
             {autoCompleteInputs?.map((autoCompleteInput, index) => {
@@ -71,19 +72,18 @@ const DialogComponent = ({
               );
             })}
           </Grid>
-        </form>
-      </DialogContent>
-      <DialogActions sx={{ px: "19px" }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color="success"
-          endIcon={<SaveOutlined />}
-          onClick={handleSave}
-        >
-          Submit
-        </Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions sx={{ px: "19px" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="success"
+            endIcon={<SaveOutlined />}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

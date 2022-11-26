@@ -32,6 +32,27 @@ const reducer = (state, action) => {
         },
       };
 
+    case "UPDATE_PRODUCT":
+      return {
+        ...state,
+        product: { ...state.product, ...action.payload },
+      };
+
+    case "RESET_PRODUCT":
+      return {
+        ...state,
+        product: {
+          id: "",
+          productName: "",
+          productPicture: "",
+          productDescription: "",
+          price: "",
+          cost: "",
+          stock: "",
+          lowStockLevel: "",
+        },
+      };
+
     default:
       throw new Error("No matched action!");
   }
