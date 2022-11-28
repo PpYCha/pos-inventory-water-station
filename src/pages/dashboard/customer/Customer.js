@@ -15,245 +15,371 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Swal from "sweetalert2";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
+import SpeedialComponent from "../../../components/SpeedialComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { customerData } from "../../../data";
 import { fDate } from "../../../utils/formatTime";
+import {
+  addDoc,
+  collection,
+  setDoc,
+  doc,
+  getDocs,
+  deleteDoc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from "@firebase/firestore";
+import { db_firestore } from "../../../api/firebase";
+import DialogComponent from "../../../components/form/DialogComponent";
+import MaterialReactTable from "material-react-table";
 
 const Customer = ({ setSelectedLink, link }) => {
-  const [customerList, setCustomerList] = useState([{}]);
-  const [loading, setLoading] = useState(true);
+  const [customersData, setCustomersData] = useState([{}]);
+  const [rowSelection, setRowSelection] = useState({});
 
   const {
-    state: { openLogin },
+    state: { openLogin, loading, customer },
     dispatch,
   } = useValue();
 
-  const fullNameRef = useRef();
-  const emailRef = useRef();
-  const addressRef = useRef();
-  const phoneNumberRef = useRef();
-  const birthdateRef = useRef();
-  const sexRef = useRef();
-  const orderedRef = useRef();
-  const debitRef = useRef();
-
   const handleClose = () => {
+    dispatch({ type: "RESET_CUSTOMER" });
     dispatch({ type: "CLOSE_LOGIN" });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    console.log(customer);
+
+    if (customer.id) {
+      handleUpdate();
+    } else {
+      handleSave();
+    }
   };
+
+  const handleSave = async () => {
+    try {
+      await addDoc(collection(db_firestore, "customers"), {
+        id: customer.id,
+        avatarUrl: customer.avatarUrl,
+        name: customer.name,
+        email: customer.email,
+        address: customer.address,
+        phoneNumber: customer.phoneNumber,
+        birthdate: customer.birthdate,
+        sex: customer.sex,
+        ordered: customer.ordered,
+        debit: customer.debit,
+      })
+        .then((data) => {
+          const docRef = doc(db_firestore, "customers", data.id);
+          updateDoc(docRef, {
+            id: data.id,
+          });
+        })
+        .finally((result) => {
+          Swal.fire({
+            text: "Successfully Save",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          fetchCustomerList();
+          handleClose();
+        })
+        .catch((e) => {
+          const textMessage = e.code;
+          Swal.fire({
+            text: textMessage.split("/").pop(),
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+    } catch (error) {}
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const rowUserId = convertUserId();
+      const washingtonRef = doc(db_firestore, "customers", rowUserId);
+
+      await updateDoc(washingtonRef, {
+        id: customer.id,
+        avatarUrl: customer.avatarUrl,
+        name: customer.name,
+        email: customer.email,
+        address: customer.address,
+        phoneNumber: customer.phoneNumber,
+        birthdate: customer.birthdate,
+        sex: customer.sex,
+        ordered: customer.ordered,
+        debit: customer.debit,
+      })
+        .then((result) => {
+          Swal.fire({
+            text: "Successfully Save",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          fetchCustomerList();
+          handleClose();
+        })
+        .catch((e) => {
+          const textMessage = e.code;
+          Swal.fire({
+            text: textMessage.split("/").pop(),
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const convertUserId = () => {
+    const obj = JSON.stringify(rowSelection);
+    const rowUserId = obj.substring(obj.indexOf(`"`) + 1, obj.lastIndexOf(`"`));
+    return rowUserId;
+  };
+
+  const handleAction = async (e) => {
+    console.log(e);
+    if (e === "add") {
+      dispatch({ type: "OPEN_LOGIN" });
+    }
+
+    if (e === "edit") {
+      const rowUserId = convertUserId();
+      const docRef = doc(db_firestore, "customers", rowUserId);
+      const docSnap = await getDoc(docRef);
+      console.log(docSnap);
+      if (docSnap.exists()) {
+        customer.id = docSnap.data().id;
+        customer.avatarUr = docSnap.data().avatarUr;
+        customer.name = docSnap.data().name;
+        customer.email = docSnap.data().email;
+        customer.address = docSnap.data().address;
+        customer.phoneNumber = docSnap.data().phoneNumber;
+        customer.birthdate = docSnap.data().birthdate;
+        customer.sex = docSnap.data().sex;
+        customer.ordered = docSnap.data().ordered;
+        customer.debit = docSnap.data().debit;
+        dispatch({ type: "OPEN_LOGIN" });
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    }
+
+    if (e === "delete") {
+      const rowUserId = convertUserId();
+
+      try {
+        deleteDoc(doc(db_firestore, "customers", rowUserId));
+        fetchCustomerList();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const handleChange = (e) => {
+    dispatch({
+      type: "UPDATE_CUSTOMER",
+      payload: { [e.target.id]: e.target.value },
+    });
+  };
+
+  const fetchCustomerList = async () => {
+    try {
+      dispatch({ type: "START_LOADING" });
+      const list = [];
+      const querySnapshot = await getDocs(
+        collection(db_firestore, "customers")
+      );
+
+      querySnapshot.forEach((doc) => {
+        list.push({
+          id: doc.data().id,
+          avatarUr: doc.data().avatarUr,
+          name: doc.data().name,
+          email: doc.data().email,
+          address: doc.data().address,
+          phoneNumber: doc.data().phoneNumber,
+          birthdate: doc.data().birthdate,
+          sex: doc.data().sex,
+          ordered: doc.data().ordered,
+          debit: doc.data().debit,
+        });
+      });
+
+      setCustomersData(list);
+      dispatch({ type: "END_LOADING" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const columns = useMemo(() => [
+    {
+      accessorKey: "id",
+      header: "ID",
+    },
+
+    {
+      accessorKey: "name",
+      header: "Name",
+      Cell: ({ cell, row }) => (
+        <>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
+            <Avatar alt={cell.avatarUrl} src={row.original.avatarUrl} />
+            <Typography>{cell.getValue()}</Typography>
+          </Box>
+        </>
+      ),
+    },
+    { accessorKey: "email", header: "Email Address" },
+
+    { accessorKey: "address", header: "Address" },
+    { accessorKey: "phoneNumber", header: "Phone Number" },
+    { accessorKey: "birthdate", header: "Birthdate" },
+    { accessorKey: "sex", header: "Sex" },
+    { accessorKey: "ordered", header: "Ordered" },
+    { accessorKey: "debit", header: "Debit" },
+  ]);
+
+  const inputs = [
+    {
+      autoFocus: true,
+
+      id: "name",
+      name: "name",
+      label: "Full Name",
+      value: customer.name,
+      type: "text",
+      xs: 12,
+      sm: 6,
+    },
+    {
+      id: "email",
+      name: "email",
+      label: "Email Address",
+      value: customer.email,
+      type: "email",
+      xs: 12,
+      sm: 6,
+    },
+    {
+      id: "address",
+      name: "address",
+      label: "Address",
+      value: customer.address,
+      type: "text",
+      xs: 12,
+      sm: 12,
+    },
+    {
+      id: "phoneNumber",
+      label: "Phone Number",
+      value: customer.phoneNumber,
+      type: "text",
+      xs: 12,
+      sm: 4,
+    },
+    {
+      id: "birthdate",
+      label: "Birthdate",
+      value: customer.birthdate,
+      type: "date",
+      InputLabelProps: { shrink: true },
+      xs: 12,
+      sm: 4,
+    },
+    {
+      id: "sex",
+      label: "Sex",
+      value: customer.sex,
+      type: "text",
+      xs: 12,
+      sm: 4,
+    },
+    {
+      id: "ordered",
+      label: "Ordered",
+      value: customer.ordered,
+      type: "number",
+      xs: 12,
+      sm: 6,
+    },
+    {
+      id: "debit",
+      label: "Debit",
+      value: customer.debit,
+      type: "number",
+      xs: 12,
+      sm: 6,
+    },
+  ];
 
   useEffect(() => {
     setSelectedLink(link);
-    fetchAPI();
+    fetchCustomerList();
   }, []);
-
-  const fetchAPI = async () => {
-    setLoading(true);
-    setCustomerList(customerData);
-    setLoading(false);
-  };
-
-  const columns = [
-    { field: "id", headerName: "ID", hide: true },
-    {
-      field: "avatarUrl",
-      headerName: "",
-      minWidth: 30,
-      renderCell: (params) => {
-        console.log(params.value);
-        return (
-          <>
-            <Avatar alt={params.avatarUrl} src={params.value} />
-          </>
-        );
-      },
-    },
-    { field: "full_name", headerName: "Full Name", minWidth: 250 },
-    { field: "email", headerName: "Email Address", minWidth: 250 },
-    { field: "address", headerName: "Address", minWidth: 200 },
-    { field: "phoneNumber", headerName: "Phone Number", minWidth: 200 },
-    { field: "sex", headerName: "Sex", minWidth: 150 },
-    {
-      field: "birthdate",
-      headerName: "Birthdate",
-      minWidth: 150,
-      renderCell: (params) => {
-        return (
-          <>
-            <Typography>{fDate(params.value)}</Typography>
-          </>
-        );
-      },
-    },
-    { field: "ordered", headerName: "Ordered", minWidth: 150 },
-    { field: "debit", headerName: "Debit", minWidth: 150 },
-    {
-      field: "action",
-      headerName: "Action",
-      minWidth: 150,
-      renderCell: (params) => {
-        return (
-          <>
-            <Stack direction="row" spacing={1}>
-              <IconButton aria-label="edit">
-                <Edit />
-              </IconButton>
-
-              <IconButton aria-label="delete">
-                <Delete sx={{ color: "red" }} />
-              </IconButton>
-            </Stack>
-          </>
-        );
-      },
-    },
-  ];
 
   return (
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Customer List</Typography>
-
-          <Button
-            variant="contained"
-            onClick={() => dispatch({ type: "OPEN_LOGIN" })}
-          >
-            Add New Customer
-          </Button>
         </Stack>
-        <Dialog open={openLogin} onClose={handleClose}>
-          <DialogTitle>
-            Customer Information
-            <IconButton
-              sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
-              onClick={handleClose}
-            >
-              <Close />
-            </IconButton>
-            <form onSubmit={handleSubmit}>
-              <DialogContent dividers>
-                <DialogContentText>
-                  Please fill customer information in the fields below:
-                </DialogContentText>
-                <TextField
-                  autoFocus
-                  margin="normal"
-                  variant="standard"
-                  id="fullNameRef"
-                  label="Full Name"
-                  type="text"
-                  fullWidth
-                  inputRef={fullNameRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="emailRef"
-                  label="Email Address"
-                  type="email"
-                  fullWidth
-                  inputRef={emailRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="addressRef"
-                  label="Address"
-                  type="text"
-                  fullWidth
-                  inputRef={addressRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="phoneNumberRef"
-                  label="Phone Number"
-                  type="text"
-                  fullWidth
-                  inputRef={phoneNumberRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="birthdateRef"
-                  label="Birthdate"
-                  InputLabelProps={{ shrink: true }}
-                  type="date"
-                  fullWidth
-                  inputRef={birthdateRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="sexRef"
-                  label="Sex"
-                  type="text"
-                  fullWidth
-                  inputRef={sexRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="orderedRef"
-                  label="Ordered"
-                  type="number"
-                  fullWidth
-                  inputRef={orderedRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="debitRef"
-                  label="Debit"
-                  type="number"
-                  fullWidth
-                  inputRef={debitRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-              </DialogContent>
-              <DialogActions sx={{ px: "19px" }}>
-                <Button type="submit" variant="contained" endIcon={<Send />}>
-                  Submit
-                </Button>
-              </DialogActions>
-            </form>
-          </DialogTitle>
-        </Dialog>
+
+        <DialogComponent
+          open={openLogin}
+          handleClose={handleClose}
+          title="Customer Information"
+          inputs={inputs}
+          handleSubmit={handleSubmit}
+          handleChange={handleChange}
+        />
+
         <Box m={2}>
           {loading ? (
             <CircularProgress color="secondary" />
           ) : (
             <>
-              <DataGridComponent rows={customerList} columns={columns} />
+              <MaterialReactTable
+                columns={columns}
+                data={customersData}
+                initialState={{ columnVisibility: { id: false } }}
+                getRowId={(row) => row.id}
+                muiTableBodyRowProps={({ row }) => ({
+                  onClick: () =>
+                    setRowSelection((prev) => ({
+                      [row.id]: !prev[row.id],
+                    })),
+                  selected: rowSelection[row.id],
+                  sx: {
+                    cursor: "pointer",
+                  },
+                })}
+                state={{ rowSelection }}
+              />
             </>
           )}
         </Box>
+        <SpeedialComponent handleAction={handleAction} />
       </Paper>
     </Box>
   );

@@ -131,12 +131,12 @@ const SideList = ({ open, setOpen }) => {
         link: "products",
         component: <Products {...{ setSelectedLink, link: "products" }} />,
       },
-      {
-        title: "Inventory",
-        icon: <InventoryOutlined />,
-        link: "inventory",
-        component: <Inventory {...{ setSelectedLink, link: "inventory" }} />,
-      },
+      // {
+      //   title: "Inventory",
+      //   icon: <InventoryOutlined />,
+      //   link: "inventory",
+      //   component: <Inventory {...{ setSelectedLink, link: "inventory" }} />,
+      // },
       {
         title: "Transactions",
         icon: <AttachMoneyOutlined />,
@@ -145,18 +145,18 @@ const SideList = ({ open, setOpen }) => {
           <Transactions {...{ setSelectedLink, link: "transactions" }} />
         ),
       },
-      {
-        title: "Sales",
-        icon: <TrendingUpOutlined />,
-        link: "sales",
-        component: <Sales {...{ setSelectedLink, link: "sales" }} />,
-      },
-      {
-        title: "Analytics",
-        icon: <TimelineOutlined />,
-        link: "analytics",
-        component: <Analytics {...{ setSelectedLink, link: "analytics" }} />,
-      },
+      // {
+      //   title: "Sales",
+      //   icon: <TrendingUpOutlined />,
+      //   link: "sales",
+      //   component: <Sales {...{ setSelectedLink, link: "sales" }} />,
+      // },
+      // {
+      //   title: "Analytics",
+      //   icon: <TimelineOutlined />,
+      //   link: "analytics",
+      //   component: <Analytics {...{ setSelectedLink, link: "analytics" }} />,
+      // },
       {
         title: "Reports",
         icon: <BarChartOutlined />,

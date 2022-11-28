@@ -53,6 +53,52 @@ const reducer = (state, action) => {
         },
       };
 
+    case "UPDATE_EMPLOYEE":
+      return {
+        ...state,
+        employee: { ...state.employee, ...action.payload },
+      };
+
+    case "RESET_EMPLOYEE":
+      return {
+        ...state,
+        employee: {
+          id: "",
+          avatarUrl: "",
+          name: "",
+          email: "",
+          position: "",
+          address: "",
+          phoneNumber: "",
+          sex: "",
+          birthdate: "",
+          salary: "",
+        },
+      };
+
+    case "UPDATE_CUSTOMER":
+      return {
+        ...state,
+        customer: { ...state.customer, ...action.payload },
+      };
+
+    case "RESET_CUSTOMER":
+      return {
+        ...state,
+        customer: {
+          id: "",
+          avatarUrl: "",
+          name: "",
+          email: "",
+          address: "",
+          phoneNumber: "",
+          birthdate: "",
+          sex: "",
+          ordered: "",
+          debit: "",
+        },
+      };
+
     default:
       throw new Error("No matched action!");
   }

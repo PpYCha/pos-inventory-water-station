@@ -26,14 +26,11 @@ const DialogComponent = ({
   autoCompleteInputs,
   handleSubmit,
   handleChange,
+  handleClose,
 }) => {
   const [value, setValue] = useState();
 
   const { dispatch } = useValue();
-
-  const handleClose = () => {
-    dispatch({ type: "CLOSE_LOGIN" });
-  };
 
   return (
     <Dialog onClose={handleClose} open={open} fullWidth maxWidth="lg">

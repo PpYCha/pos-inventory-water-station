@@ -85,6 +85,7 @@ const Users = ({ setSelectedLink, link }) => {
   } = useValue();
 
   const handleClose = () => {
+    console.log("dialog close");
     dispatch({ type: "CLOSE_LOGIN" });
     dispatch({ type: "RESET_USER" });
   };
@@ -382,6 +383,8 @@ const Users = ({ setSelectedLink, link }) => {
                   name="name"
                   onChange={handleChange}
                   value={user.name}
+                  xs={12}
+                  sm={12}
                   // inputRef={nameRef}
                 />
                 <FormInput
@@ -394,6 +397,8 @@ const Users = ({ setSelectedLink, link }) => {
                   onChange={handleChange}
                   value={user.email}
                   inputRef={emailRef}
+                  xs={12}
+                  sm={12}
                 />
                 <FormInput
                   required
@@ -405,6 +410,8 @@ const Users = ({ setSelectedLink, link }) => {
                   onChange={handleChange}
                   value={user.password}
                   inputRef={passwordRef}
+                  xs={12}
+                  sm={12}
                 />
                 <FormInput
                   required
@@ -416,6 +423,8 @@ const Users = ({ setSelectedLink, link }) => {
                   onChange={handleChange}
                   value={user.phoneNumber}
                   inputRef={phoneNumberRef}
+                  xs={12}
+                  sm={12}
                 />
                 <Grid item xs={6} sm={6} p={1}>
                   <Autocomplete

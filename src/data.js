@@ -98,7 +98,7 @@ export const salesData = [...Array(100)].map((_, index) => ({
 export const customerData = [...Array(100)].map((_, index) => ({
   id: faker.datatype.uuid(),
   avatarUrl: faker.image.avatar(),
-  full_name: faker.name.fullName(),
+  name: faker.name.fullName(),
   email: faker.internet.email(),
   address: faker.address.country(),
   phoneNumber: faker.phone.phoneNumber("(+63)9##-###-####"),

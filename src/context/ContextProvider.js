@@ -32,6 +32,30 @@ const initialState = {
     stock: "",
     lowStockLevel: "",
   },
+  employee: {
+    id: "",
+    avatarUrl: "",
+    name: "",
+    email: "",
+    position: "",
+    address: "",
+    phoneNumber: "",
+    sex: "",
+    birthdate: "",
+    salary: "",
+  },
+  customer: {
+    id: "",
+    avatarUrl: "",
+    name: "",
+    email: "",
+    address: "",
+    phoneNumber: "",
+    birthdate: "",
+    sex: "",
+    ordered: "",
+    debit: "",
+  },
 };
 
 const Context = createContext(initialState);

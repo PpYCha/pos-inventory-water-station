@@ -54,8 +54,9 @@ const Products = ({ setSelectedLink, link }) => {
   } = useValue();
 
   const handleClose = () => {
-    dispatch({ type: "CLOSE_LOGIN" });
+    console.log("close");
     dispatch({ type: "RESET_PRODUCT" });
+    dispatch({ type: "CLOSE_LOGIN" });
   };
 
   const handleSubmit = (e) => {
@@ -70,38 +71,40 @@ const Products = ({ setSelectedLink, link }) => {
   };
 
   const handleSave = async () => {
-    await addDoc(collection(db_firestore, "products"), {
-      productPicture: product.productPicture,
-      productName: product.productName,
-      productDescription: product.productDescription,
-      price: product.price,
-      cost: product.cost,
-      stock: product.stock,
-      lowStockLevel: product.lowStockLevel,
-    })
-      .then((data) => {
-        const docRef = doc(db_firestore, "products", data.id);
-        updateDoc(docRef, {
-          id: data.id,
-        });
+    try {
+      await addDoc(collection(db_firestore, "products"), {
+        productPicture: product.productPicture,
+        productName: product.productName,
+        productDescription: product.productDescription,
+        price: product.price,
+        cost: product.cost,
+        stock: product.stock,
+        lowStockLevel: product.lowStockLevel,
       })
-      .then((result) => {
-        Swal.fire({
-          text: "Successfully Save",
-          icon: "success",
-          confirmButtonText: "OK",
+        .then((data) => {
+          const docRef = doc(db_firestore, "products", data.id);
+          updateDoc(docRef, {
+            id: data.id,
+          });
+        })
+        .finally((result) => {
+          Swal.fire({
+            text: "Successfully Save",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          fetchProductsList();
+          handleClose();
+        })
+        .catch((e) => {
+          const textMessage = e.code;
+          Swal.fire({
+            text: textMessage.split("/").pop(),
+            icon: "error",
+            confirmButtonText: "OK",
+          });
         });
-        fetchProductsList();
-        handleClose();
-      })
-      .catch((e) => {
-        const textMessage = e.code;
-        Swal.fire({
-          text: textMessage.split("/").pop(),
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      });
+    } catch (error) {}
   };
 
   const handleUpdate = async () => {
@@ -189,7 +192,6 @@ const Products = ({ setSelectedLink, link }) => {
   }, []);
 
   const handleChange = (e) => {
-    console.log(e.target.id);
     dispatch({
       type: "UPDATE_PRODUCT",
       payload: { [e.target.id]: e.target.value },
@@ -250,7 +252,7 @@ const Products = ({ setSelectedLink, link }) => {
     { accessorKey: "price", header: "Price" },
     { accessorKey: "cost", header: "Cost" },
     { accessorKey: "stock", header: "Stock" },
-    { accessorKey: "lowStockLevel", header: "Low Stock Level" },
+    // { accessorKey: "lowStockLevel", header: "Low Stock Level" },
   ]);
 
   const inputs = [
@@ -287,11 +289,31 @@ const Products = ({ setSelectedLink, link }) => {
       sm: 6,
     },
     {
+      id: "cost",
+      name: "cost",
+      label: "Cost",
+      value: product.cost,
+      type: "number",
+      required: true,
+      xs: 6,
+      sm: 6,
+    },
+    {
       id: "stock",
       name: "stock",
       label: "Stock",
       type: "number",
       value: product.stock,
+      required: true,
+      xs: 6,
+      sm: 6,
+    },
+    {
+      id: "lowStockLevel",
+      name: "lowStockLevel",
+      label: "Low Stock Level",
+      type: "number",
+      value: product.lowStockLevel,
       required: true,
       xs: 6,
       sm: 6,
@@ -306,7 +328,7 @@ const Products = ({ setSelectedLink, link }) => {
         </Stack>
         <DialogComponent
           open={openLogin}
-          onClose={handleClose}
+          handleClose={handleClose}
           title="Product Information"
           inputs={inputs}
           handleSubmit={handleSubmit}
