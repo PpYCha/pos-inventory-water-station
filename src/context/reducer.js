@@ -99,6 +99,26 @@ const reducer = (state, action) => {
         },
       };
 
+    case "UPDATE_METER":
+      return {
+        ...state,
+        meter: { ...state.meter, ...action.payload },
+      };
+
+    case "RESET_METER":
+      return {
+        ...state,
+        meter: {
+          id: "",
+          dateAM: "",
+          meterAM: "",
+          imageUrlAM: "",
+          datePM: "",
+          meterPM: "",
+          imageUrlPM: "",
+        },
+      };
+
     default:
       throw new Error("No matched action!");
   }

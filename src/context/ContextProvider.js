@@ -56,6 +56,15 @@ const initialState = {
     ordered: "",
     debit: "",
   },
+  meter: {
+    id: "",
+    dateAM: "",
+    meterAM: "",
+    imageUrlAM: "",
+    datePM: "",
+    meterPM: "",
+    imageUrlPM: "",
+  },
 };
 
 const Context = createContext(initialState);
