@@ -85,7 +85,7 @@ const Users = ({ setSelectedLink, link }) => {
   } = useValue();
 
   const handleClose = () => {
-    console.log("dialog close");
+    // console.log("dialog close");
     dispatch({ type: "CLOSE_LOGIN" });
     dispatch({ type: "RESET_USER" });
   };
@@ -353,7 +353,7 @@ const Users = ({ setSelectedLink, link }) => {
           </DialogTitle>
 
           <form onSubmit={handleSubmit}>
-            <DialogContent dividers>
+            <DialogContent dividers={true}>
               <DialogContentText>
                 Please fill user information in the fields :
               </DialogContentText>

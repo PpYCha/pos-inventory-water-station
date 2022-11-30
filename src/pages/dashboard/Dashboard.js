@@ -5,21 +5,17 @@ import {
   CssBaseline,
   Typography,
   IconButton,
-  Tooltip,
   MenuItem,
   Menu,
+  Button,
 } from "@mui/material";
 import MuiAppBar from "@mui/material/AppBar";
-import {
-  AccountCircle,
-  Brightness4,
-  Brightness7,
-  Home,
-} from "@mui/icons-material";
+import { AccountCircle } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SideList from "./SideList";
+import { useValue } from "../../context/ContextProvider";
 
 const drawerWidth = 240;
 
@@ -46,6 +42,11 @@ export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const {
+    state: { currentUser },
+    dispatch,
+  } = useValue();
 
   const darkTheme = useMemo(
     () =>
@@ -94,11 +95,6 @@ export default function Dashboard() {
             >
               <MenuIcon />
             </IconButton>
-            {/* <Tooltip title="Go back to home page">
-              <IconButton sx={{ mr: 1 }} onClick={() => {}}>
-                <Home />
-              </IconButton>
-            </Tooltip> */}
             <Typography
               variant="h6"
               noWrap
@@ -133,11 +129,18 @@ export default function Dashboard() {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={() => navigate("/")}>Logout</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  navigate("/");
+                  dispatch({ type: "RESET_CURRENT_USER" });
+                }}
+              >
+                Logout
+              </MenuItem>
             </Menu>
-            <IconButton onClick={() => setDark(!dark)}>
+            {/* <IconButton onClick={() => setDark(!dark)}>
               {dark ? <Brightness7 /> : <Brightness4 />}
-            </IconButton>
+            </IconButton> */}
           </Toolbar>
         </AppBar>
         <SideList {...{ open, setOpen }} />

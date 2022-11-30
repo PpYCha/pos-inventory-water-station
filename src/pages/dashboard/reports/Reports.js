@@ -4,7 +4,15 @@ const Reports = ({ setSelectedLink, link }) => {
   useEffect(() => {
     setSelectedLink(link);
   }, []);
-  return <div>Reports</div>;
+  return (
+    <div>
+      <text>Hello</text>
+      <br />
+      <input></input>
+      <br />
+      <button>Hello</button>
+    </div>
+  );
 };
 
 export default Reports;

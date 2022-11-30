@@ -251,7 +251,7 @@ const Products = ({ setSelectedLink, link }) => {
     // { accessorKey: "username", header: "Password" },
     { accessorKey: "price", header: "Price" },
     { accessorKey: "cost", header: "Cost" },
-    { accessorKey: "stock", header: "Stock" },
+    { accessorKey: "stock", header: "Total Stock" },
     // { accessorKey: "lowStockLevel", header: "Low Stock Level" },
   ]);
 

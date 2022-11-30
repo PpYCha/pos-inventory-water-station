@@ -20,6 +20,9 @@ import {
   AccountBoxOutlined,
   SpeedOutlined,
   InventoryOutlined,
+  PaymentOutlined,
+  Inventory2Outlined,
+  // Inventory2Outlined,
 } from "@mui/icons-material";
 import BadgeIcon from "@mui/icons-material/Badge";
 import {
@@ -36,6 +39,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+
 import MuiDrawer from "@mui/material/Drawer";
 import { useMemo, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -51,6 +55,7 @@ import Reports from "./reports/Reports";
 
 import Sales from "./sales/Sales";
 import ManageStaff from "./staff/ManageStaff";
+import Stock from "./stock/Stock";
 import Transactions from "./transactions/Transactions";
 
 import Users from "./users/Users";
@@ -111,83 +116,82 @@ const Drawer = styled(MuiDrawer, {
 const SideList = ({ open, setOpen }) => {
   const [selectedLink, setSelectedLink] = useState("");
 
-  const list = useMemo(
-    () => [
-      {
-        title: "Home",
-        icon: <Home />,
-        link: "",
-        component: <Main {...{ setSelectedLink, link: "" }} />,
-      },
-      {
-        title: "Users",
-        icon: <PersonOutlineOutlined />,
-        link: "users",
-        component: <Users {...{ setSelectedLink, link: "users" }} />,
-      },
-      {
-        title: "Products",
-        icon: <StorefrontOutlined />,
-        link: "products",
-        component: <Products {...{ setSelectedLink, link: "products" }} />,
-      },
-      // {
-      //   title: "Inventory",
-      //   icon: <InventoryOutlined />,
-      //   link: "inventory",
-      //   component: <Inventory {...{ setSelectedLink, link: "inventory" }} />,
-      // },
-      {
-        title: "Transactions",
-        icon: <AttachMoneyOutlined />,
-        link: "transactions",
-        component: (
-          <Transactions {...{ setSelectedLink, link: "transactions" }} />
-        ),
-      },
-      // {
-      //   title: "Sales",
-      //   icon: <TrendingUpOutlined />,
-      //   link: "sales",
-      //   component: <Sales {...{ setSelectedLink, link: "sales" }} />,
-      // },
-      // {
-      //   title: "Analytics",
-      //   icon: <TimelineOutlined />,
-      //   link: "analytics",
-      //   component: <Analytics {...{ setSelectedLink, link: "analytics" }} />,
-      // },
-      {
-        title: "Reports",
-        icon: <BarChartOutlined />,
-        link: "reports",
-        component: <Reports {...{ setSelectedLink, link: "reports" }} />,
-      },
-      {
-        title: "Manage Staff",
-        icon: <WorkOutlineOutlined />,
-        link: "managestaff",
-        component: (
-          <ManageStaff {...{ setSelectedLink, link: "managestaff" }} />
-        ),
-      },
-      {
-        title: "Customer Profile",
-        icon: <AccountBoxOutlined />,
-        link: "customerProfile",
-        component: (
-          <Customer {...{ setSelectedLink, link: "customerProfile" }} />
-        ),
-      },
-      {
-        title: "Meter Reading",
-        icon: <SpeedOutlined />,
-        link: "meterReading",
-        component: <Meter {...{ setSelectedLink, link: "meterReading" }} />,
-      },
-    ],
-    []
-  );
+  const list = useMemo(() => [
+    {
+      title: "Home",
+      icon: <Home />,
+      link: "",
+      component: <Main {...{ setSelectedLink, link: "" }} />,
+    },
+    {
+      title: "Users",
+      icon: <PersonOutlineOutlined />,
+      link: "users",
+      component: <Users {...{ setSelectedLink, link: "users" }} />,
+    },
+    {
+      title: "Products",
+      icon: <StorefrontOutlined />,
+      link: "products",
+      component: <Products {...{ setSelectedLink, link: "products" }} />,
+    },
+    // {
+    //   title: "Inventory",
+    //   icon: <InventoryOutlined />,
+    //   link: "inventory",
+    //   component: <Inventory {...{ setSelectedLink, link: "inventory" }} />,
+    // },
+    {
+      title: "Transactions",
+      icon: <PaymentOutlined />,
+      link: "transactions",
+      component: (
+        <Transactions {...{ setSelectedLink, link: "transactions" }} />
+      ),
+    },
+    // {
+    //   title: "Sales",
+    //   icon: <TrendingUpOutlined />,
+    //   link: "sales",
+    //   component: <Sales {...{ setSelectedLink, link: "sales" }} />,
+    // },
+    // {
+    //   title: "Analytics",
+    //   icon: <TimelineOutlined />,
+    //   link: "analytics",
+    //   component: <Analytics {...{ setSelectedLink, link: "analytics" }} />,
+    // },
+    // {
+    //   title: "Reports",
+    //   icon: <BarChartOutlined />,
+    //   link: "reports",
+    //   component: <Reports {...{ setSelectedLink, link: "reports" }} />,
+    // },
+    {
+      title: "Manage Staff",
+      icon: <WorkOutlineOutlined />,
+      link: "managestaff",
+      component: <ManageStaff {...{ setSelectedLink, link: "managestaff" }} />,
+    },
+    {
+      title: "Customer Profile",
+      icon: <AccountBoxOutlined />,
+      link: "customerProfile",
+      component: <Customer {...{ setSelectedLink, link: "customerProfile" }} />,
+    },
+    {
+      title: "Meter Reading",
+      icon: <SpeedOutlined />,
+      link: "meterReading",
+      component: <Meter {...{ setSelectedLink, link: "meterReading" }} />,
+    },
+    {
+      title: "Stock",
+      icon: <Inventory2Outlined />,
+      link: "stock",
+      component: <Stock {...{ setSelectedLink, link: "stock" }} />,
+    },
+  ]);
 
   const navigate = useNavigate();
 

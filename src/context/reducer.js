@@ -10,6 +10,17 @@ const reducer = (state, action) => {
     case "END_LOADING":
       return { ...state, loading: false };
 
+    case "CURRENT_USER":
+      return {
+        ...state,
+        currentUser: { ...state.currentUser, ...action.payload },
+      };
+    case "RESET_CURRENT_USER":
+      return {
+        ...state,
+        currentUser: null,
+      };
+
     case "UPDATE_USER":
       return {
         ...state,

@@ -5,17 +5,28 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Home from "./pages/Home";
 import Signin from "./pages/Signin";
 import "./index.css";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useValue } from "./context/ContextProvider";
 
 const App = () => {
+  const {
+    state: { currentUser },
+  } = useValue();
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route path="/*" element={<Signin />} />
-          {/* <Route path="/login" element={<Login />} /> */}
-          <Route path="dashboard/*" element={<Dashboard />}>
-            {/* <Route path="/" element={<Dashboard />} /> */}
-          </Route>
+          {currentUser ? (
+            <>
+              {/* <Route path="/login" element={<Login />} /> */}
+              <Route path="dashboard/*" element={<Dashboard />}>
+                {/* <Route path="/" element={<Dashboard />} /> */}
+              </Route>
+            </>
+          ) : (
+            <></>
+          )}
         </Routes>
       </BrowserRouter>
     </>

@@ -23,8 +23,15 @@ import {
 } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useValue } from "../context/ContextProvider";
 
 const Signin = () => {
+  const {
+    state: { openLogin, loading, currentUser },
+    dispatch,
+  } = useValue();
+
   const navigate = useNavigate();
 
   const initialValues = {
@@ -41,23 +48,41 @@ const Signin = () => {
 
   const onSubmit = (values) => {
     console.log(values);
-    if (values.email === "admin@gmail.com" && values.password === "12345678") {
-      Swal.fire({
-        title: "Success",
-        text: "User successfully signin",
-        icon: "success",
-        confirmButtonText: "OK!",
-      });
 
-      navigate("/dashboard");
-    } else {
-      Swal.fire({
-        title: "Failed",
-        text: "Invalid email or password",
-        icon: "error",
-        confirmButtonText: "OK!",
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, values.email, values.password)
+      .then((userCredential) => {
+        // Signed in
+        const userFirebase = userCredential.user;
+        Swal.fire({
+          title: "Success",
+          text: "User successfully signin",
+          icon: "success",
+          confirmButtonText: "OK!",
+        });
+
+        navigate("/dashboard");
+        dispatch({
+          type: "CURRENT_USER",
+          payload: { currentUser: userFirebase.uid },
+        });
+
+        console.log(currentUser);
+        // ...
+      })
+
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+        Swal.fire({
+          title: "Failed",
+          text: "Invalid email or password",
+          icon: "error",
+          confirmButtonText: "OK!",
+        });
       });
-    }
   };
 
   return (
@@ -137,7 +162,7 @@ const Signin = () => {
                   color="primary"
                   size="large"
                 >
-                  Sign up
+                  LOGIN
                 </Button>
               </Form>
             )}
