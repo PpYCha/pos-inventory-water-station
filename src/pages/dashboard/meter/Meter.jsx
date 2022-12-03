@@ -13,6 +13,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
@@ -48,6 +49,8 @@ import {
 import { storage } from "../../../api/firebase";
 import { v4 } from "uuid";
 import { async } from "@firebase/util";
+import { upload } from "@testing-library/user-event/dist/upload";
+import { result } from "lodash";
 
 const Meter = ({ setSelectedLink, link }) => {
   const [metersData, setMetersData] = useState([{}]);
@@ -61,40 +64,52 @@ const Meter = ({ setSelectedLink, link }) => {
   } = useValue();
 
   const imagesListRef = ref(storage, "images/");
+
   const uploadFile = async () => {
-    if (imageUpload1 == null) return;
-    const imageRef = ref(storage, `images/${imageUpload1.name + v4()}`);
-    await uploadBytes(imageRef, imageUpload1).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        console.log("image1:", url);
-        dispatch({
-          type: "UPDATE_METER",
-          payload: { imageUrlAM: url },
+    const imageRef = ref(storage, `images/meterAM/${imageUpload1.name + v4()}`);
+    const waitimage1 = await uploadBytes(imageRef, imageUpload1).then(
+      (snapshot) => {
+        return getDownloadURL(snapshot.ref).then((url) => {
+          // dispatch({
+          //   type: "UPDATE_METER",
+          //   payload: { imageUrlAM: url },
+          // });
+
+          console.log("image1:", url);
+          return url;
         });
-      });
-    });
-    if (imageUpload2 == null) return;
-    const imageRef1 = ref(storage, `images/${imageUpload2.name + v4()}`);
-    await uploadBytes(imageRef1, imageUpload2).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        dispatch({
-          type: "UPDATE_METER",
-          payload: { imageUrlPM: url },
+      }
+    );
+
+    const imageRef1 = ref(
+      storage,
+      `images/meterPM/${imageUpload2.name + v4()}`
+    );
+    const waitimage2 = await uploadBytes(imageRef1, imageUpload2).then(
+      (snapshot) => {
+        return getDownloadURL(snapshot.ref).then((url) => {
+          // dispatch({
+          //   type: "UPDATE_METER",
+          //   payload: { imageUrlPM: url },
+          // });
+          console.log("image2:", url);
+          return url;
         });
-        console.log("image2:", url);
-      });
-    });
+      }
+    );
+
+    return [waitimage1, waitimage2];
   };
 
   const handleClose = () => {
     dispatch({ type: "RESET_METER" });
     dispatch({ type: "CLOSE_LOGIN" });
+    dispatch({ type: "START_LOADING" });
+    dispatch({ type: "END_LOADING" });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log(meter);
 
     if (meter.id) {
       handleUpdate();
@@ -105,42 +120,48 @@ const Meter = ({ setSelectedLink, link }) => {
 
   const handleSave = async () => {
     try {
-      uploadFile();
-      console.log("handleSave:", meter);
-      if (meter.imageUrlAM && meter.imageUrlPM) {
-        await addDoc(collection(db_firestore, "meters"), {
-          id: meter.id,
-          dateAM: meter.dateAM,
-          meterAM: meter.meterAM,
-          imageUrlAM: meter.imageUrlAM,
-          datePM: meter.datePM,
-          meterPM: meter.meterPM,
-          imageUrlPM: meter.imageUrlPM,
-        })
-          .then((data) => {
-            const docRef = doc(db_firestore, "meters", data.id);
-            updateDoc(docRef, {
-              id: data.id,
-            });
-          })
-          .finally((result) => {
-            Swal.fire({
-              text: "Successfully Save",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
-            fetchMeterList();
-            handleClose();
-          })
-          .catch((e) => {
-            const textMessage = e.code;
-            Swal.fire({
-              text: textMessage.split("/").pop(),
-              icon: "error",
-              confirmButtonText: "OK",
-            });
+      dispatch({ type: "START_LOADING" });
+      const [waitimage1, waitimage2] = await uploadFile();
+
+      console.log("wait ine:", waitimage1);
+      console.log("wait ine:", waitimage2);
+
+      addDoc(collection(db_firestore, "meters"), {
+        id: meter.id,
+        dateAM: meter.dateAM,
+        meterAM: meter.meterAM,
+        imageUrlAM: waitimage1,
+        datePM: meter.datePM,
+        meterPM: meter.meterPM,
+        imageUrlPM: waitimage2,
+      })
+        .then((data) => {
+          const docRef = doc(db_firestore, "meters", data.id);
+          updateDoc(docRef, {
+            id: data.id,
           });
-      }
+        })
+        .finally((result) => {
+          Swal.fire({
+            text: "Successfully Save",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetchMeterList();
+              handleClose();
+            }
+          });
+        })
+        .catch((e) => {
+          const textMessage = e.code;
+          Swal.fire({
+            text: textMessage.split("/").pop(),
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+      dispatch({ type: "END_LOADING" });
     } catch (error) {}
   };
 
@@ -390,7 +411,7 @@ const Meter = ({ setSelectedLink, link }) => {
             maxWidth="lg"
           >
             <DialogTitle>
-              User Information
+              Meter Information
               <IconButton
                 sx={{
                   position: "absolute",
@@ -407,7 +428,7 @@ const Meter = ({ setSelectedLink, link }) => {
             <form onSubmit={handleSubmit}>
               <DialogContent dividers={true}>
                 <DialogContentText>
-                  Please fill user information in the fields :
+                  Please fill meter information in the fields :
                 </DialogContentText>
                 <Grid container>
                   <FormInput
@@ -487,14 +508,16 @@ const Meter = ({ setSelectedLink, link }) => {
                 </Grid>
               </DialogContent>
               <DialogActions sx={{ px: "19px" }}>
-                <Button
+                <LoadingButton
                   type="submit"
                   variant="contained"
                   color="success"
                   endIcon={<SaveOutlined />}
+                  loading={loading}
+                  loadingPosition="end"
                 >
                   Save
-                </Button>
+                </LoadingButton>
               </DialogActions>
             </form>
           </Dialog>

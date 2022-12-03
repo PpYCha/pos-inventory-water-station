@@ -17,16 +17,12 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/*" element={<Signin />} />
-          {currentUser ? (
-            <>
-              {/* <Route path="/login" element={<Login />} /> */}
-              <Route path="dashboard/*" element={<Dashboard />}>
-                {/* <Route path="/" element={<Dashboard />} /> */}
-              </Route>
-            </>
-          ) : (
-            <></>
-          )}
+          <>
+            {/* <Route path="/login" element={<Login />} /> */}
+            <Route path="dashboard/*" element={<Dashboard />}>
+              {/* <Route path="/" element={<Dashboard />} /> */}
+            </Route>
+          </>
         </Routes>
       </BrowserRouter>
     </>

@@ -22,6 +22,7 @@ import {
   InventoryOutlined,
   PaymentOutlined,
   Inventory2Outlined,
+  PointOfSaleOutlined,
   // Inventory2Outlined,
 } from "@mui/icons-material";
 import BadgeIcon from "@mui/icons-material/Badge";
@@ -49,6 +50,7 @@ import Customer from "./customer/Customer";
 import Inventory from "./inventory/Inventory";
 import Main from "./main/Main";
 import Meter from "./meter/Meter";
+import Pos from "./pos/Pos";
 
 import Products from "./products/Products";
 import Reports from "./reports/Reports";
@@ -190,6 +192,12 @@ const SideList = ({ open, setOpen }) => {
       icon: <Inventory2Outlined />,
       link: "stock",
       component: <Stock {...{ setSelectedLink, link: "stock" }} />,
+    },
+    {
+      title: "POS",
+      icon: <PointOfSaleOutlined />,
+      link: "pos",
+      component: <Pos {...{ setSelectedLink, link: "pos" }} />,
     },
   ]);
 

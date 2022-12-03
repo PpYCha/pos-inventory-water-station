@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { useEffect, useRef } from "react";
 import DataGridComponent from "../../../components/dataGrid/DataGridComponent";
+import FormInput from "../../../components/form/FormInput";
+import SpeedialComponent from "../../../components/SpeedialComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { transactionsData } from "../../../data";
 import { fDate } from "../../../utils/formatTime";
@@ -35,6 +37,36 @@ const Transactions = ({ setSelectedLink, link }) => {
 
   const handleClose = () => {
     dispatch({ type: "CLOSE_LOGIN" });
+  };
+
+  const handleAction = async (e) => {
+    console.log(e);
+    if (e === "add") {
+      dispatch({ type: "OPEN_LOGIN" });
+    }
+
+    if (e === "edit") {
+      // const rowUserId = convertUserId();
+      // const docRef = doc(db_firestore, "transactions", rowUserId);
+      // const docSnap = await getDoc(docRef);
+      // console.log(docSnap);
+      // if (docSnap.exists()) {
+      //   // employee.id = docSnap.data().id;
+      //   dispatch({ type: "OPEN_LOGIN" });
+      // } else {
+      //   // doc.data() will be undefined in this case
+      //   console.log("No such document!");
+      // }
+    }
+
+    if (e === "delete") {
+      // const rowUserId = convertUserId();
+      // try {
+      //   deleteDoc(doc(db_firestore, "transactions", rowUserId));
+      // } catch (error) {
+      //   console.log(error);
+      // }
+    }
   };
 
   const handleSubmit = (e) => {
@@ -95,15 +127,8 @@ const Transactions = ({ setSelectedLink, link }) => {
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Transaction List</Typography>
-
-          <Button
-            variant="contained"
-            onClick={() => dispatch({ type: "OPEN_LOGIN" })}
-          >
-            Add New Transaction
-          </Button>
         </Stack>
-        <Dialog open={openLogin} onClose={handleClose}>
+        <Dialog open={openLogin} onClose={handleClose} fullWidth maxWidth="lg">
           <DialogTitle>
             Transaction Information
             <IconButton
@@ -122,72 +147,41 @@ const Transactions = ({ setSelectedLink, link }) => {
                 <DialogContentText>
                   Please fill product information in the fields below:
                 </DialogContentText>
-                <TextField
+                <FormInput
                   autoFocus
-                  margin="normal"
-                  variant="standard"
-                  id="productNameRef"
+                  id="productName"
                   label="Product Name"
                   type="text"
-                  fullWidth
-                  inputRef={productNameRef}
-                  inputProps={{ minLength: 2 }}
-                  required
+                  sx={12}
+                  sm={12}
                 />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="customerNameRef"
+                <FormInput
+                  id="customerName"
                   label="Customer Name"
                   type="text"
-                  fullWidth
-                  inputRef={customerNameRef}
-                  inputProps={{ minLength: 2 }}
-                  required
+                  sx={12}
+                  sm={12}
                 />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="amountRef"
-                  label="Amount"
-                  type="number"
-                  fullWidth
-                  inputRef={amountRef}
-                  inputProps={{ minLength: 2 }}
-                  required
-                />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="transactionTypeRef"
+                <FormInput id="amount" label="Amount" type="number" />
+                <FormInput
+                  id="transactionType"
                   label="Transaction Type"
                   type="text"
-                  fullWidth
-                  inputRef={transactionTypeRef}
-                  inputProps={{ minLength: 2 }}
-                  required
+                  sx={12}
+                  sm={12}
                 />
-                <TextField
-                  margin="normal"
-                  variant="standard"
-                  id="transactionDescriptionRef"
+                <FormInput
+                  id="transactionDescription"
                   label="Transaction Description"
                   type="text"
-                  fullWidth
-                  inputRef={transactionDescriptionRef}
-                  inputProps={{ minLength: 2 }}
-                  required
+                  sx={12}
+                  sm={12}
                 />
-                <TextField
+                <FormInput
                   margin="normal"
-                  variant="standard"
-                  id="transactionDateRef"
+                  id="transactionDate"
                   label="Transaction Date"
                   type="date"
-                  fullWidth
-                  inputRef={transactionDateRef}
-                  inputProps={{ minLength: 2 }}
-                  required
                   InputLabelProps={{ shrink: true }}
                 />
               </DialogContent>
@@ -209,6 +203,7 @@ const Transactions = ({ setSelectedLink, link }) => {
           )}
         </Box>
       </Paper>
+      <SpeedialComponent handleAction={handleAction} />
     </Box>
   );
 };

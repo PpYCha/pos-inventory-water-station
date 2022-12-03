@@ -65,6 +65,14 @@ const initialState = {
     meterPM: "",
     imageUrlPM: "",
   },
+  cartItems: {
+    id: "",
+    productName: "",
+    productPicture: "",
+    price: "",
+    stock: "",
+    quantity: "",
+  },
 };
 
 const Context = createContext(initialState);

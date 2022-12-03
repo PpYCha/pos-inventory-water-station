@@ -130,6 +130,18 @@ const reducer = (state, action) => {
         },
       };
 
+    case "CURRENT_CART":
+      return {
+        ...state,
+        cartItems: { ...state.cartItems, ...action.payload },
+      };
+
+    case "RESET_CART":
+      return {
+        ...state,
+        cartItems: null,
+      };
+
     default:
       throw new Error("No matched action!");
   }
