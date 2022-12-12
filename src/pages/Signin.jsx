@@ -91,17 +91,25 @@ const Signin = () => {
         sx={{
           width: "100%",
           maxWidth: "50%",
+
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           margin: (2, 0, 2, 2),
-          backgroundColor: "#019BE3",
+          // backgroundColor: "#019BE3",
         }}
       >
         {/* <CardHeader
           title={<Typography variant="h2">Hi, Welcome Back</Typography>}
         /> */}
-        <Box component="img" src={logo} />
+        <Box
+          component="img"
+          src={logo}
+          sx={{
+            maxWidth: "90%",
+            maxHeight: "90%",
+          }}
+        />
       </Card>
       <Container maxWidth="sm">
         <Box

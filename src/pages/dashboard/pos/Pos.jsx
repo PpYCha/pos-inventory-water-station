@@ -9,6 +9,7 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  Button,
 } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import MaterialReactTable from "material-react-table";
@@ -16,10 +17,13 @@ import {
   Add,
   AddCircle,
   AddShoppingCart,
+  AddShoppingCartOutlined,
   Close,
   Delete,
   Edit,
   RemoveCircle,
+  RemoveShoppingCart,
+  RemoveShoppingCartOutlined,
   SaveOutlined,
 } from "@mui/icons-material";
 import { useValue } from "../../../context/ContextProvider";
@@ -42,7 +46,7 @@ const Pos = ({ setSelectedLink, link }) => {
   const [productList, setProductList] = useState([{}]);
 
   const {
-    state: { openLogin, cartItems, loading },
+    state: { openLogin, cart, loading },
     dispatch,
   } = useValue();
 
@@ -77,14 +81,15 @@ const Pos = ({ setSelectedLink, link }) => {
   };
 
   const handleAddCart = (row) => {
-    console.log(row.productName);
-    cartItems.id = row.id;
-    cartItems.productName = row.productName;
-    cartItems.productPicture = row.productPicture;
-    cartItems.price = row.price;
-    cartItems.stock = row.stock;
-    cartItems.quantity = row.quantity;
-    dispatch({ type: "OPEN_LOGIN" });
+    console.log(row);
+    // cartItems.id = row.id;
+    // cartItems.productName = row.productName;
+    // cartItems.productPicture = row.productPicture;
+    // cartItems.price = row.price;
+    // cartItems.stock = row.stock;
+    // cartItems.quantity = row.quantity;
+    // console.log(cartItems.length);
+    // dispatch({ type: "OPEN_LOGIN" });
   };
 
   const fetchProductsList = async () => {
@@ -139,11 +144,42 @@ const Pos = ({ setSelectedLink, link }) => {
           initialState={{ columnVisibility: { id: false } }}
           enableEditing
           renderRowActions={({ row, table }) => (
-            <Box sx={{ display: "flex", gap: "1rem" }}>
-              <IconButton onClick={() => handleAddCart(row.original)}>
-                <AddShoppingCart />
-              </IconButton>
-            </Box>
+            <>
+              {cart.some((p) => p.id === row.original.id) ? (
+                <Box sx={{ display: "flex", gap: "1rem" }}>
+                  <IconButton
+                    color="error"
+                    onClick={() =>
+                      dispatch({
+                        type: "REMOVE_FROM_CART",
+                        payload: row.original,
+                      })
+                    }
+                  >
+                    <RemoveShoppingCartOutlined />
+                  </IconButton>
+                </Box>
+              ) : (
+                <Box sx={{ display: "flex", gap: "1rem" }}>
+                  <IconButton
+                    color="success"
+                    onClick={() =>
+                      dispatch({
+                        type: "ADD_TO_CART",
+                        payload: row.original,
+                      })
+                    }
+                    disabled={row.original.stock === "0"}
+                  >
+                    {row.original.stock === "0" ? (
+                      "Out of Stock"
+                    ) : (
+                      <AddShoppingCartOutlined />
+                    )}
+                  </IconButton>
+                </Box>
+              )}
+            </>
           )}
         />
       </Paper>
@@ -178,7 +214,7 @@ const Pos = ({ setSelectedLink, link }) => {
                 label="productName"
                 name="meterPM"
                 onChange={handleChange}
-                value={cartItems.productName}
+                // value={cartItems.productName}
                 xs={6}
                 sm={6}
                 // inputRef={nameRef}

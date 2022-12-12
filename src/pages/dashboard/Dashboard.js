@@ -8,14 +8,17 @@ import {
   MenuItem,
   Menu,
   Button,
+  Drawer,
+  Badge,
 } from "@mui/material";
 import MuiAppBar from "@mui/material/AppBar";
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, ShoppingCart } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SideList from "./SideList";
 import { useValue } from "../../context/ContextProvider";
+import Cart from "../../components/cart/Cart";
 
 const drawerWidth = 240;
 
@@ -42,9 +45,10 @@ export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openCart, setOpenCart] = useState(false);
 
   const {
-    state: { currentUser },
+    state: { currentUser, cart },
     dispatch,
   } = useValue();
 
@@ -75,6 +79,14 @@ export default function Dashboard() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleClickOpen = () => {
+    setOpenCart(true);
+  };
+
+  const handleClickClose = () => {
+    setOpenCart(false);
   };
 
   return (
@@ -113,6 +125,18 @@ export default function Dashboard() {
             >
               <AccountCircle />
             </IconButton>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleClickOpen}
+              color="inherit"
+            >
+              <Badge badgeContent={cart.length} color="warning">
+                <ShoppingCart />
+              </Badge>
+            </IconButton>
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -144,6 +168,11 @@ export default function Dashboard() {
           </Toolbar>
         </AppBar>
         <SideList {...{ open, setOpen }} />
+        <Cart
+          handleClickOpen={handleClickOpen}
+          handleClickClose={handleClickClose}
+          openCart={openCart}
+        />
       </Box>
     </ThemeProvider>
   );
