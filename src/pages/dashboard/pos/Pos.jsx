@@ -67,7 +67,6 @@ const Pos = ({ setSelectedLink, link }) => {
   };
 
   const handleClose = () => {
-    dispatch({ type: "RESET_METER" });
     dispatch({ type: "CLOSE_LOGIN" });
     dispatch({ type: "START_LOADING" });
     dispatch({ type: "END_LOADING" });
@@ -139,6 +138,7 @@ const Pos = ({ setSelectedLink, link }) => {
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <MaterialReactTable
+          state={{ isLoading: loading }}
           columns={columns}
           data={productList}
           initialState={{ columnVisibility: { id: false } }}
@@ -149,12 +149,12 @@ const Pos = ({ setSelectedLink, link }) => {
                 <Box sx={{ display: "flex", gap: "1rem" }}>
                   <IconButton
                     color="error"
-                    onClick={() =>
+                    onClick={() => {
                       dispatch({
                         type: "REMOVE_FROM_CART",
                         payload: row.original,
-                      })
-                    }
+                      });
+                    }}
                   >
                     <RemoveShoppingCartOutlined />
                   </IconButton>
@@ -163,12 +163,12 @@ const Pos = ({ setSelectedLink, link }) => {
                 <Box sx={{ display: "flex", gap: "1rem" }}>
                   <IconButton
                     color="success"
-                    onClick={() =>
+                    onClick={() => {
                       dispatch({
                         type: "ADD_TO_CART",
                         payload: row.original,
-                      })
-                    }
+                      });
+                    }}
                     disabled={row.original.stock === "0"}
                   >
                     {row.original.stock === "0" ? (
