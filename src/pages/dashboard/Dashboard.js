@@ -18,7 +18,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SideList from "./SideList";
 import { useValue } from "../../context/ContextProvider";
-import Cart from "../../components/cart/Cart";
+import Cart from "../../components/Cart";
 
 const drawerWidth = 240;
 
