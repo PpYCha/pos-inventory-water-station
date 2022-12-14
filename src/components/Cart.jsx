@@ -47,7 +47,9 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     );
   }, [cart]);
 
-  const handleChange = () => {};
+  const handleChange = (e) => {
+    console.log(e);
+  };
 
   return (
     <div>
@@ -135,16 +137,22 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                             textAlign: "center",
                           }}
                           align="center"
-                          onChange={(e) =>
-                            dispatch({
-                              type: "CHANGE_CART_QTY",
-                              payload: {
-                                id: prod.id,
-                                qty: e.target.value,
-                              },
-                            })
-                          }
-                        ></TextField>
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                            return {
+                              result:
+                                e.target.value === ""
+                                  ? (e.target.value = "0")
+                                  : dispatch({
+                                      type: "CHANGE_CART_QTY",
+                                      payload: {
+                                        id: prod.id,
+                                        qty: e.target.value,
+                                      },
+                                    }),
+                            };
+                          }}
+                        />
                         {/* <IconButton aria-label="decrement">
                           <ArrowCircleRightOutlined />
                         </IconButton> */}
