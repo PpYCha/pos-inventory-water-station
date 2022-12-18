@@ -63,7 +63,7 @@ import {
   updateDoc,
 } from "@firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth } from "@firebase/auth";
-import { async } from "@firebase/util";
+import { uploadImage, getImageUrl } from "../../../utils/uploadImage";
 
 const Users = ({ setSelectedLink, link }) => {
   const nameRef = useRef();
@@ -100,42 +100,48 @@ const Users = ({ setSelectedLink, link }) => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       const auth = getAuth();
-      createUserWithEmailAndPassword(auth, user.email, user.password)
-        .then((userCredential) => {
-          const uid = userCredential.user.uid;
-          setDoc(doc(db_firestore, "users", uid), {
-            id: uid,
-            email: user.email,
-            // file: user.file,
-            name: user.name,
-            password: user.password,
-            phoneNumber: user.phoneNumber,
-            photoUrl: user.photoUrl,
-            role: user.role,
-            status: user.status,
-          }).then((result) => {
-            Swal.fire({
-              text: "Successfully Save",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
-            fetchUsers();
-            handleClose();
-          });
-        })
-        .catch((e) => {
-          const textMessage = e.code;
-          Swal.fire({
-            text: textMessage.split("/").pop(),
-            icon: "error",
-            confirmButtonText: "OK",
-          });
-        });
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        user.email,
+        user.password
+      );
+
+      const imageRef = await uploadImage("images/users/profile", user.file);
+      const url = await getImageUrl(imageRef);
+
+      const uid = userCredential.user.uid;
+      await setDoc(doc(db_firestore, "users", uid), {
+        id: uid,
+        email: user.email,
+        // file: user.file,
+        name: user.name,
+        password: user.password,
+        phoneNumber: user.phoneNumber,
+        photoUrl: url,
+        role: user.role,
+        status: user.status,
+      });
+      Swal.fire({
+        text: "Successfully Save",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      fetchUsers();
+      handleClose();
     } catch (error) {
       console.log(error);
+      let errorMessage = "An unknown error occurred";
+      if (error.code) {
+        errorMessage = error.code.split("/").pop();
+      }
+      Swal.fire({
+        text: errorMessage,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
@@ -144,35 +150,32 @@ const Users = ({ setSelectedLink, link }) => {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "users", rowUserId);
 
+      const imageRef = await uploadImage("images/users/profile", user.file);
+      const url = await getImageUrl(imageRef);
+
       await updateDoc(washingtonRef, {
         email: user.email,
-
         name: user.name,
         password: user.password,
         phoneNumber: user.phoneNumber,
-        photoUrl: user.photoUrl,
+        photoUrl: url,
         role: user.role,
         status: user.status,
-      })
-        .then((result) => {
-          Swal.fire({
-            text: "Successfully Save",
-            icon: "success",
-            confirmButtonText: "OK",
-          });
-          fetchUsers();
-          handleClose();
-        })
-        .catch((e) => {
-          const textMessage = e.code;
-          Swal.fire({
-            text: textMessage.split("/").pop(),
-            icon: "error",
-            confirmButtonText: "OK",
-          });
-        });
+      });
+      Swal.fire({
+        text: "Successfully Save",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      fetchUsers();
+      handleClose();
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        text: error.code.split("/").pop(),
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
@@ -258,7 +261,7 @@ const Users = ({ setSelectedLink, link }) => {
               gap: "1rem",
             }}
           >
-            <Avatar alt={cell.avatarUrl} src={row.original.avatarUrl} />
+            <Avatar alt={cell.avatarUrl} src={row.original.photoUrl} />
             <Typography>{cell.getValue()}</Typography>
           </Box>
         </>
@@ -311,6 +314,7 @@ const Users = ({ setSelectedLink, link }) => {
           name: doc.data().name,
           email: doc.data().email,
           // password: doc.data().password,
+          photoUrl: doc.data().photoUrl,
           phoneNumber: doc.data().phoneNumber,
           status: doc.data().status,
           role: doc.data().role,
@@ -357,7 +361,7 @@ const Users = ({ setSelectedLink, link }) => {
               <DialogContentText>
                 Please fill user information in the fields :
               </DialogContentText>
-              <Grid container>
+              <Grid container justifyContent="center" alignItems="center">
                 <Grid item>
                   <label htmlFor="profilePhoto">
                     <input

@@ -25,6 +25,9 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useValue } from "../context/ContextProvider";
+import { doc, getDoc } from "firebase/firestore";
+import { db_firestore } from "../api/firebase";
+import BackdropComponent from "../components/BackdropComponent";
 
 const Signin = () => {
   const {
@@ -46,14 +49,31 @@ const Signin = () => {
       .min(7, "Password should be minimum 7 characters long"),
   });
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     console.log(values);
+    dispatch({ type: "START_LOADING" });
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
+      const userFirebase = userCredential.user;
 
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, values.email, values.password)
-      .then((userCredential) => {
-        // Signed in
-        const userFirebase = userCredential.user;
+      const user = await getUser(userFirebase.uid);
+      if (user.status === "Active") {
+        if (user.role === "Admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/dashboard/pos");
+        }
+
+        dispatch({
+          type: "CURRENT_USER",
+          payload: user,
+        });
+
         Swal.fire({
           title: "Success",
           text: "User successfully signin",
@@ -61,28 +81,38 @@ const Signin = () => {
           confirmButtonText: "OK!",
         });
 
-        navigate("/dashboard");
-        dispatch({
-          type: "CURRENT_USER",
-          payload: { currentUser: userFirebase.uid },
-        });
-
-        console.log(currentUser);
-        // ...
-      })
-
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-        Swal.fire({
-          title: "Failed",
-          text: "Invalid email or password",
-          icon: "error",
-          confirmButtonText: "OK!",
-        });
+        dispatch({ type: "END_LOADING" });
+      } else {
+        throw new Error("Banned Account");
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        title: "Failed",
+        text: "Invalid email or password",
+        icon: "error",
+        confirmButtonText: "OK!",
       });
+      dispatch({ type: "END_LOADING" });
+    }
+  };
+
+  const getUser = async (id) => {
+    try {
+      const docRef = doc(db_firestore, "users", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        return docSnap.data();
+      } else {
+        console.log("No such document!");
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
   return (
@@ -96,12 +126,8 @@ const Signin = () => {
           flexDirection: "column",
           justifyContent: "center",
           margin: (2, 0, 2, 2),
-          // backgroundColor: "#019BE3",
         }}
       >
-        {/* <CardHeader
-          title={<Typography variant="h2">Hi, Welcome Back</Typography>}
-        /> */}
         <Box
           component="img"
           src={logo}
@@ -126,7 +152,6 @@ const Signin = () => {
           <Typography variant="h4" gutterBottom>
             Sign in
           </Typography>
-
           <Typography sx={{ color: "text.secondary", mb: 5 }}>
             Enter your details below.
           </Typography>
@@ -175,6 +200,7 @@ const Signin = () => {
               </Form>
             )}
           </Formik>
+          <BackdropComponent open={loading} />
         </Box>
       </Container>
     </Box>

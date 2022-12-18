@@ -52,6 +52,8 @@ export default function Dashboard() {
     dispatch,
   } = useValue();
 
+  // console.log("dash 56:", currentUser.role);
+
   const darkTheme = useMemo(
     () =>
       createTheme({
@@ -59,7 +61,7 @@ export default function Dashboard() {
           mode: dark ? "dark" : "light",
           type: "light",
           primary: {
-            main: "#000080",
+            main: "#010080",
           },
           secondary: {
             main: "#e85611",

@@ -20,7 +20,7 @@ const Pos = ({ setSelectedLink, link }) => {
   const [productList, setProductList] = useState([{}]);
 
   const {
-    state: { openLogin, cart, loading },
+    state: { openLogin, cart, loading, products },
     dispatch,
   } = useValue();
 
@@ -43,7 +43,20 @@ const Pos = ({ setSelectedLink, link }) => {
         });
       });
 
+      list.sort((a, b) => {
+        // Sort the list in ascending order based on the product name
+        if (a.productName < b.productName) {
+          return -1;
+        }
+        if (a.productName > b.productName) {
+          return 1;
+        }
+        return 0;
+      });
+
       setProductList(list);
+
+      dispatch({ type: "UPDATE_PRODUCTS", payload: list });
       dispatch({ type: "END_LOADING" });
     } catch (error) {
       console.log(error);
@@ -65,9 +78,15 @@ const Pos = ({ setSelectedLink, link }) => {
         justifyContent: "space-around",
       }}
     >
-      {productList.map((prod) => (
-        <SingleProduct prod={prod} key={prod.id} />
-      ))}
+      {loading ? (
+        "loading "
+      ) : (
+        <>
+          {productList.map((prod) =>
+            prod.id == null ? null : <SingleProduct prod={prod} key={prod.id} />
+          )}
+        </>
+      )}
     </Box>
   );
 };

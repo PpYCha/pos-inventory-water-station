@@ -252,65 +252,6 @@ const Meter = ({ setSelectedLink, link }) => {
     });
   };
 
-  // const inputs = [
-  //   {
-  //     autoFocus: true,
-
-  //     id: "dateAM",
-  //     name: "dateAM",
-  //     label: "Date AM",
-  //     value: meter.dateAM,
-  //     type: "date",
-  //     InputLabelProps: { shrink: true },
-  //     required: false,
-  //     xs: 12,
-  //     sm: 6,
-  //   },
-  //   {
-  //     id: "meterAM",
-  //     name: "meterAM",
-  //     label: "Meter AM",
-  //     value: meter.meterAM,
-  //     type: "number",
-  //     required: false,
-  //     xs: 12,
-  //     sm: 6,
-  //   },
-
-  //   {
-  //     id: "meterAM",
-  //     name: "meterAM",
-  //     label: "Meter AM",
-  //     value: meter.meterAM,
-  //     type: "number",
-  //     required: false,
-  //     xs: 12,
-  //     sm: 6,
-  //   },
-
-  //   {
-  //     id: "datePM",
-  //     name: "datePM",
-  //     label: "Date PM",
-  //     value: meter.datePM,
-  //     type: "date",
-  //     InputLabelProps: { shrink: true },
-  //     required: false,
-  //     xs: 12,
-  //     sm: 6,
-  //   },
-  //   {
-  //     id: "meterPM",
-  //     name: "meterPM",
-  //     label: "Meter PM",
-  //     value: meter.meterPM,
-  //     required: false,
-  //     type: "number",
-  //     xs: 12,
-  //     sm: 6,
-  //   },
-  // ];
-
   const columns = useMemo(() => [
     {
       accessorKey: "id",
@@ -394,15 +335,6 @@ const Meter = ({ setSelectedLink, link }) => {
           >
             <Typography variant="h5">Meter List</Typography>
           </Stack>
-
-          {/* <DialogComponent
-            open={openLogin}
-            handleClose={handleClose}
-            title="Meter Information"
-            inputs={inputs}
-            handleSubmit={handleSubmit}
-            handleChange={handleChange}
-          /> */}
 
           <Dialog
             onClose={handleClose}

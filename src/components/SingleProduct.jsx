@@ -44,7 +44,7 @@ const SingleProduct = ({ prod }) => {
         </CardContent>
         <CardActions>
           {cart.some((p) => p.id === prod.id) ? (
-            <Box sx={{ display: "flex", gap: "1rem" }}>
+            <Box sx={{ display: "flex", gap: "1rem" }} key={prod.id}>
               <Button
                 color="error"
                 startIcon={<RemoveShoppingCartOutlined />}
@@ -69,9 +69,9 @@ const SingleProduct = ({ prod }) => {
                     payload: prod,
                   })
                 }
-                disabled={prod.stock === "0"}
+                disabled={prod.stock <= "0"}
               >
-                {prod.stock === "0" ? "Out of Stock" : "Add to Cart"}
+                {prod.stock <= "0" ? "Out of Stock" : "Add to Cart"}
               </Button>
             </Box>
           )}

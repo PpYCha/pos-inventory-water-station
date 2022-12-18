@@ -130,6 +130,18 @@ const reducer = (state, action) => {
         },
       };
 
+    case "UPDATE_PRODUCTS":
+      return {
+        ...state,
+        products: [...state.products, ...action.payload],
+      };
+
+    case "RESET_PRODUCTS":
+      return {
+        ...state,
+        products: [],
+      };
+
     case "ADD_TO_CART":
       return { ...state, cart: [...state.cart, { ...action.payload, qty: 1 }] };
 

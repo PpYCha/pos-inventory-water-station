@@ -29,7 +29,6 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const SummaryWidget = ({ title, number, cardColor, size }) => {
-  console.log(size);
   return (
     <Card sx={{ backgroundColor: cardColor }}>
       <CardActionArea>

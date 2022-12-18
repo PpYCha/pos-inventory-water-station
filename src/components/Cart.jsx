@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import ListItemText from "@mui/material/ListItemText";
@@ -13,6 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import { useValue } from "../context/ContextProvider";
 import {
+  AccountCircle,
   ArrowCircleLeftOutlined,
   ArrowCircleRightOutlined,
   DeleteOutline,
@@ -26,9 +27,14 @@ import {
   Grid,
   Stack,
   TextField,
+  InputAdornment,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import ProductImage from "../assets/contemplative-reptile.jpg";
+import Swal from "sweetalert2";
+import { db_firestore } from "../api/firebase";
+
+import { doc, updateDoc } from "@firebase/firestore";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -36,10 +42,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
   const {
-    state: { cart, loading },
+    state: { cart, loading, products },
     dispatch,
   } = useValue();
-  const [total, setTotal] = React.useState();
+  const [total, setTotal] = useState();
+  const [cash, setCash] = useState(0);
+  const [change, setChange] = useState(0);
 
   React.useEffect(() => {
     setTotal(
@@ -47,8 +55,46 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     );
   }, [cart]);
 
-  const handleChange = (e) => {
-    console.log(e);
+  const findProduct = (id) => {
+    return products.find((obj) => obj.id === id);
+    // return products;
+  };
+
+  const handleSubmit = (e) => {
+    cart.map((item) => {
+      let id = item.id;
+      let qty = item.qty;
+      const object = findProduct(id);
+      let newStock = object.stock - qty;
+      handleUpdate(id, newStock);
+      console.log(object.stock, " - ", qty, " = ", newStock);
+    });
+  };
+
+  const handleUpdate = async (id, newStock) => {
+    try {
+      const washingtonRef = doc(db_firestore, "products", id);
+      const result = await updateDoc(washingtonRef, {
+        stock: newStock,
+      });
+      Swal.fire({
+        text: "Successfully Save",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        text: error.code.split("/").pop(),
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  const handleCash = (e) => {
+    setCash(e.target.value);
+    setChange(e.target.value - total);
   };
 
   return (
@@ -139,6 +185,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                           align="center"
                           onChange={(e) => {
                             console.log(e.target.value);
+
                             return {
                               result:
                                 e.target.value === ""
@@ -189,15 +236,47 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
               }}
             >
               <Grid>
-                <Typography variant="h4">
-                  Subtotal {cart.length} items
-                </Typography>
-                <Typography variant="h6">Total:₱ {total} </Typography>
-              </Grid>
-              <Grid justifyContent="flex-end" alignItems="flex-end">
-                <Button type="submit" variant="contained" color="success">
-                  Proceed To Checkout
-                </Button>
+                <Stack spacing={2}>
+                  <Box>
+                    <Typography variant="h4">
+                      Subtotal {cart.length} items
+                    </Typography>
+                    <Typography variant="h6">Total:₱ {total} </Typography>
+                  </Box>
+                  <Box>
+                    <TextField
+                      required
+                      id="outlined-required"
+                      label="Payment"
+                      type="number"
+                      onChange={handleCash}
+                    />
+                  </Box>
+                  <Box>
+                    <TextField
+                      id="outlined-required"
+                      label="Change"
+                      type="number"
+                      value={change}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                  </Box>
+
+                  <Box>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="success"
+                      onClick={handleSubmit}
+                      disabled={cash < total}
+                    >
+                      Proceed To Checkout
+                    </Button>
+                  </Box>
+                </Stack>
               </Grid>
             </Paper>
           </Grid>

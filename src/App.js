@@ -18,10 +18,9 @@ const App = () => {
         <Routes>
           <Route path="/*" element={<Signin />} />
           <>
-            {/* <Route path="/login" element={<Login />} /> */}
-            <Route path="dashboard/*" element={<Dashboard />}>
-              {/* <Route path="/" element={<Dashboard />} /> */}
-            </Route>
+            {currentUser === null ? null : (
+              <Route path="dashboard/*" element={<Dashboard />} />
+            )}
           </>
         </Routes>
       </BrowserRouter>
