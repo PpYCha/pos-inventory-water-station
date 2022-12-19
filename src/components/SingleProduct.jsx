@@ -31,7 +31,7 @@ const SingleProduct = ({ prod }) => {
           component="img"
           height="200"
           width="200"
-          image={ProductImage}
+          src={prod.photoUrl}
           alt={prod.productName}
         />
         <CardContent>

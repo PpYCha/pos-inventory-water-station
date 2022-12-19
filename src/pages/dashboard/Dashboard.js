@@ -48,7 +48,7 @@ export default function Dashboard() {
   const [openCart, setOpenCart] = useState(false);
 
   const {
-    state: { currentUser, cart },
+    state: { currentUser, cart, cartDialog },
     dispatch,
   } = useValue();
 
@@ -84,11 +84,13 @@ export default function Dashboard() {
   };
 
   const handleClickOpen = () => {
-    setOpenCart(true);
+    // setOpenCart(true);
+    dispatch({ type: "OPEN_CART" });
   };
 
   const handleClickClose = () => {
-    setOpenCart(false);
+    // setOpenCart(false);
+    dispatch({ type: "CLOSE_CART" });
   };
 
   return (
@@ -173,7 +175,7 @@ export default function Dashboard() {
         <Cart
           handleClickOpen={handleClickOpen}
           handleClickClose={handleClickClose}
-          openCart={openCart}
+          openCart={cartDialog}
         />
       </Box>
     </ThemeProvider>

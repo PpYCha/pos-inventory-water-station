@@ -29,6 +29,7 @@ import SpeedialComponent from "../../../components/SpeedialComponent";
 import { useValue } from "../../../context/ContextProvider";
 import MaterialReactTable from "material-react-table";
 import { db_firestore } from "../../../api/firebase";
+import noProductImage from "../../../assets/no-image.png";
 
 import {
   addDoc,
@@ -43,6 +44,7 @@ import {
 } from "@firebase/firestore";
 import Swal from "sweetalert2";
 import { async } from "@firebase/util";
+import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
 
 const Products = ({ setSelectedLink, link }) => {
   const [productsData, setProductsData] = useState([{}]);
@@ -72,8 +74,14 @@ const Products = ({ setSelectedLink, link }) => {
 
   const handleSave = async () => {
     try {
+      let url;
+      if (product.file) {
+        const imageRef = await uploadImage("images/product", product.file);
+        url = await getImageUrl(imageRef);
+      }
+
       await addDoc(collection(db_firestore, "products"), {
-        productPicture: product.productPicture,
+        photoUrl: url || null,
         productName: product.productName,
         productDescription: product.productDescription,
         price: product.price,
@@ -104,7 +112,9 @@ const Products = ({ setSelectedLink, link }) => {
             confirmButtonText: "OK",
           });
         });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleUpdate = async () => {
@@ -112,8 +122,14 @@ const Products = ({ setSelectedLink, link }) => {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "products", rowUserId);
 
+      let url;
+      if (product.file) {
+        const imageRef = await uploadImage("images/product", product.file);
+        url = await getImageUrl(imageRef);
+      }
+
       await updateDoc(washingtonRef, {
-        productPicture: product.productPicture,
+        photoUrl: url || product.photoUrl,
         productName: product.productName,
         productDescription: product.productDescription,
         price: product.price,
@@ -146,37 +162,51 @@ const Products = ({ setSelectedLink, link }) => {
   const handleAction = async (e) => {
     if (e === "add") {
       dispatch({ type: "OPEN_LOGIN" });
+      return;
     }
+
+    let docSnap;
     if (e === "edit") {
       const rowUserId = convertUserId();
       const docRef = doc(db_firestore, "products", rowUserId);
-      const docSnap = await getDoc(docRef);
-      console.log(docSnap);
-      if (docSnap.exists()) {
-        product.id = docSnap.data().id;
-        product.productPicture = docSnap.data().productPicture;
-        product.productName = docSnap.data().productName;
-        product.productDescription = docSnap.data().productDescription;
-        product.price = docSnap.data().price;
-        product.cost = docSnap.data().cost;
-        product.stock = docSnap.data().stock;
-        product.lowStockLevel = docSnap.data().lowStockLevel;
-        dispatch({ type: "OPEN_LOGIN" });
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
+      docSnap = await getDoc(docRef);
+    }
+
+    if (docSnap && docSnap.exists()) {
+      product.id = docSnap.data().id;
+      product.photoUrl = docSnap.data().photoUrl;
+      product.productName = docSnap.data().productName;
+      product.productDescription = docSnap.data().productDescription;
+      product.price = docSnap.data().price;
+      product.cost = docSnap.data().cost;
+      product.stock = docSnap.data().stock;
+      product.lowStockLevel = docSnap.data().lowStockLevel;
+      dispatch({ type: "OPEN_LOGIN" });
+    } else if (e === "edit") {
+      console.log("No such document!");
     }
 
     if (e === "delete") {
-      const rowUserId = convertUserId();
+      Swal.fire({
+        title: "Do you want to delete the product?",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: `No`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire("Deleted!", "", "success");
 
-      try {
-        deleteDoc(doc(db_firestore, "products", rowUserId));
-        fetchProductsList();
-      } catch (error) {
-        console.log(error);
-      }
+          const rowUserId = convertUserId();
+          try {
+            deleteDoc(doc(db_firestore, "products", rowUserId));
+            fetchProductsList();
+          } catch (error) {
+            console.log(error);
+          }
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
     }
   };
 
@@ -207,7 +237,7 @@ const Products = ({ setSelectedLink, link }) => {
       querySnapshot.forEach((doc) => {
         list.push({
           id: doc.data().id,
-          productPicture: doc.data().productPicture,
+          photoUrl: doc.data().photoUrl,
           productName: doc.data().productName,
           productDescription: doc.data().productDescription,
           price: doc.data().price,
@@ -221,6 +251,18 @@ const Products = ({ setSelectedLink, link }) => {
       dispatch({ type: "END_LOADING" });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleChangeImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const photoUrl = URL.createObjectURL(file);
+      console.log(photoUrl);
+      dispatch({
+        type: "UPDATE_PRODUCT",
+        payload: { ...product, file, photoUrl },
+      });
     }
   };
 
@@ -242,6 +284,15 @@ const Products = ({ setSelectedLink, link }) => {
               gap: "1rem",
             }}
           >
+            <Box
+              component="img"
+              src={row.original.photoUrl || noProductImage}
+              sx={{
+                maxWidth: "50%",
+                maxHeight: "50%",
+                cursor: "pointer",
+              }}
+            />
             <Typography>{cell.getValue()}</Typography>
           </Box>
         </>
@@ -333,6 +384,8 @@ const Products = ({ setSelectedLink, link }) => {
           inputs={inputs}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
+          handleChangeImage={handleChangeImage}
+          imgSrc={product.photoUrl || noProductImage}
         />
 
         <Box m={2}>

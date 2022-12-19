@@ -86,6 +86,8 @@ const Users = ({ setSelectedLink, link }) => {
 
   const handleClose = () => {
     // console.log("dialog close");
+    setStatusValue(null);
+    setRoleValue(null);
     dispatch({ type: "CLOSE_LOGIN" });
     dispatch({ type: "RESET_USER" });
   };
@@ -109,8 +111,11 @@ const Users = ({ setSelectedLink, link }) => {
         user.password
       );
 
-      const imageRef = await uploadImage("images/users/profile", user.file);
-      const url = await getImageUrl(imageRef);
+      let url;
+      if (user.file) {
+        const imageRef = await uploadImage("images/users/profile", user.file);
+        url = await getImageUrl(imageRef);
+      }
 
       const uid = userCredential.user.uid;
       await setDoc(doc(db_firestore, "users", uid), {
@@ -120,7 +125,7 @@ const Users = ({ setSelectedLink, link }) => {
         name: user.name,
         password: user.password,
         phoneNumber: user.phoneNumber,
-        photoUrl: url,
+        photoUrl: url || null,
         role: user.role,
         status: user.status,
       });
@@ -150,15 +155,18 @@ const Users = ({ setSelectedLink, link }) => {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "users", rowUserId);
 
-      const imageRef = await uploadImage("images/users/profile", user.file);
-      const url = await getImageUrl(imageRef);
+      let url;
+      if (user.file) {
+        const imageRef = await uploadImage("images/users/profile", user.file);
+        url = await getImageUrl(imageRef);
+      }
 
       await updateDoc(washingtonRef, {
         email: user.email,
         name: user.name,
         password: user.password,
         phoneNumber: user.phoneNumber,
-        photoUrl: url,
+        photoUrl: url || user.photoUrl,
         role: user.role,
         status: user.status,
       });
@@ -207,14 +215,28 @@ const Users = ({ setSelectedLink, link }) => {
       }
     }
     if (e === "delete") {
-      console.log(JSON.stringify(rowSelection));
-      const rowUserId = convertUserId();
-      try {
-        deleteDoc(doc(db_firestore, "users", rowUserId));
-        fetchUsers();
-      } catch (error) {
-        console.log(error);
-      }
+      Swal.fire({
+        title: "Do you want to delete the user?",
+        showDenyButton: true,
+
+        confirmButtonText: "Yes",
+        denyButtonText: `No`,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          Swal.fire("Deleted!", "", "success");
+          console.log(JSON.stringify(rowSelection));
+          const rowUserId = convertUserId();
+          try {
+            deleteDoc(doc(db_firestore, "users", rowUserId));
+            fetchUsers();
+          } catch (error) {
+            console.log(error);
+          }
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
     }
   };
 

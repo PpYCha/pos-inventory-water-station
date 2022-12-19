@@ -5,6 +5,8 @@ import {
   Send,
 } from "@mui/icons-material";
 import {
+  Avatar,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -27,6 +29,9 @@ const DialogComponent = ({
   handleSubmit,
   handleChange,
   handleClose,
+  handleChangeImage,
+  imgSrc,
+  profilePicture,
 }) => {
   const [value, setValue] = useState();
 
@@ -53,7 +58,34 @@ const DialogComponent = ({
           <DialogContentText>
             Please fill product information in the fields :
           </DialogContentText>
-          <Grid container>
+          <Grid container justifyContent="center" alignItems="center">
+            <label htmlFor="profilePhoto">
+              <input
+                accept="image/*"
+                id="profilePhoto"
+                type="file"
+                style={{ display: "none" }}
+                onChange={handleChangeImage}
+              />
+              {profilePicture ? (
+                <Avatar
+                  src={imgSrc}
+                  sx={{ width: 250, height: 250, cursor: "pointer" }}
+                />
+              ) : (
+                <Box
+                  component="img"
+                  src={imgSrc}
+                  sx={{
+                    maxWidth: "75%",
+                    maxHeight: "75%",
+                    cursor: "pointer",
+                  }}
+                />
+              )}
+            </label>
+          </Grid>
+          <Grid container justifyContent="center" alignItems="center">
             {inputs.map((input) => (
               <FormInput key={input.id} {...input} onChange={handleChange} />
             ))}

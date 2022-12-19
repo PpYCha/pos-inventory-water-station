@@ -36,6 +36,7 @@ import {
 import { db_firestore } from "../../../api/firebase";
 import DialogComponent from "../../../components/form/DialogComponent";
 import MaterialReactTable from "material-react-table";
+import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
 
 const Customer = ({ setSelectedLink, link }) => {
   const [customersData, setCustomersData] = useState([{}]);
@@ -65,9 +66,18 @@ const Customer = ({ setSelectedLink, link }) => {
 
   const handleSave = async () => {
     try {
+      let url;
+      if (customer.file) {
+        const imageRef = await uploadImage(
+          "images/customers/profile",
+          customer.file
+        );
+        url = await getImageUrl(imageRef);
+      }
+
       await addDoc(collection(db_firestore, "customers"), {
         id: customer.id,
-        avatarUrl: customer.avatarUrl,
+        avatarUrl: url || null,
         name: customer.name,
         email: customer.email,
         address: customer.address,
@@ -108,9 +118,18 @@ const Customer = ({ setSelectedLink, link }) => {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "customers", rowUserId);
 
+      let url;
+      if (customer.file) {
+        const imageRef = await uploadImage(
+          "images/customers/profile",
+          customer.file
+        );
+        url = await getImageUrl(imageRef);
+      }
+
       await updateDoc(washingtonRef, {
         id: customer.id,
-        avatarUrl: customer.avatarUrl,
+        avatarUrl: url || customer.avatarUrl,
         name: customer.name,
         email: customer.email,
         address: customer.address,
@@ -161,7 +180,7 @@ const Customer = ({ setSelectedLink, link }) => {
       console.log(docSnap);
       if (docSnap.exists()) {
         customer.id = docSnap.data().id;
-        customer.avatarUr = docSnap.data().avatarUr;
+        customer.avatarUrl = docSnap.data().avatarUrl;
         customer.name = docSnap.data().name;
         customer.email = docSnap.data().email;
         customer.address = docSnap.data().address;
@@ -178,14 +197,26 @@ const Customer = ({ setSelectedLink, link }) => {
     }
 
     if (e === "delete") {
-      const rowUserId = convertUserId();
+      Swal.fire({
+        title: "Do you want to delete the cutomer?",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: `No`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire("Deleted!", "", "success");
 
-      try {
-        deleteDoc(doc(db_firestore, "customers", rowUserId));
-        fetchCustomerList();
-      } catch (error) {
-        console.log(error);
-      }
+          const rowUserId = convertUserId();
+          try {
+            deleteDoc(doc(db_firestore, "customers", rowUserId));
+            fetchCustomerList();
+          } catch (error) {
+            console.log(error);
+          }
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
     }
   };
 
@@ -207,7 +238,7 @@ const Customer = ({ setSelectedLink, link }) => {
       querySnapshot.forEach((doc) => {
         list.push({
           id: doc.data().id,
-          avatarUr: doc.data().avatarUr,
+          avatarUrl: doc.data().avatarUrl,
           name: doc.data().name,
           email: doc.data().email,
           address: doc.data().address,
@@ -223,6 +254,18 @@ const Customer = ({ setSelectedLink, link }) => {
       dispatch({ type: "END_LOADING" });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleChangeImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const avatarUrl = URL.createObjectURL(file);
+      console.log(avatarUrl);
+      dispatch({
+        type: "UPDATE_CUSTOMER",
+        payload: { ...customer, file, avatarUrl },
+      });
     }
   };
 
@@ -245,6 +288,7 @@ const Customer = ({ setSelectedLink, link }) => {
             }}
           >
             <Avatar alt={cell.avatarUrl} src={row.original.avatarUrl} />
+
             <Typography>{cell.getValue()}</Typography>
           </Box>
         </>
@@ -352,6 +396,9 @@ const Customer = ({ setSelectedLink, link }) => {
           inputs={inputs}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
+          handleChangeImage={handleChangeImage}
+          imgSrc={customer.avatarUrl || null}
+          profilePicture={true}
         />
 
         <Box m={2}>

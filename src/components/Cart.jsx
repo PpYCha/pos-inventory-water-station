@@ -34,7 +34,17 @@ import ProductImage from "../assets/contemplative-reptile.jpg";
 import Swal from "sweetalert2";
 import { db_firestore } from "../api/firebase";
 
-import { doc, updateDoc } from "@firebase/firestore";
+import {
+  addDoc,
+  collection,
+  setDoc,
+  doc,
+  getDocs,
+  deleteDoc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from "@firebase/firestore";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -69,6 +79,39 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
       handleUpdate(id, newStock);
       console.log(object.stock, " - ", qty, " = ", newStock);
     });
+    handleTransaction();
+  };
+
+  const handleClose = () => {
+    setCash(0);
+    setChange(0);
+    dispatch({ type: "RESET_CART" });
+    dispatch({ type: "CLOSE_LOGIN" });
+  };
+
+  const handleTransaction = async () => {
+    try {
+      await addDoc(collection(db_firestore, "transactions"), {
+        cash: total,
+        cart: cart,
+      })
+        .finally((result) => {
+          Swal.fire({
+            text: "Successfully Save",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          handleClose();
+        })
+        .catch((e) => {
+          const textMessage = e.code;
+          Swal.fire({
+            text: textMessage.split("/").pop(),
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+    } catch (error) {}
   };
 
   const handleUpdate = async (id, newStock) => {
@@ -154,7 +197,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                   <Grid container>
                     <Grid item md={3}>
                       <img
-                        src={ProductImage}
+                        src={prod.photoUrl}
                         alt={prod.productName}
                         style={{ width: "90%", height: 200 }}
                       />

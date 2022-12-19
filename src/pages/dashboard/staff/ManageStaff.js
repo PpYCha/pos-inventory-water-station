@@ -37,6 +37,8 @@ import {
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
 import Swal from "sweetalert2";
+import noProductImage from "../../../assets/no-image.png";
+import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
 
 const ManageStaff = ({ setSelectedLink, link }) => {
   //   console.log(employeeData);
@@ -64,9 +66,19 @@ const ManageStaff = ({ setSelectedLink, link }) => {
 
   const handleSave = async () => {
     try {
+      let url;
+      if (employee.file) {
+        const imageRef = await uploadImage(
+          "images/employee/profile",
+          employee.file
+        );
+        url = await getImageUrl(imageRef);
+      }
+
       await addDoc(collection(db_firestore, "employees"), {
         id: employee.id,
-        avatarUrl: employee.avatarUrl,
+        avatarUrl: url || null,
+
         name: employee.name,
         email: employee.email,
         position: employee.position,
@@ -107,8 +119,17 @@ const ManageStaff = ({ setSelectedLink, link }) => {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "employees", rowUserId);
 
+      let url;
+      if (employee.file) {
+        const imageRef = await uploadImage(
+          "images/employee/profile",
+          employee.file
+        );
+        url = await getImageUrl(imageRef);
+      }
+
       await updateDoc(washingtonRef, {
-        avatarUrl: employee.avatarUrl,
+        avatarUrl: employee.avatarUrl || url,
         name: employee.name,
         email: employee.email,
         position: employee.position,
@@ -176,14 +197,26 @@ const ManageStaff = ({ setSelectedLink, link }) => {
     }
 
     if (e === "delete") {
-      const rowUserId = convertUserId();
+      Swal.fire({
+        title: "Do you want to delete the employee?",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: `No`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire("Deleted!", "", "success");
 
-      try {
-        deleteDoc(doc(db_firestore, "employees", rowUserId));
-        fetchEmployeeList();
-      } catch (error) {
-        console.log(error);
-      }
+          try {
+            const rowUserId = convertUserId();
+            deleteDoc(doc(db_firestore, "employees", rowUserId));
+            fetchEmployeeList();
+          } catch (error) {
+            console.log(error);
+          }
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
     }
   };
 
@@ -192,6 +225,18 @@ const ManageStaff = ({ setSelectedLink, link }) => {
       type: "UPDATE_EMPLOYEE",
       payload: { [e.target.id]: e.target.value },
     });
+  };
+
+  const handleChangeImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const photoUrl = URL.createObjectURL(file);
+      console.log(photoUrl);
+      dispatch({
+        type: "UPDATE_EMPLOYEE",
+        payload: { ...employee, file, photoUrl },
+      });
+    }
   };
 
   const fetchEmployeeList = async () => {
@@ -354,6 +399,9 @@ const ManageStaff = ({ setSelectedLink, link }) => {
           inputs={inputs}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
+          handleChangeImage={handleChangeImage}
+          imgSrc={employee.photoUrl || null}
+          profilePicture={true}
         />
 
         <Box m={2}>

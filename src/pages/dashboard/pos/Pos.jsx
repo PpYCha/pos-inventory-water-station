@@ -33,7 +33,7 @@ const Pos = ({ setSelectedLink, link }) => {
       querySnapshot.forEach((doc) => {
         list.push({
           id: doc.data().id,
-          productPicture: doc.data().productPicture,
+          photoUrl: doc.data().photoUrl,
           productName: doc.data().productName,
           productDescription: doc.data().productDescription,
           price: doc.data().price,

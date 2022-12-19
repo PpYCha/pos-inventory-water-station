@@ -234,14 +234,25 @@ const Meter = ({ setSelectedLink, link }) => {
     }
 
     if (e === "delete") {
-      const rowUserId = convertUserId();
-
-      try {
-        deleteDoc(doc(db_firestore, "meters", rowUserId));
-        fetchMeterList();
-      } catch (error) {
-        console.log(error);
-      }
+      Swal.fire({
+        title: "Do you want to delete the product?",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: `No`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire("Deleted!", "", "success");
+          const rowUserId = convertUserId();
+          try {
+            deleteDoc(doc(db_firestore, "meters", rowUserId));
+            fetchMeterList();
+          } catch (error) {
+            console.log(error);
+          }
+        } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
     }
   };
 

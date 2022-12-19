@@ -28,13 +28,16 @@ const initialState = {
     productName: "",
     productDescription: "",
     price: "",
+    photoUrl: "",
+    file: null,
     cost: "",
     stock: "",
     lowStockLevel: "",
   },
   employee: {
     id: "",
-    avatarUrl: "",
+    photoUrl: "",
+    file: null,
     name: "",
     email: "",
     position: "",
@@ -67,6 +70,7 @@ const initialState = {
   },
   products: [],
   cart: [],
+  cartDialog: false,
 };
 
 const Context = createContext(initialState);

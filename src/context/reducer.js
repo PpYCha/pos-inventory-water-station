@@ -158,6 +158,17 @@ const reducer = (state, action) => {
         ),
       };
 
+    case "RESET_CART":
+      return {
+        ...state,
+        cart: [],
+      };
+
+    case "OPEN_CART":
+      return { ...state, cartDialog: true };
+    case "CLOSE_CART":
+      return { ...state, cartDialog: false };
+
     default:
       throw new Error("No matched action!");
   }
