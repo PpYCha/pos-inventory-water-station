@@ -4,34 +4,34 @@
 
 ### Users:
 
-Fix the bug where the user's role and status do not reset.
-Add a confirmation prompt before deleting in the user interface.
-Fix a bug where updating the user's information does not update the image.
+1. Fix the bug where the user's role and status do not reset.
+2. Add a confirmation prompt before deleting in the user interface.
+3. Fix a bug where updating the user's information does not update the image.
 
 ### Products:
 
-Add a confirmation prompt before deleting in the product interface.
-Add an image to the product list.
-Add an image to the product information.
+1. Add a confirmation prompt before deleting in the product interface.
+2. Add an image to the product list.
+3. Add an image to the product information.
 
 ### Employees:
 
-Add a confirmation prompt before deleting in the employee interface.
-Add a profile image in the employee information.
+1. Add a confirmation prompt before deleting in the employee interface.
+2. Add a profile image in the employee information.
 
 ### Customers:
 
-Add a confirmation prompt before deleting in the customer interface.
-Add a profile image in the customer information.
+1. Add a confirmation prompt before deleting in the customer interface.
+2. Add a profile image in the customer information.
 
 ### Meters:
 
-Add a confirmation prompt before deleting.
+1. Add a confirmation prompt before deleting.
 
 ### POS:
 
-Make the image sync with the product image that is saved.
+1. Make the image sync with the product image that is saved.
 
 ### Cart:
 
-Fix the display of the image.
+1. Fix the display of the image.
