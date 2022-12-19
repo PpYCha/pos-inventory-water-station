@@ -4,9 +4,9 @@
 
 ### Users:
 
-1.Fix the bug where the user's role and status do not reset.
-2.Add a confirmation prompt before deleting in the user interface.
-3.Fix a bug where updating the user's information does not update the image.
+1. Fix the bug where the user's role and status do not reset.
+2. Add a confirmation prompt before deleting in the user interface.
+3. Fix a bug where updating the user's information does not update the image.
 
 ### Products:
 
