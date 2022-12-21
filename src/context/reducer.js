@@ -169,6 +169,22 @@ const reducer = (state, action) => {
     case "CLOSE_CART":
       return { ...state, cartDialog: false };
 
+    case "UPDATE_EXPENSE":
+      return {
+        ...state,
+        expense: { ...state.expense, ...action.payload },
+      };
+    case "RESET_EXPENSE":
+      return {
+        ...state,
+        expense: {
+          id: "",
+          particular: "",
+          amount: "",
+          date: "",
+        },
+      };
+
     default:
       throw new Error("No matched action!");
   }

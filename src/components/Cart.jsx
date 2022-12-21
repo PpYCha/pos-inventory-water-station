@@ -33,7 +33,7 @@ import { Box } from "@mui/system";
 import ProductImage from "../assets/contemplative-reptile.jpg";
 import Swal from "sweetalert2";
 import { db_firestore } from "../api/firebase";
-
+import noProductImage from "../assets/no-image.png";
 import {
   addDoc,
   collection,
@@ -87,31 +87,42 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     setChange(0);
     dispatch({ type: "RESET_CART" });
     dispatch({ type: "CLOSE_LOGIN" });
+    dispatch({ type: "CLOSE_CART" });
   };
 
   const handleTransaction = async () => {
     try {
-      await addDoc(collection(db_firestore, "transactions"), {
-        cash: total,
+      let tax = total * 0.12;
+      const date = new Date();
+      const isoString = date.toISOString();
+      const result = await addDoc(collection(db_firestore, "transactions"), {
+        amount: total,
+        taxRate: 12,
+        tax: tax,
+        total: tax + total,
+        date: isoString.substring(0, 10),
+        time: isoString.substring(11, 19),
         cart: cart,
-      })
-        .finally((result) => {
-          Swal.fire({
-            text: "Successfully Save",
-            icon: "success",
-            confirmButtonText: "OK",
-          });
-          handleClose();
-        })
-        .catch((e) => {
-          const textMessage = e.code;
-          Swal.fire({
-            text: textMessage.split("/").pop(),
-            icon: "error",
-            confirmButtonText: "OK",
-          });
-        });
-    } catch (error) {}
+      });
+
+      console.log(result.id);
+
+      Swal.fire({
+        text: "Successfully Checkout",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      handleClose();
+    } catch (error) {
+      const textMessage = error.code;
+      console.log(textMessage);
+      console.log(error);
+      // Swal.fire({
+      //   text: textMessage.split("/").pop(),
+      //   icon: "error",
+      //   confirmButtonText: "OK",
+      // });
+    }
   };
 
   const handleUpdate = async (id, newStock) => {
@@ -120,18 +131,8 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
       const result = await updateDoc(washingtonRef, {
         stock: newStock,
       });
-      Swal.fire({
-        text: "Successfully Save",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        text: error.code.split("/").pop(),
-        icon: "error",
-        confirmButtonText: "OK",
-      });
     }
   };
 
@@ -142,9 +143,6 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open full-screen dialog
-      </Button>
       <Dialog
         fullScreen
         open={openCart}
@@ -197,7 +195,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                   <Grid container>
                     <Grid item md={3}>
                       <img
-                        src={prod.photoUrl}
+                        src={prod.photoUrl || noProductImage}
                         alt={prod.productName}
                         style={{ width: "90%", height: 200 }}
                       />
@@ -221,6 +219,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                           variant="outlined"
                           size="small"
                           type="number"
+                          label="Qty"
                           sx={{
                             width: 100,
                             textAlign: "center",
@@ -249,6 +248,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                         <IconButton
                           color="error"
                           aria-label="decrement"
+                          label="Remove"
                           size="large"
                           onClick={() =>
                             dispatch({
@@ -269,60 +269,62 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
 
           {/* //End Cart items  */}
           {/* //Start Subtotal cart */}
-          <Grid item md={4}>
-            <Paper
-              sx={{
-                paddingLeft: 1,
-                paddingTop: 1,
-                paddingBottom: 1,
-                height: "100%",
-              }}
-            >
-              <Grid>
-                <Stack spacing={2}>
-                  <Box>
-                    <Typography variant="h4">
-                      Subtotal {cart.length} items
-                    </Typography>
-                    <Typography variant="h6">Total:₱ {total} </Typography>
-                  </Box>
-                  <Box>
-                    <TextField
-                      required
-                      id="outlined-required"
-                      label="Payment"
-                      type="number"
-                      onChange={handleCash}
-                    />
-                  </Box>
-                  <Box>
-                    <TextField
-                      id="outlined-required"
-                      label="Change"
-                      type="number"
-                      value={change}
-                      InputLabelProps={{ shrink: true }}
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                  </Box>
+          {cart ? (
+            <Grid item md={4}>
+              <Paper
+                sx={{
+                  paddingLeft: 1,
+                  paddingTop: 1,
+                  paddingBottom: 1,
+                  height: "100%",
+                }}
+              >
+                <Grid>
+                  <Stack spacing={2}>
+                    <Box>
+                      <Typography variant="h4">
+                        Subtotal {cart.length} items
+                      </Typography>
+                      <Typography variant="h6">Total:₱ {total} </Typography>
+                    </Box>
+                    <Box>
+                      <TextField
+                        required
+                        id="outlined-required"
+                        label="Cash Payment"
+                        type="number"
+                        onChange={handleCash}
+                      />
+                    </Box>
+                    <Box>
+                      <TextField
+                        id="outlined-required"
+                        label="Cash Change"
+                        type="number"
+                        value={change}
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    </Box>
 
-                  <Box>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="success"
-                      onClick={handleSubmit}
-                      disabled={cash < total}
-                    >
-                      Proceed To Checkout
-                    </Button>
-                  </Box>
-                </Stack>
-              </Grid>
-            </Paper>
-          </Grid>
+                    <Box>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="success"
+                        onClick={handleSubmit}
+                        disabled={cash < total}
+                      >
+                        Proceed To Checkout
+                      </Button>
+                    </Box>
+                  </Stack>
+                </Grid>
+              </Paper>
+            </Grid>
+          ) : null}
           {/* End Subtotal Cart */}
         </Grid>
       </Dialog>

@@ -23,6 +23,7 @@ import {
   PaymentOutlined,
   Inventory2Outlined,
   PointOfSaleOutlined,
+  PaymentsOutlined,
   // Inventory2Outlined,
 } from "@mui/icons-material";
 import BadgeIcon from "@mui/icons-material/Badge";
@@ -47,6 +48,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import { useValue } from "../../context/ContextProvider";
 import Analytics from "./analytics/Analytics";
 import Customer from "./customer/Customer";
+import Expenses from "./expenses/Expenses";
 import Inventory from "./inventory/Inventory";
 import Main from "./main/Main";
 import Meter from "./meter/Meter";
@@ -181,6 +183,12 @@ const SideList = ({ open, setOpen }) => {
       icon: <PointOfSaleOutlined />,
       link: "pos",
       component: <Pos {...{ setSelectedLink, link: "pos" }} />,
+    },
+    {
+      title: "Expenses",
+      icon: <PaymentsOutlined />,
+      link: "expenses",
+      component: <Expenses {...{ setSelectedLink, link: "expenses" }} />,
     },
   ]);
 

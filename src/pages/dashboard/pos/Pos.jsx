@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import SingleProduct from "../../../components/SingleProduct";
 import { useValue } from "../../../context/ContextProvider";
@@ -15,6 +15,7 @@ import {
   serverTimestamp,
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
+import BackdropComponent from "../../../components/BackdropComponent";
 
 const Pos = ({ setSelectedLink, link }) => {
   const [productList, setProductList] = useState([{}]);
@@ -69,17 +70,20 @@ const Pos = ({ setSelectedLink, link }) => {
   }, []);
 
   return (
-    <Box
+    <Grid
+      container
       sx={{
         display: "flex",
-        width: "78%",
-        padding: "20px",
+        width: "100%",
+        padding: "10px",
         flexWrap: "wrap",
-        justifyContent: "space-around",
+        justifyContent: "space-evenly",
+        height: "100vh",
       }}
+      spacing={2}
     >
       {loading ? (
-        "loading "
+        <BackdropComponent />
       ) : (
         <>
           {productList.map((prod) =>
@@ -87,7 +91,7 @@ const Pos = ({ setSelectedLink, link }) => {
           )}
         </>
       )}
-    </Box>
+    </Grid>
   );
 };
 

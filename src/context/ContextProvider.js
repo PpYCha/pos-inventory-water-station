@@ -71,6 +71,13 @@ const initialState = {
   products: [],
   cart: [],
   cartDialog: false,
+
+  expense: {
+    id: "",
+    particular: "",
+    amount: "",
+    date: "",
+  },
 };
 
 const Context = createContext(initialState);

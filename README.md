@@ -1,5 +1,29 @@
 # Water Refilling Station Web
 
+## Changelog: December 21 - 2022
+
+### Home
+
+1. Fix transaction count
+
+### Expense
+
+1. Added expense tab
+2. Crude Expense
+
+### Transaction
+
+1. Added transaction list
+
+### Stock
+
+1. Added stock list
+
+### Cart
+
+1. Close the cart after a successfully checkout
+2. Enhanced Design
+
 ## Changelog: December 19 - 2022
 
 ### Users:

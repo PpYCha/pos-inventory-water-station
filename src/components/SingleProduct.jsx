@@ -7,11 +7,12 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ProductImage from "../assets/contemplative-reptile.jpg";
 import { useValue } from "../context/ContextProvider";
-import { Box, IconButton } from "@mui/material";
+import { Box, Divider, Grid, IconButton, Paper } from "@mui/material";
 import {
   AddShoppingCartOutlined,
   RemoveShoppingCartOutlined,
 } from "@mui/icons-material";
+import noProductImage from "../assets/no-image.png";
 
 const SingleProduct = ({ prod }) => {
   const {
@@ -20,64 +21,63 @@ const SingleProduct = ({ prod }) => {
   } = useValue();
 
   return (
-    <Box
-      sx={{
-        width: "30%",
-        margin: "10px",
-      }}
-    >
-      <Card sx={{ maxWidth: 345 }}>
-        <CardMedia
-          component="img"
-          height="200"
-          width="200"
-          src={prod.photoUrl}
-          alt={prod.productName}
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {prod.productName}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {prod.productDescription}
-          </Typography>
-        </CardContent>
-        <CardActions>
-          {cart.some((p) => p.id === prod.id) ? (
-            <Box sx={{ display: "flex", gap: "1rem" }} key={prod.id}>
-              <Button
-                color="error"
-                startIcon={<RemoveShoppingCartOutlined />}
-                onClick={() =>
-                  dispatch({
-                    type: "REMOVE_FROM_CART",
-                    payload: prod,
-                  })
-                }
-              >
-                Remove from Cart
-              </Button>
-            </Box>
-          ) : (
-            <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Button
-                color="success"
-                startIcon={<AddShoppingCartOutlined />}
-                onClick={() =>
-                  dispatch({
-                    type: "ADD_TO_CART",
-                    payload: prod,
-                  })
-                }
-                disabled={prod.stock <= "0"}
-              >
-                {prod.stock <= "0" ? "Out of Stock" : "Add to Cart"}
-              </Button>
-            </Box>
-          )}
-        </CardActions>
-      </Card>
-    </Box>
+    <Grid item xs={6} md={4} lg={2}>
+      <Paper elevation={10}>
+        <Card>
+          <CardMedia
+            component="img"
+            src={prod.photoUrl || noProductImage}
+            alt={prod.productName}
+          />
+          <Divider />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {prod.productName}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {prod.productDescription}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              ₱{prod.price}
+            </Typography>
+          </CardContent>
+          <CardActions>
+            {cart.some((p) => p.id === prod.id) ? (
+              <Box sx={{ display: "flex" }} key={prod.id}>
+                <Button
+                  color="error"
+                  startIcon={<RemoveShoppingCartOutlined />}
+                  onClick={() =>
+                    dispatch({
+                      type: "REMOVE_FROM_CART",
+                      payload: prod,
+                    })
+                  }
+                >
+                  Remove from Cart
+                </Button>
+              </Box>
+            ) : (
+              <Box sx={{ display: "flex" }}>
+                <Button
+                  color="success"
+                  startIcon={<AddShoppingCartOutlined />}
+                  onClick={() =>
+                    dispatch({
+                      type: "ADD_TO_CART",
+                      payload: prod,
+                    })
+                  }
+                  disabled={prod.stock <= "0"}
+                >
+                  {prod.stock <= "0" ? "Out of Stock" : "Add to Cart"}
+                </Button>
+              </Box>
+            )}
+          </CardActions>
+        </Card>
+      </Paper>
+    </Grid>
   );
 };
 

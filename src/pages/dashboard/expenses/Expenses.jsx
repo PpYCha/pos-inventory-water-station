@@ -46,18 +46,18 @@ import Swal from "sweetalert2";
 import { async } from "@firebase/util";
 import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
 
-const Products = ({ setSelectedLink, link }) => {
-  const [productsData, setProductsData] = useState([{}]);
+const Expenses = ({ setSelectedLink, link }) => {
+  const [expenseList, setExpenseList] = useState([{}]);
   const [rowSelection, setRowSelection] = useState({});
 
   const {
-    state: { openLogin, product, loading },
+    state: { openLogin, product, loading, expense },
     dispatch,
   } = useValue();
 
   const handleClose = () => {
     console.log("close");
-    dispatch({ type: "RESET_PRODUCT" });
+    dispatch({ type: "RESET_EXPENSE" });
     dispatch({ type: "CLOSE_LOGIN" });
   };
 
@@ -74,34 +74,19 @@ const Products = ({ setSelectedLink, link }) => {
 
   const handleSave = async () => {
     try {
-      let url;
-      if (product.file) {
-        const imageRef = await uploadImage("images/product", product.file);
-        url = await getImageUrl(imageRef);
-      }
-
-      await addDoc(collection(db_firestore, "products"), {
-        photoUrl: url || null,
-        productName: product.productName,
-        productDescription: product.productDescription,
-        price: product.price,
-        cost: product.cost,
-        stock: product.stock,
-        lowStockLevel: product.lowStockLevel,
+      await addDoc(collection(db_firestore, "expenses"), {
+        id: expense.id,
+        particular: expense.particular,
+        amount: expense.amount,
+        date: expense.date,
       })
-        .then((data) => {
-          const docRef = doc(db_firestore, "products", data.id);
-          updateDoc(docRef, {
-            id: data.id,
-          });
-        })
         .finally((result) => {
           Swal.fire({
             text: "Successfully Save",
             icon: "success",
             confirmButtonText: "OK",
           });
-          fetchProductsList();
+          fetchExpenseList();
           handleClose();
         })
         .catch((e) => {
@@ -120,22 +105,12 @@ const Products = ({ setSelectedLink, link }) => {
   const handleUpdate = async () => {
     try {
       const rowUserId = convertUserId();
-      const washingtonRef = doc(db_firestore, "products", rowUserId);
-
-      let url;
-      if (product.file) {
-        const imageRef = await uploadImage("images/product", product.file);
-        url = await getImageUrl(imageRef);
-      }
+      const washingtonRef = doc(db_firestore, "expenses", rowUserId);
 
       await updateDoc(washingtonRef, {
-        photoUrl: url || product.photoUrl,
-        productName: product.productName,
-        productDescription: product.productDescription,
-        price: product.price,
-        cost: product.cost,
-        stock: product.stock,
-        lowStockLevel: product.lowStockLevel,
+        particular: expense.particular,
+        amount: expense.amount,
+        date: expense.date,
       })
         .then((result) => {
           Swal.fire({
@@ -143,7 +118,7 @@ const Products = ({ setSelectedLink, link }) => {
             icon: "success",
             confirmButtonText: "OK",
           });
-          fetchProductsList();
+          fetchExpenseList();
           handleClose();
         })
         .catch((e) => {
@@ -168,19 +143,16 @@ const Products = ({ setSelectedLink, link }) => {
     let docSnap;
     if (e === "edit") {
       const rowUserId = convertUserId();
-      const docRef = doc(db_firestore, "products", rowUserId);
+      const docRef = doc(db_firestore, "expenses", rowUserId);
       docSnap = await getDoc(docRef);
     }
 
     if (docSnap && docSnap.exists()) {
-      product.id = docSnap.data().id;
-      product.photoUrl = docSnap.data().photoUrl;
-      product.productName = docSnap.data().productName;
-      product.productDescription = docSnap.data().productDescription;
-      product.price = docSnap.data().price;
-      product.cost = docSnap.data().cost;
-      product.stock = docSnap.data().stock;
-      product.lowStockLevel = docSnap.data().lowStockLevel;
+      expense.id = docSnap.data().id;
+      expense.particular = docSnap.data().particular;
+      expense.amount = docSnap.data().amount;
+      expense.date = docSnap.data().date;
+
       dispatch({ type: "OPEN_LOGIN" });
     } else if (e === "edit") {
       console.log("No such document!");
@@ -198,8 +170,8 @@ const Products = ({ setSelectedLink, link }) => {
 
           const rowUserId = convertUserId();
           try {
-            deleteDoc(doc(db_firestore, "products", rowUserId));
-            fetchProductsList();
+            deleteDoc(doc(db_firestore, "expenses", rowUserId));
+            fetchExpenseList();
           } catch (error) {
             console.log(error);
           }
@@ -218,36 +190,32 @@ const Products = ({ setSelectedLink, link }) => {
 
   useEffect(() => {
     setSelectedLink(link);
-    fetchProductsList();
+    fetchExpenseList();
   }, []);
 
   const handleChange = (e) => {
     dispatch({
-      type: "UPDATE_PRODUCT",
+      type: "UPDATE_EXPENSE",
       payload: { [e.target.id]: e.target.value },
     });
   };
 
-  const fetchProductsList = async () => {
+  const fetchExpenseList = async () => {
     try {
       dispatch({ type: "START_LOADING" });
       const list = [];
-      const querySnapshot = await getDocs(collection(db_firestore, "products"));
+      const querySnapshot = await getDocs(collection(db_firestore, "expenses"));
 
       querySnapshot.forEach((doc) => {
         list.push({
           id: doc.data().id,
-          photoUrl: doc.data().photoUrl,
-          productName: doc.data().productName,
-          productDescription: doc.data().productDescription,
-          price: doc.data().price,
-          cost: doc.data().cost,
-          stock: doc.data().stock,
-          lowStockLevel: doc.data().lowStockLevel,
+          particular: doc.data().particular,
+          amount: doc.data().amount,
+          date: doc.data().date,
         });
       });
 
-      setProductsData(list);
+      setExpenseList(list);
       dispatch({ type: "END_LOADING" });
     } catch (error) {
       console.log(error);
@@ -267,110 +235,57 @@ const Products = ({ setSelectedLink, link }) => {
   };
 
   const columns = useMemo(() => [
-    
     {
       accessorKey: "id",
       header: "ID",
     },
-
+    { accessorKey: "particular", header: "Particular" },
     {
-      accessorKey: "productName",
-      header: "Name",
+      accessorKey: "amount",
+      header: "Expense Amount",
       Cell: ({ cell, row }) => (
         <>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <Box
-              component="img"
-              src={row.original.photoUrl || noProductImage}
-              sx={{
-                maxWidth: "50%",
-                maxHeight: "50%",
-                cursor: "pointer",
-              }}
-            />
-            <Typography>{cell.getValue()}</Typography>
-          </Box>
+          <Typography>₱ {row.original.amount}</Typography>
         </>
       ),
     },
-    { accessorKey: "productDescription", header: "Description" },
-    // { accessorKey: "username", header: "Password" },
-    { accessorKey: "price", header: "Price", Cell:({cell,row} ) =>(<>
-      <Typography>₱ {row.original.price}</Typography>
-    </>) },
-    { accessorKey: "cost", header: "Cost" },
-    { accessorKey: "stock", header: "Total Stock" },
-    // { accessorKey: "lowStockLevel", header: "Low Stock Level" },
+    { accessorKey: "date", header: "Date" },
   ]);
 
   const inputs = [
     {
-      id: "productName",
-      name: "productName",
-      label: "Product Name",
+      id: "particular",
+      name: "particular",
+      label: "Particular",
       type: "text",
       required: true,
 
-      value: product.productName,
+      value: expense.particular,
       xs: 12,
       sm: 12,
     },
     {
-      id: "productDescription",
-      name: "productDescription",
-      label: "Product Description",
-      value: product.productDescription,
+      id: "amount",
+      name: "amount",
+      label: "Amount",
+      value: expense.amount,
       type: "text",
       required: true,
+      inputProps: { minLength: 1 },
+      xs: 6,
+      sm: 6,
+    },
 
-      xs: 12,
-      sm: 12,
-    },
     {
-      id: "price",
-      name: "price",
-      label: "Price",
-      value: product.price,
-      type: "number",
+      id: "date",
+      name: "date",
+      label: "Date",
+      value: expense.cost,
+      type: "date",
       required: true,
       xs: 6,
       sm: 6,
-    },
-    {
-      id: "cost",
-      name: "cost",
-      label: "Cost",
-      value: product.cost,
-      type: "number",
-      required: true,
-      xs: 6,
-      sm: 6,
-    },
-    {
-      id: "stock",
-      name: "stock",
-      label: "Stock",
-      type: "number",
-      value: product.stock,
-      required: true,
-      xs: 6,
-      sm: 6,
-    },
-    {
-      id: "lowStockLevel",
-      name: "lowStockLevel",
-      label: "Low Stock Level",
-      type: "number",
-      value: product.lowStockLevel,
-      required: true,
-      xs: 6,
-      sm: 6,
+      InputLabelProps: { shrink: true },
     },
   ];
 
@@ -378,12 +293,12 @@ const Products = ({ setSelectedLink, link }) => {
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
-          <Typography variant="h5">Product List</Typography>
+          <Typography variant="h5">Expense List</Typography>
         </Stack>
         <DialogComponent
           open={openLogin}
           handleClose={handleClose}
-          title="Product Information"
+          title="Expense Information"
           inputs={inputs}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
@@ -398,7 +313,7 @@ const Products = ({ setSelectedLink, link }) => {
             <>
               <MaterialReactTable
                 columns={columns}
-                data={productsData}
+                data={expenseList}
                 initialState={{ columnVisibility: { id: false } }}
                 getRowId={(row) => row.id}
                 muiTableBodyRowProps={({ row }) => ({
@@ -422,4 +337,4 @@ const Products = ({ setSelectedLink, link }) => {
   );
 };
 
-export default Products;
+export default Expenses;
