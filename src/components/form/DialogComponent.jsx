@@ -67,6 +67,7 @@ const DialogComponent = ({
                 style={{ display: "none" }}
                 onChange={handleChangeImage}
               />
+
               {profilePicture ? (
                 <Avatar
                   src={imgSrc}
