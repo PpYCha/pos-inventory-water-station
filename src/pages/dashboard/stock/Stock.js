@@ -64,7 +64,15 @@ const Stock = ({ setSelectedLink, link }) => {
     },
 
     { accessorKey: "productName", header: "Product Name" },
-    { accessorKey: "qty", header: "Quantity" },
+    {
+      accessorKey: "qty",
+      header: "Quantity In/Out",
+      Cell: ({ row }) => (
+        <>
+          <Typography> - {row.original.qty}</Typography>
+        </>
+      ),
+    },
     {
       accessorKey: "price",
       header: "Price",
@@ -101,9 +109,8 @@ const Stock = ({ setSelectedLink, link }) => {
       );
 
       let cartList;
-      console.log(querySnapshot);
+
       querySnapshot.forEach((doc) => {
-        console.log(doc.id);
         cartList = doc.data().cart;
 
         cartList.forEach((item, index) => {
@@ -130,7 +137,7 @@ const Stock = ({ setSelectedLink, link }) => {
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
-          <Typography variant="h5">Stock List</Typography>
+          <Typography variant="h5">Inventory Log</Typography>
         </Stack>
 
         <Box m={2}>

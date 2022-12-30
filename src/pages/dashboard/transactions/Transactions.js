@@ -12,6 +12,12 @@ import {
   IconButton,
   Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -36,12 +42,16 @@ import {
   serverTimestamp,
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
+import InvoiceComponent from "../../../components/InvoiceComponent";
+import InvoiceDialogComponent from "../../../components/InvoiceDialogComponent";
 
 const Transactions = ({ setSelectedLink, link }) => {
   const [transactionList, setTransactionList] = useState([{}]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [amount, setAmount] = useState();
 
   const {
-    state: { openLogin, loading },
+    state: { openLogin, loading, customerInvoice },
     dispatch,
   } = useValue();
 
@@ -53,24 +63,47 @@ const Transactions = ({ setSelectedLink, link }) => {
     e.preventDefault();
   };
 
+  const handleDoubleClick = (e) => {
+    fetchSpecificTransaction();
+
+    console.log(customerInvoice);
+  };
+
+  const fetchSpecificTransaction = async () => {
+    let docSnap;
+    const obj = JSON.stringify(rowSelection);
+    const rowUserId = obj.substring(obj.indexOf(`"`) + 1, obj.lastIndexOf(`"`));
+    console.log("id:", rowUserId);
+    const docRef = doc(db_firestore, "transactions", rowUserId);
+    docSnap = await getDoc(docRef);
+
+    if (docSnap && docSnap.exists()) {
+      customerInvoice.cart = docSnap.data().cart;
+      customerInvoice.date = docSnap.data().date;
+      customerInvoice.time = docSnap.data().time;
+      customerInvoice.subTotal = docSnap.data().subTotal;
+      customerInvoice.tax = docSnap.data().tax;
+      customerInvoice.total = docSnap.data().total;
+
+      dispatch({ type: "OPEN_LOGIN" });
+    } else {
+      console.log("No such document!");
+    }
+  };
+
   const columns = useMemo(() => [
     {
       accessorKey: "id",
       header: "Invoice ID",
     },
 
-    { accessorKey: "amount", header: "Amount" },
-    { accessorKey: "taxRate", header: "Tax Rate" },
-    { accessorKey: "tax", header: "Tax" },
+    // { accessorKey: "amount", header: "Amount" },
+    // { accessorKey: "taxRate", header: "Tax Rate" },
+    // { accessorKey: "tax", header: "Tax" },
     { accessorKey: "total", header: "Total" },
     { accessorKey: "date", header: "Date" },
     { accessorKey: "time", header: "Time" },
   ]);
-
-  useEffect(() => {
-    setSelectedLink(link);
-    fetchTransactionList();
-  }, []);
 
   const fetchTransactionList = async () => {
     try {
@@ -79,9 +112,8 @@ const Transactions = ({ setSelectedLink, link }) => {
       const querySnapshot = await getDocs(
         collection(db_firestore, "transactions")
       );
-      console.log(querySnapshot);
+
       querySnapshot.forEach((doc) => {
-        console.log(doc.id);
         list.push({
           id: doc.id,
           amount: doc.data().amount,
@@ -101,13 +133,23 @@ const Transactions = ({ setSelectedLink, link }) => {
     }
   };
 
+  useEffect(() => {
+    setSelectedLink(link);
+    fetchTransactionList();
+  }, []);
+
   return (
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
           <Typography variant="h5">Transaction List</Typography>
         </Stack>
-
+        {/* Start Dialog */}
+        <InvoiceDialogComponent
+          openLogin={openLogin}
+          handleClose={handleClose}
+        />
+        {/* End Dialog */}
         <Box m={2}>
           {loading ? (
             <CircularProgress color="secondary" />
@@ -117,8 +159,21 @@ const Transactions = ({ setSelectedLink, link }) => {
                 <MaterialReactTable
                   columns={columns}
                   data={transactionList}
-                  initialState={{ columnVisibility: { id: false } }}
+                  initialState={{ columnVisibility: { id: true } }}
                   getRowId={(row) => row.id}
+                  muiTableBodyCellProps={({ cell }) => ({
+                    onDoubleClick: handleDoubleClick,
+                  })}
+                  muiTableBodyRowProps={({ row }) => ({
+                    onClick: () =>
+                      setRowSelection((prev) => ({
+                        [row.id]: !prev[row.id],
+                      })),
+                    selected: rowSelection[row.id],
+                    sx: {
+                      cursor: "pointer",
+                    },
+                  })}
                 />
               </>
             </>

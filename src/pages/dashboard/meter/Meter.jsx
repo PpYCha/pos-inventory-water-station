@@ -268,6 +268,17 @@ const Meter = ({ setSelectedLink, link }) => {
       accessorKey: "id",
       header: "ID",
     },
+    {
+      accessorKey: "refillCashMeter",
+      header: "Refill Cash Meter",
+      Cell: ({ cell, row }) => (
+        <Typography>
+          {(((row.original.meterPM - row.original.meterAM) * 25) / 5).toFixed(
+            2
+          )}
+        </Typography>
+      ),
+    },
 
     { accessorKey: "meterAM", header: "Meter AM" },
     {

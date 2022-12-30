@@ -40,6 +40,9 @@ const SingleProduct = ({ prod }) => {
             <Typography variant="body2" color="text.secondary">
               ₱{prod.price}
             </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Stock:{prod.stock}
+            </Typography>
           </CardContent>
           <CardActions>
             {cart.some((p) => p.id === prod.id) ? (

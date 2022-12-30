@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import SingleProduct from "../../../components/SingleProduct";
 import { useValue } from "../../../context/ContextProvider";
@@ -83,7 +83,7 @@ const Pos = ({ setSelectedLink, link }) => {
       spacing={2}
     >
       {loading ? (
-        <BackdropComponent />
+        <CircularProgress color="secondary" />
       ) : (
         <>
           {productList.map((prod) =>

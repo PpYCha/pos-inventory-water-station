@@ -1,5 +1,25 @@
 # Water Refilling Station Web
 
+## Changelog: December 30 - 2022
+
+### Transaction
+
+1. Click to higlight a row
+2. Double Click a row to open Resibo details
+
+### Cart
+
+1. Added Temporary invoice in cart
+2. Added Printable invoice after proceeed to checkout
+
+### POS
+
+1. Added Stock Label
+
+### Meter
+
+1. Added Refill Cash Meter
+
 ## Changelog: December 21 - 2022
 
 ### Home

@@ -45,6 +45,8 @@ import {
   updateDoc,
   serverTimestamp,
 } from "@firebase/firestore";
+import InvoiceComponent from "./InvoiceComponent";
+import InvoiceDialogComponent from "./InvoiceDialogComponent";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -52,12 +54,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
   const {
-    state: { cart, loading, products },
+    state: { cart, loading, products, customerInvoice, openLogin },
     dispatch,
   } = useValue();
   const [total, setTotal] = useState();
   const [cash, setCash] = useState(0);
   const [change, setChange] = useState(0);
+  const [tax, setTax] = useState(0);
 
   React.useEffect(() => {
     setTotal(
@@ -66,20 +69,30 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
   }, [cart]);
 
   const findProduct = (id) => {
-    return products.find((obj) => obj.id === id);
+    const productFind = products.find((obj) => obj.id === id);
+
+    return productFind;
     // return products;
   };
 
+  const handleChange = (e) => {
+    dispatch({
+      type: "UPDATE_CUSTOMERINVOICE",
+      payload: { [e.target.id]: e.target.value },
+    });
+  };
+
   const handleSubmit = (e) => {
+    dispatch({ type: "START_LOADING" });
     cart.map((item) => {
       let id = item.id;
       let qty = item.qty;
       const object = findProduct(id);
       let newStock = object.stock - qty;
       handleUpdate(id, newStock);
-      console.log(object.stock, " - ", qty, " = ", newStock);
     });
     handleTransaction();
+    dispatch({ type: "END_LOADING" });
   };
 
   const handleClose = () => {
@@ -96,23 +109,29 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
       const date = new Date();
       const isoString = date.toISOString();
       const result = await addDoc(collection(db_firestore, "transactions"), {
-        amount: total,
+        subTotal: total,
         taxRate: 12,
         tax: tax,
         total: tax + total,
         date: isoString.substring(0, 10),
         time: isoString.substring(11, 19),
         cart: cart,
+
+        name: customerInvoice.name,
+        address: customerInvoice.address,
+        phone: customerInvoice.phone,
+        email: customerInvoice.email,
       });
 
-      console.log(result.id);
-
-      Swal.fire({
-        text: "Successfully Checkout",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
       handleClose();
+
+      const res = await fetchSpecificTransaction(result.id);
+
+      // Swal.fire({
+      //   text: "Successfully Checkout",
+      //   icon: "success",
+      //   confirmButtonText: "OK",
+      // });
     } catch (error) {
       const textMessage = error.code;
       console.log(textMessage);
@@ -136,9 +155,31 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     }
   };
 
+  const fetchSpecificTransaction = async (id) => {
+    let docSnap;
+
+    const docRef = doc(db_firestore, "transactions", id);
+    docSnap = await getDoc(docRef);
+
+    if (docSnap && docSnap.exists()) {
+      customerInvoice.cart = docSnap.data().cart;
+      customerInvoice.date = docSnap.data().date;
+      customerInvoice.time = docSnap.data().time;
+      customerInvoice.subTotal = docSnap.data().subTotal;
+      customerInvoice.tax = docSnap.data().tax;
+      customerInvoice.total = docSnap.data().total;
+
+      dispatch({ type: "OPEN_LOGIN" });
+    } else {
+      console.log("No such document!");
+    }
+  };
+
   const handleCash = (e) => {
     setCash(e.target.value);
-    setChange(e.target.value - total);
+    setTax(total * 0.12);
+    // setTotal(total + tax);
+    setChange(e.target.value - (total + total * 0.12));
   };
 
   return (
@@ -176,7 +217,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
 
           <Grid
             item
-            md={8}
+            md={7}
             justifyContent="space-evenly"
             alignItems="center"
             p={1}
@@ -197,19 +238,20 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                       <img
                         src={prod.photoUrl || noProductImage}
                         alt={prod.productName}
-                        style={{ width: "90%", height: 200 }}
+                        style={{ width: "70%", height: 160 }}
                       />
                     </Grid>
-                    <Grid item md={3}>
-                      <Typography variant="h5">{prod.productName}</Typography>
+                    <Grid item md={5}>
+                      <Typography variant="h6">{prod.productName}</Typography>
                       <Typography variant="subtitle1">
                         {prod.productDescription}
                       </Typography>
                     </Grid>
-                    <Grid item md={3}>
-                      <Typography variant="h5">₱ {prod.price}</Typography>
+                    <Grid item md={2}>
+                      <Typography variant="h6">Price: ₱{prod.price}</Typography>
+                      <Typography variant="h6">Stock: {prod.stock}</Typography>
                     </Grid>
-                    <Grid item md={3}>
+                    <Grid item md={2}>
                       <Stack direction="row" alignItems="center">
                         {/* <IconButton aria-label="increment">
                           <ArrowCircleLeftOutlined />
@@ -226,8 +268,6 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                           }}
                           align="center"
                           onChange={(e) => {
-                            console.log(e.target.value);
-
                             return {
                               result:
                                 e.target.value === ""
@@ -270,7 +310,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
           {/* //End Cart items  */}
           {/* //Start Subtotal cart */}
           {cart ? (
-            <Grid item md={4}>
+            <Grid item md={5}>
               <Paper
                 sx={{
                   paddingLeft: 1,
@@ -282,10 +322,46 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                 <Grid>
                   <Stack spacing={2}>
                     <Box>
-                      <Typography variant="h4">
-                        Subtotal {cart.length} items
-                      </Typography>
-                      <Typography variant="h6">Total:₱ {total} </Typography>
+                      <InvoiceComponent
+                        cart={cart}
+                        amountDue={total}
+                        onChange={handleChange}
+                      />
+
+                      <Stack direction="column" spacing={0.5} marginTop={5}>
+                        <TextField
+                          required
+                          id="name"
+                          name="name"
+                          label="Customer Name"
+                          type="text"
+                          onChange={handleChange}
+                        />
+                        <TextField
+                          required
+                          id="address"
+                          name="address"
+                          label="Address"
+                          type="text"
+                          onChange={handleChange}
+                        />
+                        <TextField
+                          required
+                          id="phone"
+                          name="phone"
+                          label="Phone"
+                          type="number"
+                          onChange={handleChange}
+                        />
+                        <TextField
+                          required
+                          id="email"
+                          name="email"
+                          label="Email"
+                          type="email"
+                          onChange={handleChange}
+                        />
+                      </Stack>
                     </Box>
                     <Box>
                       <TextField
@@ -315,7 +391,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                         variant="contained"
                         color="success"
                         onClick={handleSubmit}
-                        disabled={cash < total}
+                        disabled={cash < total + tax}
                       >
                         Proceed To Checkout
                       </Button>
@@ -328,6 +404,8 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
           {/* End Subtotal Cart */}
         </Grid>
       </Dialog>
+
+      <InvoiceDialogComponent openLogin={openLogin} handleClose={handleClose} />
     </div>
   );
 }

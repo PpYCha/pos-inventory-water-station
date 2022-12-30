@@ -185,6 +185,31 @@ const reducer = (state, action) => {
         },
       };
 
+    case "UPDATE_CUSTOMERINVOICE":
+      return {
+        ...state,
+        customerInvoice: { ...state.customerInvoice, ...action.payload },
+      };
+
+    case "RESET_CUSTOMERINVOICE":
+      return {
+        ...state,
+        customerInvoice: {
+          id: "",
+          amount: "",
+          cart: [],
+          date: "",
+          time: "",
+          tax: "",
+
+          name: "",
+          address: "",
+          tin: "",
+          phone: "",
+          email: "",
+        },
+      };
+
     default:
       throw new Error("No matched action!");
   }

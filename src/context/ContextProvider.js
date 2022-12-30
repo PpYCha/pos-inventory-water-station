@@ -78,6 +78,21 @@ const initialState = {
     amount: "",
     date: "",
   },
+
+  customerInvoice: {
+    id: "",
+    amount: "",
+    cart: [],
+    date: "",
+    time: "",
+    tax: "",
+
+    name: "",
+    address: "",
+    tin: "",
+    phone: "",
+    email: "",
+  },
 };
 
 const Context = createContext(initialState);
