@@ -54,7 +54,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
   const {
-    state: { cart, loading, products, customerInvoice, openLogin },
+    state: { cart, loading, products, customerInvoice, openLogin, openInvoice },
     dispatch,
   } = useValue();
   const [total, setTotal] = useState();
@@ -101,6 +101,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     dispatch({ type: "RESET_CART" });
     dispatch({ type: "CLOSE_LOGIN" });
     dispatch({ type: "CLOSE_CART" });
+    dispatch({ type: "CLOSE_INVOICE" });
   };
 
   const handleTransaction = async () => {
@@ -169,7 +170,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
       customerInvoice.tax = docSnap.data().tax;
       customerInvoice.total = docSnap.data().total;
 
-      dispatch({ type: "OPEN_LOGIN" });
+      dispatch({ type: "OPEN_INVOICE" });
     } else {
       console.log("No such document!");
     }
@@ -405,7 +406,10 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
         </Grid>
       </Dialog>
 
-      <InvoiceDialogComponent openLogin={openLogin} handleClose={handleClose} />
+      <InvoiceDialogComponent
+        openLogin={openInvoice}
+        handleClose={handleClose}
+      />
     </div>
   );
 }

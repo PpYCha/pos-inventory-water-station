@@ -10,6 +10,7 @@ import reducer from "./reducer";
 const initialState = {
   currentUser: null,
   openLogin: false,
+  openInvoice: false,
   loading: false,
   user: {
     id: "",

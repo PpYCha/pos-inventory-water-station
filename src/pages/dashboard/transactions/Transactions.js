@@ -51,12 +51,12 @@ const Transactions = ({ setSelectedLink, link }) => {
   const [amount, setAmount] = useState();
 
   const {
-    state: { openLogin, loading, customerInvoice },
+    state: { openLogin, loading, customerInvoice, openInvoice },
     dispatch,
   } = useValue();
 
   const handleClose = () => {
-    dispatch({ type: "CLOSE_LOGIN" });
+    dispatch({ type: "CLOSE_INVOICE" });
   };
 
   const handleSubmit = (e) => {
@@ -85,7 +85,7 @@ const Transactions = ({ setSelectedLink, link }) => {
       customerInvoice.tax = docSnap.data().tax;
       customerInvoice.total = docSnap.data().total;
 
-      dispatch({ type: "OPEN_LOGIN" });
+      dispatch({ type: "OPEN_INVOICE" });
     } else {
       console.log("No such document!");
     }
@@ -146,7 +146,7 @@ const Transactions = ({ setSelectedLink, link }) => {
         </Stack>
         {/* Start Dialog */}
         <InvoiceDialogComponent
-          openLogin={openLogin}
+          openLogin={openInvoice}
           handleClose={handleClose}
         />
         {/* End Dialog */}

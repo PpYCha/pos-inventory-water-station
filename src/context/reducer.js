@@ -5,6 +5,11 @@ const reducer = (state, action) => {
     case "CLOSE_LOGIN":
       return { ...state, openLogin: false };
 
+    case "OPEN_INVOICE":
+      return { ...state, openInvoice: true };
+    case "CLOSE_INVOICE":
+      return { ...state, openInvoice: false };
+
     case "START_LOADING":
       return { ...state, loading: true };
     case "END_LOADING":
