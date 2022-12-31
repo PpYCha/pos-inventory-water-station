@@ -1,5 +1,11 @@
 # Water Refilling Station Web
 
+## Changelog: December 31 - 2022
+
+### Bug Fixes
+
+1. Fix a bug where dialog receipt open in the products tab
+
 ## Changelog: December 30 - 2022
 
 ### Transaction
