@@ -173,10 +173,10 @@ const SideList = ({ open, setOpen }) => {
       component: <Meter {...{ setSelectedLink, link: "meterReading" }} />,
     },
     {
-      title: "Stock",
+      title: "Inventory",
       icon: <Inventory2Outlined />,
-      link: "stock",
-      component: <Stock {...{ setSelectedLink, link: "stock" }} />,
+      link: "inventory",
+      component: <Stock {...{ setSelectedLink, link: "inventory" }} />,
     },
     {
       title: "POS",
