@@ -75,11 +75,16 @@ const Expenses = ({ setSelectedLink, link }) => {
   const handleSave = async () => {
     try {
       await addDoc(collection(db_firestore, "expenses"), {
-        id: expense.id,
         particular: expense.particular,
         amount: expense.amount,
         date: expense.date,
       })
+        .then((data) => {
+          const docRef = doc(db_firestore, "products", data.id);
+          updateDoc(docRef, {
+            id: expense.id,
+          });
+        })
         .finally((result) => {
           Swal.fire({
             text: "Successfully Save",
@@ -303,7 +308,7 @@ const Expenses = ({ setSelectedLink, link }) => {
           handleSubmit={handleSubmit}
           handleChange={handleChange}
           handleChangeImage={handleChangeImage}
-          imgSrc={product.photoUrl || noProductImage}
+          imgSrc={null}
         />
 
         <Box m={2}>

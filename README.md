@@ -2,7 +2,12 @@
 
 ## Changelog: December 31 - 2022
 
-### Bug Fixes
+### Expenses
+
+1. Remove the picture in dialog
+2. Fix delete and select
+
+## Changelog: December 31 - 2022
 
 1. Fix a bug where dialog receipt open in the products tab
 

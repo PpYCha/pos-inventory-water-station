@@ -267,7 +267,6 @@ const Products = ({ setSelectedLink, link }) => {
   };
 
   const columns = useMemo(() => [
-    
     {
       accessorKey: "id",
       header: "ID",
@@ -301,9 +300,15 @@ const Products = ({ setSelectedLink, link }) => {
     },
     { accessorKey: "productDescription", header: "Description" },
     // { accessorKey: "username", header: "Password" },
-    { accessorKey: "price", header: "Price", Cell:({cell,row} ) =>(<>
-      <Typography>₱ {row.original.price}</Typography>
-    </>) },
+    {
+      accessorKey: "price",
+      header: "Price",
+      Cell: ({ cell, row }) => (
+        <>
+          <Typography>₱ {row.original.price}</Typography>
+        </>
+      ),
+    },
     { accessorKey: "cost", header: "Cost" },
     { accessorKey: "stock", header: "Total Stock" },
     // { accessorKey: "lowStockLevel", header: "Low Stock Level" },
