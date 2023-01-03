@@ -114,6 +114,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
       const date = new Date();
       const timeZoneOffset = 28800000; // 8 hours in milliseconds
       date.setTime(date.getTime() + timeZoneOffset);
+
       const isoString = date.toISOString();
 
       const result = await addDoc(collection(db_firestore, "transactions"), {
@@ -121,7 +122,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
         taxRate: 12,
         tax: tax,
         total: total,
-        date: isoString.substring(0, 10),
+        date: serverTimestamp(),
         time: isoString.substring(11, 19),
         cart: cart,
 

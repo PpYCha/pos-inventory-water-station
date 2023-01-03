@@ -30,6 +30,8 @@ import {
   getDoc,
   updateDoc,
   serverTimestamp,
+  where,
+  query,
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
 
@@ -76,33 +78,108 @@ const SummaryWidget = ({ title, number, cardColor, size }) => {
 };
 
 const Main = ({ setSelectedLink, link }) => {
-  const [startDate, setStartDate] = useState(dayjs("2022-10-18T21:11:54"));
-  const [endDate, setEndDate] = useState(dayjs("2022-11-18T21:11:54"));
+  const [startDate, setStartDate] = useState(dayjs("2023-01-01T21:11:54"));
+  const [endDate, setEndDate] = useState(dayjs("2023-12-31T21:11:54"));
   const [transactionCount, setTransactionCount] = useState(0);
+  const [profit, setProfit] = useState(0.0);
+  const [expensesMain, setExpensesMain] = useState(0.0);
+  const [meterAm, setMeterAm] = useState();
+  const [meterPm, setMeterPm] = useState();
 
   const handleStartDate = (e) => {
-    setStartDate(e);
+    let year = e.$d.getFullYear();
+    let month = e.$d.getUTCMonth();
+    let day = e.$d.getDate();
+    setStartDate(`${year}-${month + 1}-${day}`);
   };
 
   const handleEndDate = (e) => {
-    setEndDate(e);
+    let year = e.$d.getFullYear();
+    let month = e.$d.getUTCMonth();
+    let day = e.$d.getDate();
+    setEndDate(`${year}-${month + 1}-${day}`);
   };
 
-  const countTransaction = async () => {
+  const fetchMeter = async () => {
     try {
-      const querySnapshot = await getDocs(
-        collection(db_firestore, "transactions")
-      );
-      setTransactionCount(querySnapshot.size);
+      const querySnapshot = await getDocs(collection(db_firestore, "meters"));
+      let meterAM;
+      let meterPM;
+      querySnapshot.forEach((doc) => {
+        meterAM = parseFloat(doc.data().meterAM);
+        meterPM = parseFloat(doc.data().meterPM);
+      });
+
+      setMeterAm(meterAM);
+      setMeterPm(meterPM);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const fetchProfit = async () => {
+    try {
+      const transactionRef = collection(db_firestore, "transactions");
+
+      const startDatee = new Date(startDate);
+      const endDatee = new Date(endDate);
+
+      const q = query(
+        transactionRef,
+        where("date", ">=", startDatee),
+        where("date", "<=", endDatee)
+      );
+
+      const querySnapshot = await getDocs(q);
+      let total = 0;
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data());
+        total += doc.data().total;
+      });
+      setTransactionCount(querySnapshot.size);
+      setProfit(total);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchExpenses = async () => {
+    try {
+      const expensesRef = collection(db_firestore, "expenses");
+
+      const startDatee = new Date(startDate);
+      const endDatee = new Date(endDate);
+
+      const q = query(
+        expensesRef,
+        where("date", ">=", startDatee),
+        where("date", "<=", endDatee)
+      );
+
+      let expensesAmount = 0;
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+
+        expensesAmount += parseFloat(doc.data().amount);
+      });
+      setExpensesMain(expensesAmount);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAll = () => {
+    fetchProfit();
+    fetchExpenses();
+    fetchMeter();
+  };
+
   useEffect(() => {
-    countTransaction();
+    fetchAll();
     setSelectedLink(link);
-  }, []);
+  }, [startDate, endDate]);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box>
@@ -129,14 +206,14 @@ const Main = ({ setSelectedLink, link }) => {
             <Grid xs={6}>
               <SummaryWidget
                 title={"Meter Reading AM"}
-                number={homeData[0].meterReadingYesterday}
+                number={meterAm}
                 cardColor={homeColorData[6].cardColor}
               />
             </Grid>
             <Grid xs={6}>
               <SummaryWidget
                 title={"Meter Reading PM"}
-                number={homeData[0].meterReadingYesterday}
+                number={meterPm}
                 cardColor={homeColorData[12].cardColor}
               />
             </Grid>
@@ -149,18 +226,11 @@ const Main = ({ setSelectedLink, link }) => {
                 size="h5"
               />
             </Grid>
-            <Grid xs={4}>
-              <SummaryWidget
-                title={"Net Sales"}
-                number={homeData[0].netSales}
-                cardColor={homeColorData[1].cardColor}
-              />
-            </Grid>
 
             <Grid xs={4}>
               <SummaryWidget
                 title={"Expenses"}
-                number={homeData[0].expenses}
+                number={expensesMain}
                 cardColor={homeColorData[4].cardColor}
               />
             </Grid>
@@ -168,7 +238,7 @@ const Main = ({ setSelectedLink, link }) => {
             <Grid xs={12}>
               <SummaryWidget
                 title={"Profit"}
-                number={homeData[0].profit}
+                number={profit}
                 cardColor={homeColorData[5].cardColor}
               />
             </Grid>

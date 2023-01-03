@@ -41,10 +41,12 @@ import {
   getDoc,
   updateDoc,
   serverTimestamp,
+  toDate,
 } from "@firebase/firestore";
 import Swal from "sweetalert2";
 import { async } from "@firebase/util";
 import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
+import { fDate, fDateTime } from "../../../utils/formatTime";
 
 const Expenses = ({ setSelectedLink, link }) => {
   const [expenseList, setExpenseList] = useState([{}]);
@@ -74,18 +76,15 @@ const Expenses = ({ setSelectedLink, link }) => {
 
   const handleSave = async () => {
     try {
+      let date = new Date(Date.parse(expense.date));
+      date.setHours(0, 0, 0, 0);
+
       await addDoc(collection(db_firestore, "expenses"), {
         particular: expense.particular,
         amount: expense.amount,
-        date: expense.date,
+        date: date,
       })
-        .then((data) => {
-          const docRef = doc(db_firestore, "products", data.id);
-          updateDoc(docRef, {
-            id: expense.id,
-          });
-        })
-        .finally((result) => {
+        .then((result) => {
           Swal.fire({
             text: "Successfully Save",
             icon: "success",
@@ -111,6 +110,9 @@ const Expenses = ({ setSelectedLink, link }) => {
     try {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "expenses", rowUserId);
+
+      let date = new Date(Date.parse(expense.date));
+      date.setHours(0, 0, 0, 0);
 
       await updateDoc(washingtonRef, {
         particular: expense.particular,
@@ -199,6 +201,7 @@ const Expenses = ({ setSelectedLink, link }) => {
   }, []);
 
   const handleChange = (e) => {
+    console.log(e.target.value);
     dispatch({
       type: "UPDATE_EXPENSE",
       payload: { [e.target.id]: e.target.value },
@@ -211,12 +214,18 @@ const Expenses = ({ setSelectedLink, link }) => {
       const list = [];
       const querySnapshot = await getDocs(collection(db_firestore, "expenses"));
 
+      let date;
+      let dateString;
+      // console.log(dateString); // Output: "YYYY-MM-DD"
+
       querySnapshot.forEach((doc) => {
+        date = doc.data().date.toDate();
+        dateString = date.toISOString().substring(0, 10);
         list.push({
           id: doc.data().id,
           particular: doc.data().particular,
           amount: doc.data().amount,
-          date: doc.data().date,
+          date: dateString,
         });
       });
 
@@ -254,7 +263,10 @@ const Expenses = ({ setSelectedLink, link }) => {
         </>
       ),
     },
-    { accessorKey: "date", header: "Date" },
+    {
+      accessorKey: "date",
+      header: "Date",
+    },
   ]);
 
   const inputs = [
@@ -274,7 +286,7 @@ const Expenses = ({ setSelectedLink, link }) => {
       name: "amount",
       label: "Amount",
       value: expense.amount,
-      type: "text",
+      type: "number",
       required: true,
       inputProps: { minLength: 1 },
       xs: 6,

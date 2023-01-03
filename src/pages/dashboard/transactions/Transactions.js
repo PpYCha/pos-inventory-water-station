@@ -40,6 +40,7 @@ import {
   getDoc,
   updateDoc,
   serverTimestamp,
+  toDate,
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
 import InvoiceComponent from "../../../components/InvoiceComponent";
@@ -78,8 +79,11 @@ const Transactions = ({ setSelectedLink, link }) => {
     docSnap = await getDoc(docRef);
 
     if (docSnap && docSnap.exists()) {
+      let date = docSnap.data().date.toDate();
+      let dateString = date.toISOString().substring(0, 10);
+
       customerInvoice.cart = docSnap.data().cart;
-      customerInvoice.date = docSnap.data().date;
+      customerInvoice.date = dateString;
       customerInvoice.time = docSnap.data().time;
       customerInvoice.subTotal = docSnap.data().subTotal;
       customerInvoice.tax = docSnap.data().tax;
@@ -113,7 +117,13 @@ const Transactions = ({ setSelectedLink, link }) => {
         collection(db_firestore, "transactions")
       );
 
+      let date;
+      let dateString;
+
       querySnapshot.forEach((doc) => {
+        date = doc.data().date.toDate();
+        dateString = date.toISOString().substring(0, 10);
+
         list.push({
           id: doc.id,
           amount: doc.data().amount,
@@ -121,7 +131,7 @@ const Transactions = ({ setSelectedLink, link }) => {
           taxRate: doc.data().taxRate,
           tax: doc.data().tax,
           total: doc.data().total,
-          date: doc.data().date,
+          date: dateString,
           time: doc.data().time,
         });
       });
