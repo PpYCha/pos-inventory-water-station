@@ -102,18 +102,25 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     dispatch({ type: "CLOSE_LOGIN" });
     dispatch({ type: "CLOSE_CART" });
     dispatch({ type: "CLOSE_INVOICE" });
+    dispatch({ type: "RESET_PRODUCTS" });
+    dispatch({ type: "RESET_PRODUCTS_LIST" });
+    fetchProductsList();
   };
 
   const handleTransaction = async () => {
     try {
       let tax = total * 0.12;
+
       const date = new Date();
+      const timeZoneOffset = 28800000; // 8 hours in milliseconds
+      date.setTime(date.getTime() + timeZoneOffset);
       const isoString = date.toISOString();
+
       const result = await addDoc(collection(db_firestore, "transactions"), {
         subTotal: total,
         taxRate: 12,
         tax: tax,
-        total: tax + total,
+        total: total,
         date: isoString.substring(0, 10),
         time: isoString.substring(11, 19),
         cart: cart,
@@ -127,21 +134,15 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
       handleClose();
 
       const res = await fetchSpecificTransaction(result.id);
-
-      // Swal.fire({
-      //   text: "Successfully Checkout",
-      //   icon: "success",
-      //   confirmButtonText: "OK",
-      // });
     } catch (error) {
       const textMessage = error.code;
       console.log(textMessage);
       console.log(error);
-      // Swal.fire({
-      //   text: textMessage.split("/").pop(),
-      //   icon: "error",
-      //   confirmButtonText: "OK",
-      // });
+      Swal.fire({
+        text: textMessage.split("/").pop(),
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
@@ -176,11 +177,52 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     }
   };
 
+  const fetchProductsList = async () => {
+    try {
+      dispatch({ type: "START_LOADING" });
+      dispatch({ type: "RESET_PRODUCTS_LIST" });
+      const list = [];
+      const querySnapshot = await getDocs(collection(db_firestore, "products"));
+
+      querySnapshot.forEach((doc) => {
+        list.push({
+          id: doc.data().id,
+          photoUrl: doc.data().photoUrl,
+          productName: doc.data().productName,
+          productDescription: doc.data().productDescription,
+          price: doc.data().price,
+          cost: doc.data().cost,
+          stock: doc.data().stock,
+          lowStockLevel: doc.data().lowStockLevel,
+        });
+      });
+
+      list.sort((a, b) => {
+        // Sort the list in ascending order based on the product name
+        if (a.productName < b.productName) {
+          return -1;
+        }
+        if (a.productName > b.productName) {
+          return 1;
+        }
+        return 0;
+      });
+
+      // setProductList(list);
+
+      dispatch({ type: "UPDATE_PRODUCTS", payload: list });
+      dispatch({ type: "UPDATE_PRODUCTS_LIST", payload: list });
+      dispatch({ type: "END_LOADING" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleCash = (e) => {
     setCash(e.target.value);
     setTax(total * 0.12);
     // setTotal(total + tax);
-    setChange(e.target.value - (total + total * 0.12));
+    setChange(e.target.value - total);
   };
 
   return (
@@ -392,7 +434,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
                         variant="contained"
                         color="success"
                         onClick={handleSubmit}
-                        disabled={cash < total + tax}
+                        disabled={cash < total}
                       >
                         Proceed To Checkout
                       </Button>

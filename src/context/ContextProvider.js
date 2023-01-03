@@ -70,6 +70,7 @@ const initialState = {
     imageUrlPM: "",
   },
   products: [],
+  productsList: [],
   cart: [],
   cartDialog: false,
 

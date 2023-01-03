@@ -18,16 +18,17 @@ import { db_firestore } from "../../../api/firebase";
 import BackdropComponent from "../../../components/BackdropComponent";
 
 const Pos = ({ setSelectedLink, link }) => {
-  const [productList, setProductList] = useState([{}]);
+  // const [productList, setProductList] = useState([{}]);
 
   const {
-    state: { openLogin, cart, loading, products },
+    state: { openLogin, cart, loading, productsList },
     dispatch,
   } = useValue();
 
   const fetchProductsList = async () => {
     try {
       dispatch({ type: "START_LOADING" });
+      dispatch({ type: "RESET_PRODUCTS_LIST" });
       const list = [];
       const querySnapshot = await getDocs(collection(db_firestore, "products"));
 
@@ -55,9 +56,10 @@ const Pos = ({ setSelectedLink, link }) => {
         return 0;
       });
 
-      setProductList(list);
+      // setProductList(list);
 
       dispatch({ type: "UPDATE_PRODUCTS", payload: list });
+      dispatch({ type: "UPDATE_PRODUCTS_LIST", payload: list });
       dispatch({ type: "END_LOADING" });
     } catch (error) {
       console.log(error);
@@ -86,7 +88,7 @@ const Pos = ({ setSelectedLink, link }) => {
         <CircularProgress color="secondary" />
       ) : (
         <>
-          {productList.map((prod) =>
+          {productsList.map((prod) =>
             prod.id == null ? null : <SingleProduct prod={prod} key={prod.id} />
           )}
         </>

@@ -80,9 +80,7 @@ const InvoiceComponent = ({ cart, amountDue, handleChange }) => {
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>Total</TableCell>
-              <TableCell align="right">
-                {(0.12 * amountDue + amountDue).toFixed()}
-              </TableCell>
+              <TableCell align="right">{amountDue.toFixed()}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

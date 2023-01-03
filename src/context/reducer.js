@@ -147,6 +147,18 @@ const reducer = (state, action) => {
         products: [],
       };
 
+    case "UPDATE_PRODUCTS_LIST":
+      return {
+        ...state,
+        productsList: [...state.productsList, ...action.payload],
+      };
+
+    case "RESET_PRODUCTS_LIST":
+      return {
+        ...state,
+        productsList: [],
+      };
+
     case "ADD_TO_CART":
       return { ...state, cart: [...state.cart, { ...action.payload, qty: 1 }] };
 
