@@ -176,6 +176,8 @@ const Expenses = ({ setSelectedLink, link }) => {
           Swal.fire("Deleted!", "", "success");
 
           const rowUserId = convertUserId();
+
+          console.log(rowUserId);
           try {
             deleteDoc(doc(db_firestore, "expenses", rowUserId));
             fetchExpenseList();
@@ -221,8 +223,9 @@ const Expenses = ({ setSelectedLink, link }) => {
       querySnapshot.forEach((doc) => {
         date = doc.data().date.toDate();
         dateString = date.toISOString().substring(0, 10);
+
         list.push({
-          id: doc.data().id,
+          id: doc.id,
           particular: doc.data().particular,
           amount: doc.data().amount,
           date: dateString,

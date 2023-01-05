@@ -109,9 +109,13 @@ const Stock = ({ setSelectedLink, link }) => {
       );
 
       let cartList;
+      let date;
+      let dateString;
 
       querySnapshot.forEach((doc) => {
         cartList = doc.data().cart;
+        date = doc.data().date.toDate();
+        dateString = date.toISOString().substring(0, 10);
 
         cartList.forEach((item, index) => {
           list.push({
@@ -120,7 +124,7 @@ const Stock = ({ setSelectedLink, link }) => {
             qty: item.qty,
             price: item.price,
 
-            date: doc.data().date,
+            date: dateString,
             time: doc.data().time,
           });
         });
