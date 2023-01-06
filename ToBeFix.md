@@ -11,3 +11,5 @@
 7. Sulod po san "Profile" sa system
 8. dire po narerecord sa inventory kun mag add kame stock saam product
 9. Sa encoder profile dudugangan, "inventory log","Dashboard", "Expenses (waray edit)", " 
+10. Time format himoon 12hrs not 24hrs
+11.Sa format po sa email kun pwede po mabutngan la none or n/a pag waray email, kase pag nag tatransact kame dire makaproceed kay required an email po talaga butngan sin "@sample.com"
