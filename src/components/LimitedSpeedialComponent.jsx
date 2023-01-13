@@ -2,19 +2,7 @@ import { Add, Delete, Edit } from "@mui/icons-material";
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import React from "react";
 
-const actions = [
-  {
-    icon: <Add />,
-    name: "Add",
-    operation: "add",
-  },
-  // { icon: <RemoveRedEye />, name: "View", operation: "view" },
-
-  { icon: <Edit />, name: "Edit", operation: "edit" },
-  { icon: <Delete />, name: "Delete", operation: "delete" },
-];
-
-const SpeedialComponent = ({ handleAction }) => {
+const LimitedSpeedialComponent = ({ handleAction, actions }) => {
   return (
     <SpeedDial
       ariaLabel="SpeedDial controlled open example"
@@ -39,4 +27,4 @@ const SpeedialComponent = ({ handleAction }) => {
   );
 };
 
-export default SpeedialComponent;
+export default LimitedSpeedialComponent;

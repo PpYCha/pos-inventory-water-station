@@ -67,8 +67,8 @@ import { uploadImage, getImageUrl } from "../../../utils/uploadImage";
 
 const Users = ({ setSelectedLink, link }) => {
   const nameRef = useRef();
-  const emailRef = useRef();
   const usernameRef = useRef();
+  const emailRef = useRef();
   const passwordRef = useRef();
   const phoneNumberRef = useRef();
 
