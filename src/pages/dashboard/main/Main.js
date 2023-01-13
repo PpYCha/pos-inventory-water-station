@@ -83,6 +83,7 @@ const Main = ({ setSelectedLink, link }) => {
   const [transactionCount, setTransactionCount] = useState(0);
   const [profit, setProfit] = useState(0.0);
   const [expensesMain, setExpensesMain] = useState(0.0);
+  const [netSales, setNetSales] = useState(0.0);
   const [meterAm, setMeterAm] = useState();
   const [meterPm, setMeterPm] = useState();
 
@@ -170,9 +171,38 @@ const Main = ({ setSelectedLink, link }) => {
     }
   };
 
+  const fetchNetSales = async () => {
+    try {
+      let gross = profit;
+      const expensesRef = collection(db_firestore, "expenses");
+
+      const startDatee = new Date(startDate);
+      const endDatee = new Date(endDate);
+
+      const q = query(
+        expensesRef,
+        where("date", ">=", startDatee),
+        where("date", "<=", endDatee)
+      );
+
+      let expensesAmount = 0;
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+
+        expensesAmount += parseFloat(doc.data().amount);
+      });
+      setExpensesMain(expensesAmount);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchAll = () => {
     fetchProfit();
     fetchExpenses();
+    fetchNetSales();
     fetchMeter();
   };
 
@@ -237,9 +267,16 @@ const Main = ({ setSelectedLink, link }) => {
 
             <Grid xs={12}>
               <SummaryWidget
-                title={"Profit"}
+                title={"Gross Sales"}
                 number={profit}
                 cardColor={homeColorData[5].cardColor}
+              />
+            </Grid>
+            <Grid xs={12}>
+              <SummaryWidget
+                title={"Net Sales"}
+                number={netSales}
+                cardColor={homeColorData[1].cardColor}
               />
             </Grid>
           </Grid>

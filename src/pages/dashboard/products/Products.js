@@ -49,6 +49,7 @@ import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
 const Products = ({ setSelectedLink, link }) => {
   const [productsData, setProductsData] = useState([{}]);
   const [rowSelection, setRowSelection] = useState({});
+  const [currentStockValue, setCurrentStockValue] = useState("");
 
   const {
     state: { openLogin, product, loading },
@@ -128,6 +129,15 @@ const Products = ({ setSelectedLink, link }) => {
         url = await getImageUrl(imageRef);
       }
 
+      if (currentStockValue > product.stock) {
+        //remove stock
+      } else {
+        //add stock
+      }
+
+      console.log("inputed:", product.stock);
+      console.log("current stock:", currentStockValue);
+
       await updateDoc(washingtonRef, {
         photoUrl: url || product.photoUrl,
         productName: product.productName,
@@ -171,6 +181,8 @@ const Products = ({ setSelectedLink, link }) => {
       const docRef = doc(db_firestore, "products", rowUserId);
       docSnap = await getDoc(docRef);
     }
+
+    setCurrentStockValue(docSnap.data().stock);
 
     if (docSnap && docSnap.exists()) {
       product.id = docSnap.data().id;

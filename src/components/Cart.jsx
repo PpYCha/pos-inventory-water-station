@@ -104,7 +104,21 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     dispatch({ type: "CLOSE_INVOICE" });
     dispatch({ type: "RESET_PRODUCTS" });
     dispatch({ type: "RESET_PRODUCTS_LIST" });
+
     fetchProductsList();
+  };
+  const handleCloseInvoice = () => {
+    handleClose();
+    dispatch({
+      type: "UPDATE_CUSTOMERINVOICE",
+      payload: {
+        name: "",
+        address: "",
+        tin: "",
+        phone: "",
+        email: "",
+      },
+    });
   };
 
   const handleTransaction = async () => {
@@ -117,6 +131,8 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
 
       const isoString = date.toISOString();
 
+      const invoiceSize = await fetchtransactionSize();
+
       const result = await addDoc(collection(db_firestore, "transactions"), {
         subTotal: total,
         taxRate: 12,
@@ -125,7 +141,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
         date: serverTimestamp(),
         time: isoString.substring(11, 19),
         cart: cart,
-
+        inVoiceId: invoiceSize,
         name: customerInvoice.name,
         address: customerInvoice.address,
         phone: customerInvoice.phone,
@@ -156,6 +172,15 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const fetchtransactionSize = async () => {
+    const querySnapshot = await getDocs(
+      collection(db_firestore, "transactions")
+    );
+    let total = 0;
+
+    return querySnapshot.size;
   };
 
   const fetchSpecificTransaction = async (id) => {
@@ -451,7 +476,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
 
       <InvoiceDialogComponent
         openLogin={openInvoice}
-        handleClose={handleClose}
+        handleClose={handleCloseInvoice}
       />
     </div>
   );

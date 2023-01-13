@@ -19,3 +19,12 @@ export function fToNow(date) {
     addSuffix: true,
   });
 }
+
+export function convertTo12Hour(time) {
+  let hours = parseInt(time.substr(0, 2));
+  let minutes = time.substr(3);
+  let ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  return hours + ":" + minutes + " " + ampm;
+}

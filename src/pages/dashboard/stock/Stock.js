@@ -21,7 +21,7 @@ import FormInput from "../../../components/form/FormInput";
 import SpeedialComponent from "../../../components/SpeedialComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { transactionsData, usersDatass } from "../../../data";
-import { fDate } from "../../../utils/formatTime";
+import { convertTo12Hour, fDate } from "../../../utils/formatTime";
 import MaterialReactTable from "material-react-table";
 
 import {
@@ -92,7 +92,10 @@ const Stock = ({ setSelectedLink, link }) => {
       ),
     },
     { accessorKey: "date", header: "Date" },
-    { accessorKey: "time", header: "Time" },
+    {
+      accessorKey: "time",
+      header: "Time",
+    },
   ]);
 
   useEffect(() => {
@@ -111,21 +114,22 @@ const Stock = ({ setSelectedLink, link }) => {
       let cartList;
       let date;
       let dateString;
+      let inVoiceId;
 
       querySnapshot.forEach((doc) => {
         cartList = doc.data().cart;
         date = doc.data().date.toDate();
         dateString = date.toISOString().substring(0, 10);
-
+        inVoiceId = doc.data().inVoiceId;
         cartList.forEach((item, index) => {
           list.push({
-            transactId: doc.id + index,
+            transactId: inVoiceId,
             productName: item.productName,
             qty: item.qty,
             price: item.price,
 
             date: dateString,
-            time: doc.data().time,
+            time: convertTo12Hour(doc.data().time),
           });
         });
       });

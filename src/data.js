@@ -9,7 +9,7 @@ export const usersData = [...Array(100)].map((_, index) => ({
   email: faker.internet.email(),
   username: faker.internet.userName(),
   password: faker.internet.password(),
-  phoneNumber: faker.phone.phoneNumber("(+63)9##-###-####"),
+
   status: sample(["active", "banned"]),
   role: sample(["Admin", "Cashier"]),
 }));
@@ -101,7 +101,7 @@ export const customerData = [...Array(100)].map((_, index) => ({
   name: faker.name.fullName(),
   email: faker.internet.email(),
   address: faker.address.country(),
-  phoneNumber: faker.phone.phoneNumber("(+63)9##-###-####"),
+
   birthdate: faker.date.birthdate({ min: 1980, max: 2008, mode: "year" }),
   sex: faker.name.sexType(),
   ordered: faker.datatype.number(2000),
@@ -115,7 +115,7 @@ export const employeeData = [...Array(20)].map((_, index) => ({
   email: faker.internet.email(),
   position: sample(["Owner", "Cashier", "Driver", "Helper"]),
   address: faker.address.country(),
-  phoneNumber: faker.phone.phoneNumber("(+63)9##-###-####"),
+
   sex: faker.name.sexType(),
   birthdate: faker.date.birthdate({ min: 1980, max: 2008, mode: "year" }),
   salary: faker.datatype.number({ min: 350, max: 700 }),

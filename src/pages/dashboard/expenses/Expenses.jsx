@@ -47,13 +47,14 @@ import Swal from "sweetalert2";
 import { async } from "@firebase/util";
 import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
 import { fDate, fDateTime } from "../../../utils/formatTime";
+import LimitedSpeedialComponent from "../../../components/LimitedSpeedialComponent";
 
 const Expenses = ({ setSelectedLink, link }) => {
   const [expenseList, setExpenseList] = useState([{}]);
   const [rowSelection, setRowSelection] = useState({});
 
   const {
-    state: { openLogin, product, loading, expense },
+    state: { currentUser, openLogin, product, loading, expense },
     dispatch,
   } = useValue();
 
@@ -351,10 +352,26 @@ const Expenses = ({ setSelectedLink, link }) => {
             </>
           )}
         </Box>
-        <SpeedialComponent handleAction={handleAction} />
+        {currentUser.role === "Admin" ? (
+          <SpeedialComponent handleAction={handleAction} />
+        ) : (
+          <LimitedSpeedialComponent
+            handleAction={handleAction}
+            actions={actionsEncoderExpenses}
+          />
+        )}
       </Paper>
     </Box>
   );
 };
 
 export default Expenses;
+
+const actionsEncoderExpenses = [
+  {
+    icon: <Add />,
+    name: "Add",
+    operation: "add",
+  },
+  // { icon: <RemoveRedEye />, name: "View", operation: "view" },
+];

@@ -27,7 +27,7 @@ import FormInput from "../../../components/form/FormInput";
 import SpeedialComponent from "../../../components/SpeedialComponent";
 import { useValue } from "../../../context/ContextProvider";
 import { transactionsData, usersDatass } from "../../../data";
-import { fDate } from "../../../utils/formatTime";
+import { convertTo12Hour, fDate } from "../../../utils/formatTime";
 import MaterialReactTable from "material-react-table";
 
 import {
@@ -106,7 +106,10 @@ const Transactions = ({ setSelectedLink, link }) => {
     // { accessorKey: "tax", header: "Tax" },
     { accessorKey: "total", header: "Total" },
     { accessorKey: "date", header: "Date" },
-    { accessorKey: "time", header: "Time" },
+    {
+      accessorKey: "time",
+      header: "Time",
+    },
   ]);
 
   const fetchTransactionList = async () => {
@@ -125,14 +128,14 @@ const Transactions = ({ setSelectedLink, link }) => {
         dateString = date.toISOString().substring(0, 10);
 
         list.push({
-          id: doc.id,
+          id: doc.data().inVoiceId,
           amount: doc.data().amount,
 
           taxRate: doc.data().taxRate,
           tax: doc.data().tax,
           total: doc.data().total,
           date: dateString,
-          time: doc.data().time,
+          time: convertTo12Hour(doc.data().time),
         });
       });
 

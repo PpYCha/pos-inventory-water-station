@@ -194,6 +194,12 @@ const SideList = ({ open, setOpen }) => {
 
   const listEncoder = useMemo(() => [
     {
+      title: "Home",
+      icon: <Home />,
+      link: "",
+      component: <Main {...{ setSelectedLink, link: "" }} />,
+    },
+    {
       title: "Customer Profile",
       icon: <AccountBoxOutlined />,
       link: "customerProfile",
@@ -211,6 +217,18 @@ const SideList = ({ open, setOpen }) => {
       icon: <PointOfSaleOutlined />,
       link: "pos",
       component: <Pos {...{ setSelectedLink, link: "pos" }} />,
+    },
+    {
+      title: "Inventory",
+      icon: <Inventory2Outlined />,
+      link: "inventory",
+      component: <Stock {...{ setSelectedLink, link: "inventory" }} />,
+    },
+    {
+      title: "Expenses",
+      icon: <PaymentsOutlined />,
+      link: "expenses",
+      component: <Expenses {...{ setSelectedLink, link: "expenses" }} />,
     },
   ]);
 
