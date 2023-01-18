@@ -4,12 +4,12 @@ import { getAuth } from "@firebase/auth";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAesEza3VlbIwFrysH1CYZ3qfrpPbvSEcc",
-  authDomain: "fairways-7e98e.firebaseapp.com",
-  projectId: "fairways-7e98e",
-  storageBucket: "fairways-7e98e.appspot.com",
-  messagingSenderId: "927402148244",
-  appId: "1:927402148244:web:8c6f2a992f92f214f24f81"
+  apiKey: "AIzaSyBeC34sxS7NwqOKLS8_NBwXnN0A_w72VSk",
+  authDomain: "water-pos-60b3d.firebaseapp.com",
+  projectId: "water-pos-60b3d",
+  storageBucket: "water-pos-60b3d.appspot.com",
+  messagingSenderId: "571664418101",
+  appId: "1:571664418101:web:e55de2c4150d7920e7b87c",
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

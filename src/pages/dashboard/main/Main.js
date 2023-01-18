@@ -275,7 +275,7 @@ const Main = ({ setSelectedLink, link }) => {
             <Grid xs={12}>
               <SummaryWidget
                 title={"Net Sales"}
-                number={netSales}
+                number={profit}
                 cardColor={homeColorData[1].cardColor}
               />
             </Grid>
