@@ -237,14 +237,14 @@ const Main = ({ setSelectedLink, link }) => {
               <SummaryWidget
                 title={"Meter Reading AM"}
                 number={meterAm}
-                cardColor={homeColorData[6].cardColor}
+                cardColor={homeColorData[1].cardColor}
               />
             </Grid>
             <Grid xs={6}>
               <SummaryWidget
                 title={"Meter Reading PM"}
                 number={meterPm}
-                cardColor={homeColorData[12].cardColor}
+                cardColor={homeColorData[2].cardColor}
               />
             </Grid>
 
@@ -252,7 +252,7 @@ const Main = ({ setSelectedLink, link }) => {
               <SummaryWidget
                 title={"Transaction Count"}
                 number={transactionCount}
-                cardColor={homeColorData[0].cardColor}
+                cardColor={homeColorData[3].cardColor}
                 size="h5"
               />
             </Grid>
@@ -276,7 +276,14 @@ const Main = ({ setSelectedLink, link }) => {
               <SummaryWidget
                 title={"Net Sales"}
                 number={profit}
-                cardColor={homeColorData[1].cardColor}
+                cardColor={homeColorData[6].cardColor}
+              />
+            </Grid>
+            <Grid xs={12}>
+              <SummaryWidget
+                title={"Net Income"}
+                number={profit - expensesMain}
+                cardColor={homeColorData[7].cardColor}
               />
             </Grid>
           </Grid>
