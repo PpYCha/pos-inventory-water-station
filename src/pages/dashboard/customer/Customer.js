@@ -168,7 +168,7 @@ const Customer = ({ setSelectedLink, link }) => {
   };
 
   const handleAction = async (e) => {
-    console.log(e);
+    // console.log(e);
     if (e === "add") {
       dispatch({ type: "OPEN_LOGIN" });
     }
@@ -185,8 +185,14 @@ const Customer = ({ setSelectedLink, link }) => {
         customer.email = docSnap.data().email;
         customer.address = docSnap.data().address;
         customer.phoneNumber = docSnap.data().phoneNumber;
-        customer.birthdate = docSnap.data().birthdate;
-        customer.sex = docSnap.data().sex;
+        // customer.birthdate = docSnap.data().birthdate;
+        // customer.sex = docSnap.data().sex;
+        if (docSnap.data().birthdate !== null) {
+          customer.birthdate = docSnap.data().birthdate;
+        }
+        if (docSnap.data().sex !== null) {
+          customer.sex = docSnap.data().sex;
+        }
         customer.ordered = docSnap.data().ordered;
         customer.debit = docSnap.data().debit;
         dispatch({ type: "OPEN_LOGIN" });
@@ -350,6 +356,7 @@ const Customer = ({ setSelectedLink, link }) => {
       InputLabelProps: { shrink: true },
       xs: 12,
       sm: 4,
+      required: false,
     },
     {
       id: "sex",
@@ -358,6 +365,7 @@ const Customer = ({ setSelectedLink, link }) => {
       type: "text",
       xs: 12,
       sm: 4,
+      required: false,
     },
     {
       id: "ordered",

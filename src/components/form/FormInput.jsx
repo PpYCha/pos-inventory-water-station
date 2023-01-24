@@ -9,7 +9,7 @@ const FormInput = (props) => {
         label={props.label}
         name={props.name}
         // value={props.value}
-        // inputRef={props.inputRef}
+        inputRef={props.inputRef || undefined}
         required
         fullWidth
         inputProps={{ minLength: 4 }}

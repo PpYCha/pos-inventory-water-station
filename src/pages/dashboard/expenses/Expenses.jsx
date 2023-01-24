@@ -66,7 +66,7 @@ const Expenses = ({ setSelectedLink, link }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(product);
+    // console.log(product);
 
     if (product.id) {
       handleUpdate();
@@ -204,7 +204,6 @@ const Expenses = ({ setSelectedLink, link }) => {
   }, []);
 
   const handleChange = (e) => {
-    console.log(e.target.value);
     dispatch({
       type: "UPDATE_EXPENSE",
       payload: { [e.target.id]: e.target.value },
@@ -223,8 +222,12 @@ const Expenses = ({ setSelectedLink, link }) => {
 
       querySnapshot.forEach((doc) => {
         date = doc.data().date.toDate();
-        dateString = date.toISOString().substring(0, 10);
+        dateString = date.toLocaleDateString();
+        console.log(date);
+        // dateString = date.toISOString().substring(0, 10);
 
+        // console.log(date);
+        // console.log(dateString);
         list.push({
           id: doc.id,
           particular: doc.data().particular,

@@ -32,6 +32,8 @@ const DialogComponent = ({
   handleChangeImage,
   imgSrc,
   profilePicture,
+  handleShowAddStock,
+  handleShowRemoveStock,
 }) => {
   const [value, setValue] = useState();
 
@@ -90,7 +92,27 @@ const DialogComponent = ({
           ) : null}
           <Grid container justifyContent="center" alignItems="center">
             {inputs.map((input) => (
-              <FormInput key={input.id} {...input} onChange={handleChange} />
+              <>
+                {input.id === "stock" ? (
+                  <>
+                    <FormInput
+                      key={input.id}
+                      {...input}
+                      onChange={handleChange}
+                    />
+                    <Grid item xs={2}>
+                      <Button onClick={handleShowAddStock}>Add</Button>
+                      <Button onClick={handleShowRemoveStock}>Remove</Button>
+                    </Grid>
+                  </>
+                ) : (
+                  <FormInput
+                    key={input.id}
+                    {...input}
+                    onChange={handleChange}
+                  />
+                )}
+              </>
             ))}
 
             {autoCompleteInputs?.map((autoCompleteInput, index) => {

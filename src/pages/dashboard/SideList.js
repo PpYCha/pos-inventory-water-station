@@ -24,6 +24,8 @@ import {
   Inventory2Outlined,
   PointOfSaleOutlined,
   PaymentsOutlined,
+  ArrowDownwardOutlined,
+  ArrowUpwardOutlined,
   // Inventory2Outlined,
 } from "@mui/icons-material";
 import BadgeIcon from "@mui/icons-material/Badge";
@@ -177,6 +179,23 @@ const SideList = ({ open, setOpen }) => {
       icon: <Inventory2Outlined />,
       link: "inventory",
       component: <Stock {...{ setSelectedLink, link: "inventory" }} />,
+      subLink: [
+        {
+          title: "Sales Inventory",
+          icon: <AttachMoneyOutlined />,
+          link: "sales",
+        },
+        {
+          title: "In Stock",
+          icon: <ArrowDownwardOutlined />,
+          link: "inStocks",
+        },
+        {
+          title: "Out Stock",
+          icon: <ArrowUpwardOutlined />,
+          link: "outStocks",
+        },
+      ],
     },
     {
       title: "POS",

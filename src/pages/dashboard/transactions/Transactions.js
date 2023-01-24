@@ -138,7 +138,7 @@ const Transactions = ({ setSelectedLink, link }) => {
           time: convertTo12Hour(doc.data().time),
         });
       });
-
+      list.sort((a, b) => a.id - b.id);
       setTransactionList(list);
       dispatch({ type: "END_LOADING" });
     } catch (error) {

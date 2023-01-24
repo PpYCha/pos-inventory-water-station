@@ -1,5 +1,6 @@
 import {
   Add,
+  ClassSharp,
   Close,
   Delete,
   Edit,
@@ -15,6 +16,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid,
   IconButton,
   Paper,
   Stack,
@@ -45,11 +47,21 @@ import {
 import Swal from "sweetalert2";
 import { async } from "@firebase/util";
 import { getImageUrl, uploadImage } from "../../../utils/uploadImage";
+import FormInput from "../../../components/form/FormInput";
+
+import RemoveStockDialog from "./RemoveStockDialog";
 
 const Products = ({ setSelectedLink, link }) => {
   const [productsData, setProductsData] = useState([{}]);
   const [rowSelection, setRowSelection] = useState({});
   const [currentStockValue, setCurrentStockValue] = useState("");
+  const [openStock, setOpenStock] = useState(false);
+  const [openRemoveStock, setOpenRemoveStock] = useState(false);
+  const [currentStock, setCurrentStock] = useState();
+
+  const addStockRef = useRef("");
+  const removeStockRef = useRef("");
+  const remarksRef = useRef("");
 
   const {
     state: { openLogin, product, loading },
@@ -64,8 +76,8 @@ const Products = ({ setSelectedLink, link }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(product);
-
+    console.log(currentStock);
+    console.log(product.stock);
     if (product.id) {
       handleUpdate();
     } else {
@@ -170,6 +182,8 @@ const Products = ({ setSelectedLink, link }) => {
   };
 
   const handleAction = async (e) => {
+    // console.log(e);
+
     if (e === "add") {
       dispatch({ type: "OPEN_LOGIN" });
       return;
@@ -180,22 +194,24 @@ const Products = ({ setSelectedLink, link }) => {
       const rowUserId = convertUserId();
       const docRef = doc(db_firestore, "products", rowUserId);
       docSnap = await getDoc(docRef);
-    }
 
-    setCurrentStockValue(docSnap.data().stock);
+      setCurrentStockValue(docSnap.data().stock);
 
-    if (docSnap && docSnap.exists()) {
-      product.id = docSnap.data().id;
-      product.photoUrl = docSnap.data().photoUrl;
-      product.productName = docSnap.data().productName;
-      product.productDescription = docSnap.data().productDescription;
-      product.price = docSnap.data().price;
-      product.cost = docSnap.data().cost;
-      product.stock = docSnap.data().stock;
-      product.lowStockLevel = docSnap.data().lowStockLevel;
-      dispatch({ type: "OPEN_LOGIN" });
-    } else if (e === "edit") {
-      console.log("No such document!");
+      if (docSnap && docSnap.exists()) {
+        product.id = docSnap.data().id;
+        product.photoUrl = docSnap.data().photoUrl;
+        product.productName = docSnap.data().productName;
+        product.productDescription = docSnap.data().productDescription;
+        product.price = docSnap.data().price;
+        product.cost = docSnap.data().cost;
+        product.stock = docSnap.data().stock;
+        product.lowStockLevel = docSnap.data().lowStockLevel;
+
+        setCurrentStock(docSnap.data().stock);
+        dispatch({ type: "OPEN_LOGIN" });
+      } else if (e === "edit") {
+        console.log("No such document!");
+      }
     }
 
     if (e === "delete") {
@@ -376,8 +392,9 @@ const Products = ({ setSelectedLink, link }) => {
       type: "number",
       value: product.stock,
       required: true,
-      xs: 6,
-      sm: 6,
+      xs: 4,
+      sm: 4,
+      disabled: true,
     },
     {
       id: "lowStockLevel",
@@ -390,6 +407,41 @@ const Products = ({ setSelectedLink, link }) => {
       sm: 6,
     },
   ];
+
+  const handleShowAddStock = () => {
+    console.log("add stock show");
+    setOpenStock(true);
+  };
+  const handleShowRemoveStock = () => {
+    console.log("remove stock show");
+    setOpenRemoveStock(true);
+  };
+
+  const handleAddStock = () => {
+    let newStock =
+      parseInt(product.stock) + parseInt(addStockRef.current.value);
+    product.stock = newStock;
+    console.log(newStock);
+    setOpenStock(false);
+  };
+
+  const handleCloseStock = () => {
+    setOpenStock(false);
+  };
+
+  const handleRemoveStock = () => {
+    let newStock =
+      parseInt(product.stock) - parseInt(removeStockRef.current.value);
+    product.stock = newStock;
+    console.log(newStock);
+    setOpenRemoveStock(false);
+
+    console.log(newStock);
+  };
+
+  const handleRemoveCloseStock = () => {
+    setOpenRemoveStock(false);
+  };
 
   return (
     <Box display="flex" flexDirection="column">
@@ -406,6 +458,8 @@ const Products = ({ setSelectedLink, link }) => {
           handleChange={handleChange}
           handleChangeImage={handleChangeImage}
           imgSrc={product.photoUrl || noProductImage}
+          handleShowAddStock={handleShowAddStock}
+          handleShowRemoveStock={handleShowRemoveStock}
         />
 
         <Box m={2}>
@@ -435,6 +489,48 @@ const Products = ({ setSelectedLink, link }) => {
         </Box>
         <SpeedialComponent handleAction={handleAction} />
       </Paper>
+
+      <Dialog
+        open={openStock}
+        onClose={handleCloseStock}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Adding Stock"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Enter quantity of stock to be added and it's remark
+          </DialogContentText>
+          <Grid>
+            <FormInput
+              id="stockQuantity"
+              label="Quantity"
+              name="stockQuantity"
+              required={true}
+              inputRef={addStockRef}
+            />
+            <FormInput
+              id="remarks"
+              label="Remark"
+              name="remarks"
+              required={true}
+              inputRef={remarksRef}
+            />
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAddStock}>Add</Button>
+          <Button onClick={handleCloseStock}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+
+      <RemoveStockDialog
+        openRemoveStock={openRemoveStock}
+        handleRemoveCloseStock={handleRemoveCloseStock}
+        handleRemoveStock={handleRemoveStock}
+        removeStockRef={removeStockRef}
+        remarks={remarksRef}
+      />
     </Box>
   );
 };
