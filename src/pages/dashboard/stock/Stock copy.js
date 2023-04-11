@@ -36,7 +36,6 @@ import {
   serverTimestamp,
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
-import Swal from "sweetalert2";
 
 const Stock = ({ setSelectedLink, link }) => {
   const [stockList, setStockList] = useState([{}]);
@@ -54,54 +53,49 @@ const Stock = ({ setSelectedLink, link }) => {
     e.preventDefault();
   };
 
-  const handleAction = async (e) => {
-    // console.log(e);
-
-    if (e === "add") {
-      console.log("add ine sa inventory");
-      return;
-    }
-
-    if (e === "edit") {
-    }
-    if (e === "delete") {
-      Swal.fire({
-        title: "Do you want to delete the product?",
-        showDenyButton: true,
-        confirmButtonText: "Yes",
-        denyButtonText: `No`,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire("Deleted!", "", "success");
-        } else if (result.isDenied) {
-          Swal.fire("Changes are not saved", "", "info");
-        }
-      });
-    }
-  };
-
   const columns = useMemo(() => [
     {
       accessorKey: "id",
-      header: "ID",
+      header: "Index",
     },
-
     {
-      accessorKey: "productName",
-      header: "Product",
+      accessorKey: "transactId",
+      header: "Invoice ID",
     },
-    { accessorKey: "productDescription", header: "Description" },
 
+    { accessorKey: "productName", header: "Product Name" },
+    {
+      accessorKey: "qty",
+      header: "Quantity In/Out",
+      Cell: ({ row }) => (
+        <>
+          <Typography> - {row.original.qty}</Typography>
+        </>
+      ),
+    },
     {
       accessorKey: "price",
       header: "Price",
-      Cell: ({ cell, row }) => (
+      Cell: ({ row }) => (
         <>
           <Typography>₱ {row.original.price}</Typography>
         </>
       ),
     },
-    { accessorKey: "cost", header: "Cost" },
+    {
+      accessorKey: "total",
+      header: "Total",
+      Cell: ({ cell, row }) => (
+        <>
+          <Typography>₱ {row.original.qty * row.original.price}</Typography>
+        </>
+      ),
+    },
+    { accessorKey: "date", header: "Date" },
+    {
+      accessorKey: "time",
+      header: "Time",
+    },
   ]);
 
   useEffect(() => {
@@ -151,7 +145,7 @@ const Stock = ({ setSelectedLink, link }) => {
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
-          <Typography variant="h5">Inventory</Typography>
+          <Typography variant="h5">Inventory Log</Typography>
         </Stack>
 
         <Box m={2}>
@@ -171,7 +165,6 @@ const Stock = ({ setSelectedLink, link }) => {
           )}
         </Box>
       </Paper>
-      <SpeedialComponent handleAction={handleAction} />
     </Box>
   );
 };

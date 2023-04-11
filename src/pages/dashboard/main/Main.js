@@ -134,7 +134,7 @@ const Main = ({ setSelectedLink, link }) => {
       const querySnapshot = await getDocs(q);
       let total = 0;
       querySnapshot.forEach((doc) => {
-        console.log(doc.data());
+        // console.log(doc.data());
         total += doc.data().total;
       });
       setTransactionCount(querySnapshot.size);

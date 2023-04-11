@@ -99,8 +99,8 @@ const Products = ({ setSelectedLink, link }) => {
         productDescription: product.productDescription,
         price: product.price,
         cost: product.cost,
-        stock: product.stock,
-        lowStockLevel: product.lowStockLevel,
+        // stock: product.stock,
+        // lowStockLevel: product.lowStockLevel,
       })
         .then((data) => {
           const docRef = doc(db_firestore, "products", data.id);
@@ -156,8 +156,8 @@ const Products = ({ setSelectedLink, link }) => {
         productDescription: product.productDescription,
         price: product.price,
         cost: product.cost,
-        stock: product.stock,
-        lowStockLevel: product.lowStockLevel,
+        // stock: product.stock,
+        // lowStockLevel: product.lowStockLevel,
       })
         .then((result) => {
           Swal.fire({
@@ -204,8 +204,8 @@ const Products = ({ setSelectedLink, link }) => {
         product.productDescription = docSnap.data().productDescription;
         product.price = docSnap.data().price;
         product.cost = docSnap.data().cost;
-        product.stock = docSnap.data().stock;
-        product.lowStockLevel = docSnap.data().lowStockLevel;
+        // product.stock = docSnap.data().stock;
+        // product.lowStockLevel = docSnap.data().lowStockLevel;
 
         setCurrentStock(docSnap.data().stock);
         dispatch({ type: "OPEN_LOGIN" });
@@ -338,7 +338,7 @@ const Products = ({ setSelectedLink, link }) => {
       ),
     },
     { accessorKey: "cost", header: "Cost" },
-    { accessorKey: "stock", header: "Total Stock" },
+    // { accessorKey: "stock", header: "Total Stock" },
     // { accessorKey: "lowStockLevel", header: "Low Stock Level" },
   ]);
 
@@ -381,27 +381,6 @@ const Products = ({ setSelectedLink, link }) => {
       label: "Cost",
       value: product.cost,
       type: "number",
-      required: true,
-      xs: 6,
-      sm: 6,
-    },
-    {
-      id: "stock",
-      name: "stock",
-      label: "Stock",
-      type: "number",
-      value: product.stock,
-      required: true,
-      xs: 4,
-      sm: 4,
-      disabled: true,
-    },
-    {
-      id: "lowStockLevel",
-      name: "lowStockLevel",
-      label: "Low Stock Level",
-      type: "number",
-      value: product.lowStockLevel,
       required: true,
       xs: 6,
       sm: 6,

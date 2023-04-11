@@ -270,7 +270,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Cart
+              POS
             </Typography>
           </Toolbar>
         </AppBar>

@@ -68,7 +68,7 @@ const Signin = () => {
         } else {
           navigate("/dashboard/pos");
         }
-
+        localStorage.setItem("waterUser", JSON.stringify(user));
         dispatch({
           type: "CURRENT_USER",
           payload: user,
@@ -104,6 +104,7 @@ const Signin = () => {
 
       if (docSnap.exists()) {
         console.log("Document data:", docSnap.data());
+
         return docSnap.data();
       } else {
         console.log("No such document!");

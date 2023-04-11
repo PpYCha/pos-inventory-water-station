@@ -147,14 +147,14 @@ const SideList = ({ open, setOpen }) => {
       component: <Products {...{ setSelectedLink, link: "products" }} />,
     },
 
-    {
-      title: "Transactions",
-      icon: <PaymentOutlined />,
-      link: "transactions",
-      component: (
-        <Transactions {...{ setSelectedLink, link: "transactions" }} />
-      ),
-    },
+    // {
+    //   title: "Transactions",
+    //   icon: <PaymentOutlined />,
+    //   link: "transactions",
+    //   component: (
+    //     <Transactions {...{ setSelectedLink, link: "transactions" }} />
+    //   ),
+    // },
 
     {
       title: "Manage Staff",
@@ -178,7 +178,7 @@ const SideList = ({ open, setOpen }) => {
       title: "Inventory",
       icon: <Inventory2Outlined />,
       link: "inventory",
-      component: <Stock {...{ setSelectedLink, link: "inventory" }} />,
+      component: <Inventory {...{ setSelectedLink, link: "inventory" }} />,
       subLink: [
         {
           title: "Sales Inventory",
@@ -241,7 +241,7 @@ const SideList = ({ open, setOpen }) => {
       title: "Inventory",
       icon: <Inventory2Outlined />,
       link: "inventory",
-      component: <Stock {...{ setSelectedLink, link: "inventory" }} />,
+      component: <Inventory {...{ setSelectedLink, link: "inventory" }} />,
     },
     {
       title: "Expenses",

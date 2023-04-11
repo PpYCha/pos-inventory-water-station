@@ -33,7 +33,7 @@ const initialState = {
     photoUrl: "",
     file: null,
     cost: "",
-    stock: "",
+    stock: 0,
     lowStockLevel: "",
   },
   employee: {
@@ -95,6 +95,13 @@ const initialState = {
     tin: "",
     phone: "",
     email: "",
+  },
+  inventory: {
+    id: "",
+    inventoryProductName: "",
+    inventoryProductDescription: "",
+    inventoryPrice: "",
+    inventoryQuantity: "",
   },
 };
 

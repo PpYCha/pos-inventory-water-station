@@ -69,8 +69,25 @@ const reducer = (state, action) => {
           productDescription: "",
           price: "",
           cost: "",
-          stock: "",
+          stock: 0,
           lowStockLevel: "",
+        },
+      };
+    case "UPDATE_INVENTORY":
+      return {
+        ...state,
+        product: { ...state.inventory, ...action.payload },
+      };
+
+    case "RESET_INVENTORY":
+      return {
+        ...state,
+        product: {
+          id: "",
+          inventoryProductName: "",
+          inventoryProductDescription: "",
+          inventoryPrice: "",
+          inventoryQuantity: "",
         },
       };
 
