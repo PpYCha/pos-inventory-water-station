@@ -429,7 +429,7 @@ const ManageStaff = ({ setSelectedLink, link }) => {
             </>
           )}
         </Box>
-        <SpeedialComponent handleAction={handleAction} noAdd={true} />
+        <SpeedialComponent handleAction={handleAction} noAdd={false} />
       </Paper>
     </Box>
   );

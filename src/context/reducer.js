@@ -88,6 +88,8 @@ const reducer = (state, action) => {
           inventoryProductDescription: "",
           inventoryPrice: "",
           inventoryQuantity: "",
+          inventoryIn: "",
+          inventoryOut: "",
         },
       };
 

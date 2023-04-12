@@ -102,6 +102,8 @@ const initialState = {
     inventoryProductDescription: "",
     inventoryPrice: "",
     inventoryQuantity: "",
+    inventoryIn: "",
+    inventoryOut: "",
   },
 };
 

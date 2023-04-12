@@ -466,7 +466,7 @@ const Products = ({ setSelectedLink, link }) => {
             </>
           )}
         </Box>
-        <SpeedialComponent handleAction={handleAction} noAdd={true} />
+        <SpeedialComponent handleAction={handleAction} noAdd={false} />
       </Paper>
 
       <Dialog

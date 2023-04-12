@@ -57,11 +57,10 @@ const Inventory = ({ setSelectedLink, link }) => {
           id: doc.data().id,
           photoUrl: doc.data().photoUrl,
           productName: doc.data().productName,
-          productDescription: doc.data().productDescription,
-          price: doc.data().price,
-          cost: doc.data().cost,
-          stock: doc.data().stock,
-          lowStockLevel: doc.data().lowStockLevel,
+
+          inventoryIn: doc.data().inventoryIn,
+          inventoryOut: doc.data().inventoryOut,
+          stock: doc.data().inventoryIn - doc.data().inventoryOut,
         });
       });
 
@@ -84,7 +83,10 @@ const Inventory = ({ setSelectedLink, link }) => {
       const washingtonRef = doc(db_firestore, "products", rowUserId);
       console.log(inventory.inventoryQuantity);
       await updateDoc(washingtonRef, {
-        stock: inventory.inventoryQuantity,
+        inventoryIn: parseInt(inventory.inventoryIn),
+        inventoryOut: parseInt(inventory.inventoryOut),
+        stock:
+          parseInt(inventory.inventoryIn) - parseInt(inventory.inventoryOut),
       })
         .then((result) => {
           Swal.fire({
@@ -117,20 +119,16 @@ const Inventory = ({ setSelectedLink, link }) => {
       const docRef = doc(db_firestore, "products", rowUserId);
       docSnap = await getDoc(docRef);
 
-      setCurrentStockValue(docSnap.data().stock);
-
       if (docSnap && docSnap.exists()) {
         inventory.id = docSnap.data().id;
 
         inventory.inventoryProductName = docSnap.data().productName;
-        inventory.inventoryProductDescription =
-          docSnap.data().productDescription;
-        inventory.inventoryPrice = docSnap.data().price;
 
         inventory.inventoryQuantity = docSnap.data().stock;
+        inventory.inventoryIn = docSnap.data().inventoryIn;
+        inventory.inventoryOut = docSnap.data().inventoryOut;
         // product.lowStockLevel = docSnap.data().lowStockLevel;
 
-        setCurrentStock(docSnap.data().stock);
         dispatch({ type: "OPEN_LOGIN" });
       } else if (e === "edit") {
         console.log("No such document!");
@@ -174,20 +172,18 @@ const Inventory = ({ setSelectedLink, link }) => {
 
     {
       accessorKey: "productName",
-      header: "Product",
+      header: "Item",
     },
-    { accessorKey: "productDescription", header: "Description" },
-
     {
-      accessorKey: "price",
-      header: "Price",
-      Cell: ({ cell, row }) => (
-        <>
-          <Typography>₱ {row.original.price}</Typography>
-        </>
-      ),
+      accessorKey: "inventoryIn",
+      header: "In",
     },
-    { accessorKey: "stock", header: "Quantity" },
+    {
+      accessorKey: "inventoryOut",
+      header: "Out",
+    },
+
+    { accessorKey: "stock", header: "Onhand" },
   ]);
 
   const convertUserId = () => {
@@ -273,38 +269,38 @@ const Inventory = ({ setSelectedLink, link }) => {
                 <FormInput
                   fullWidth
                   required
-                  type="text"
-                  id="inventoryProductDescription"
-                  label="Product Description"
-                  name="inventoryProductDescription"
-                  onChange={handleChange}
-                  value={inventory.inventoryProductDescription}
-                  xs={6}
-                  sm={6}
-                  // inputRef={nameRef}
-                />
-                <FormInput
-                  fullWidth
-                  required
-                  type="number"
-                  id="inventoryPrice"
-                  label="Price"
-                  name="inventoryPrice"
-                  onChange={handleChange}
-                  value={inventory.inventoryPrice}
-                  xs={6}
-                  sm={6}
-                  // inputRef={nameRef}
-                />
-                <FormInput
-                  fullWidth
-                  required
                   type="number"
                   id="inventoryQuantity"
-                  label="Quantity"
+                  label="Onhand"
                   name="inventoryQuantity"
                   onChange={handleChange}
                   value={inventory.inventoryQuantity}
+                  xs={6}
+                  sm={6}
+                  // inputRef={nameRef}
+                />
+                <FormInput
+                  fullWidth
+                  required
+                  type="number"
+                  id="inventoryIn"
+                  label="In"
+                  name="inventoryIn"
+                  onChange={handleChange}
+                  value={inventory.inventoryIn}
+                  xs={6}
+                  sm={6}
+                  // inputRef={nameRef}
+                />
+                <FormInput
+                  fullWidth
+                  required
+                  type="number"
+                  id="inventoryOut"
+                  label="Out"
+                  name="inventoryOut"
+                  onChange={handleChange}
+                  value={inventory.inventoryOut}
                   xs={6}
                   sm={6}
                   // inputRef={nameRef}
@@ -326,7 +322,7 @@ const Inventory = ({ setSelectedLink, link }) => {
           </form>
         </Dialog>
 
-        <SpeedialComponent handleAction={handleAction} noAdd={false} />
+        <SpeedialComponent handleAction={handleAction} noAdd={true} />
       </Box>
     </>
   );
