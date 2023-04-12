@@ -76,13 +76,13 @@ const reducer = (state, action) => {
     case "UPDATE_INVENTORY":
       return {
         ...state,
-        product: { ...state.inventory, ...action.payload },
+        inventory: { ...state.inventory, ...action.payload },
       };
 
     case "RESET_INVENTORY":
       return {
         ...state,
-        product: {
+        inventory: {
           id: "",
           inventoryProductName: "",
           inventoryProductDescription: "",

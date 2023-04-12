@@ -2,19 +2,25 @@ import { Add, Delete, Edit } from "@mui/icons-material";
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import React from "react";
 
-const actions = [
-  {
-    icon: <Add />,
-    name: "Add",
-    operation: "add",
-  },
-  // { icon: <RemoveRedEye />, name: "View", operation: "view" },
+const SpeedialComponent = ({ handleAction, noAdd }) => {
+  const actions = [
+    {
+      icon: <Add />,
+      name: "Add",
+      operation: "add",
+    },
 
-  { icon: <Edit />, name: "Edit", operation: "edit" },
-  { icon: <Delete />, name: "Delete", operation: "delete" },
-];
+    { icon: <Edit />, name: "Edit", operation: "edit" },
+    { icon: <Delete />, name: "Delete", operation: "delete" },
+  ];
 
-const SpeedialComponent = ({ handleAction }) => {
+  if (noAdd) {
+    const addActionIndex = actions.findIndex(
+      (item) => item.operation === "add"
+    );
+    actions.splice(addActionIndex, 1);
+  }
+
   return (
     <SpeedDial
       ariaLabel="SpeedDial controlled open example"

@@ -523,7 +523,7 @@ const Users = ({ setSelectedLink, link }) => {
           )}
         </Box>
       </Paper>
-      <SpeedialComponent handleAction={handleAction} />
+      <SpeedialComponent handleAction={handleAction} noAdd={true} />
     </Box>
   );
 };

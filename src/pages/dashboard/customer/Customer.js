@@ -434,7 +434,7 @@ const Customer = ({ setSelectedLink, link }) => {
             </>
           )}
         </Box>
-        <SpeedialComponent handleAction={handleAction} />
+        <SpeedialComponent handleAction={handleAction} noAdd={true} />
       </Paper>
     </Box>
   );

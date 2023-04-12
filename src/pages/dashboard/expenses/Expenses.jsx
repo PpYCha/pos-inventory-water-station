@@ -356,7 +356,7 @@ const Expenses = ({ setSelectedLink, link }) => {
           )}
         </Box>
         {currentUser.role === "Admin" ? (
-          <SpeedialComponent handleAction={handleAction} />
+          <SpeedialComponent handleAction={handleAction} noAdd={true} />
         ) : (
           <LimitedSpeedialComponent
             handleAction={handleAction}
