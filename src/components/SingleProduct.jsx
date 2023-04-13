@@ -57,7 +57,7 @@ const SingleProduct = ({ prod }) => {
                     })
                   }
                 >
-                  Remove from Cart
+                  Remove
                 </Button>
               </Box>
             ) : (
@@ -73,7 +73,7 @@ const SingleProduct = ({ prod }) => {
                   }
                   disabled={prod.stock <= "0"}
                 >
-                  {prod.stock <= "0" ? "Out of Stock" : "Add to Cart"}
+                  {prod.stock <= "0" ? "Out of Stock" : "Add"}
                 </Button>
               </Box>
             )}

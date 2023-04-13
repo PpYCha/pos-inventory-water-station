@@ -103,9 +103,20 @@ const Main = ({ setSelectedLink, link }) => {
 
   const fetchMeter = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db_firestore, "meters"));
+      const metersRef = collection(db_firestore, "meters");
       let meterAM;
       let meterPM;
+
+      const startDatee = new Date(startDate);
+      const endDatee = new Date(endDate);
+
+      const q = query(
+        metersRef,
+        where("dateAM", ">=", startDatee),
+        where("dateAM", "<=", endDatee)
+      );
+
+      const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         meterAM = parseFloat(doc.data().meterAM);
         meterPM = parseFloat(doc.data().meterPM);
@@ -248,14 +259,14 @@ const Main = ({ setSelectedLink, link }) => {
               />
             </Grid>
 
-            <Grid xs={4}>
+            {/* <Grid xs={4}>
               <SummaryWidget
                 title={"Transaction Count"}
                 number={transactionCount}
                 cardColor={homeColorData[3].cardColor}
                 size="h5"
               />
-            </Grid>
+            </Grid> */}
 
             <Grid xs={4}>
               <SummaryWidget
@@ -265,13 +276,13 @@ const Main = ({ setSelectedLink, link }) => {
               />
             </Grid>
 
-            <Grid xs={12}>
+            {/* <Grid xs={12}>
               <SummaryWidget
                 title={"Gross Sales"}
                 number={profit}
                 cardColor={homeColorData[5].cardColor}
               />
-            </Grid>
+            </Grid> */}
             <Grid xs={12}>
               <SummaryWidget
                 title={"Net Sales"}

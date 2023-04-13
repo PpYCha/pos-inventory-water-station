@@ -30,6 +30,7 @@ import {
   deleteDoc,
   getDoc,
   updateDoc,
+  toDate,
   serverTimestamp,
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
@@ -126,9 +127,12 @@ const Meter = ({ setSelectedLink, link }) => {
       console.log("wait ine:", waitimage1);
       console.log("wait ine:", waitimage2);
 
+      let date = new Date(Date.parse(meter.dateAM));
+      date.setHours(0, 0, 0, 0);
+
       addDoc(collection(db_firestore, "meters"), {
         id: meter.id,
-        dateAM: meter.dateAM,
+        dateAM: date,
         meterAM: meter.meterAM,
         imageUrlAM: waitimage1,
         datePM: meter.datePM,
@@ -170,9 +174,12 @@ const Meter = ({ setSelectedLink, link }) => {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "meters", rowUserId);
 
+      let date = new Date(Date.parse(meter.dateAM));
+      date.setHours(0, 0, 0, 0);
+
       await updateDoc(washingtonRef, {
         id: meter.id,
-        dateAM: meter.dateAM,
+        dateAM: date,
         meterAM: meter.meterAM,
         imageUrlAM: meter.imageUrlAM,
         datePM: meter.datePM,
@@ -322,10 +329,16 @@ const Meter = ({ setSelectedLink, link }) => {
       const list = [];
       const querySnapshot = await getDocs(collection(db_firestore, "meters"));
 
+      let date;
+      let dateString;
+
       querySnapshot.forEach((doc) => {
+        date = doc.data().dateAM.toDate();
+        dateString = date.toLocaleDateString();
+        console.log("date:", date);
         list.push({
           id: doc.data().id,
-          dateAM: doc.data().dateAM,
+          dateAM: dateString,
           meterAM: doc.data().meterAM,
           imageUrlAM: doc.data().imageUrlAM,
           datePM: doc.data().datePM,

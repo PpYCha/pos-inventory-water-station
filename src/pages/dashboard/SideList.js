@@ -26,6 +26,7 @@ import {
   PaymentsOutlined,
   ArrowDownwardOutlined,
   ArrowUpwardOutlined,
+  MonetizationOn,
   // Inventory2Outlined,
 } from "@mui/icons-material";
 import BadgeIcon from "@mui/icons-material/Badge";
@@ -204,6 +205,12 @@ const SideList = ({ open, setOpen }) => {
       component: <Pos {...{ setSelectedLink, link: "pos" }} />,
     },
     {
+      title: "Sales",
+      icon: <MonetizationOn />,
+      link: "sales",
+      component: <Sales {...{ setSelectedLink, link: "sales" }} />,
+    },
+    {
       title: "Expenses",
       icon: <PaymentsOutlined />,
       link: "expenses",
@@ -243,6 +250,7 @@ const SideList = ({ open, setOpen }) => {
       link: "inventory",
       component: <Inventory {...{ setSelectedLink, link: "inventory" }} />,
     },
+
     {
       title: "Expenses",
       icon: <PaymentsOutlined />,
