@@ -32,6 +32,7 @@ import {
   serverTimestamp,
   where,
   query,
+  orderBy,
 } from "@firebase/firestore";
 import { db_firestore } from "../../../api/firebase";
 
@@ -103,9 +104,12 @@ const Main = ({ setSelectedLink, link }) => {
 
   const fetchMeter = async () => {
     try {
+      let list = [];
       const metersRef = collection(db_firestore, "meters");
       let meterAM;
       let meterPM;
+      let firstMeterAM;
+      let lastMeterPM;
 
       const startDatee = new Date(startDate);
       const endDatee = new Date(endDate);
@@ -113,17 +117,40 @@ const Main = ({ setSelectedLink, link }) => {
       const q = query(
         metersRef,
         where("dateAM", ">=", startDatee),
-        where("dateAM", "<=", endDatee)
+        where("dateAM", "<=", endDatee),
+        orderBy("dateAM", "asc")
       );
 
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        meterAM = parseFloat(doc.data().meterAM);
-        meterPM = parseFloat(doc.data().meterPM);
+      if (querySnapshot.empty) {
+        console.log("No documents found!");
+      } else {
+        querySnapshot.forEach((doc, index) => {
+          meterAM = parseFloat(doc.data().meterAM);
+          meterPM = parseFloat(doc.data().meterPM);
+          list.push({
+            meterAM: meterAM,
+            meterPM: meterPM,
+            dateAM: doc.data().dateAM.toDate(),
+          });
+        });
+      }
+
+      console.log(list);
+
+      list.forEach((value, index) => {
+        console.log(index);
+        if (index === 0) {
+          firstMeterAM = value.meterAM;
+          console.log("0 ine:", firstMeterAM);
+        }
+        if (index === querySnapshot.size - 1) {
+          lastMeterPM = value.meterPM;
+        }
       });
 
-      setMeterAm(meterAM);
-      setMeterPm(meterPM);
+      setMeterAm(firstMeterAM);
+      setMeterPm(lastMeterPM);
     } catch (error) {
       console.log(error);
     }
@@ -283,14 +310,14 @@ const Main = ({ setSelectedLink, link }) => {
                 cardColor={homeColorData[5].cardColor}
               />
             </Grid> */}
-            <Grid xs={12}>
+            <Grid xs={4}>
               <SummaryWidget
                 title={"Net Sales"}
                 number={profit}
                 cardColor={homeColorData[6].cardColor}
               />
             </Grid>
-            <Grid xs={12}>
+            <Grid xs={4}>
               <SummaryWidget
                 title={"Net Income"}
                 number={profit - expensesMain}
