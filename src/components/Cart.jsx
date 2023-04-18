@@ -88,8 +88,10 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     cart.map((item) => {
       let id = item.id;
       let qty = item.qty;
-      const object = findProduct(id);
-      let newStock = object.stock - qty;
+      console.log("item", item);
+      // const object = findProduct(id);
+      let newStock = item.stock - qty;
+      // console.log(object.stock);
       handleUpdate(id, newStock);
     });
     handleTransaction();
@@ -105,6 +107,8 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
     dispatch({ type: "CLOSE_INVOICE" });
     dispatch({ type: "RESET_PRODUCTS" });
     dispatch({ type: "RESET_PRODUCTS_LIST" });
+    dispatch({ type: "RESET_PRODUCT" });
+    dispatch({ type: "RESET_INVENTORY" });
 
     fetchProductsList();
   };
