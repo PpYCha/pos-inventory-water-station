@@ -49,7 +49,7 @@ const SingleProduct = ({ prod }) => {
               <Box sx={{ display: "flex" }} key={prod.id}>
                 <Button
                   color="error"
-                  startIcon={<RemoveShoppingCartOutlined />}
+                  // startIcon={<RemoveShoppingCartOutlined />}
                   onClick={() =>
                     dispatch({
                       type: "REMOVE_FROM_CART",
@@ -64,7 +64,7 @@ const SingleProduct = ({ prod }) => {
               <Box sx={{ display: "flex" }}>
                 <Button
                   color="success"
-                  startIcon={<AddShoppingCartOutlined />}
+                  // startIcon={<AddShoppingCartOutlined />}
                   onClick={() =>
                     dispatch({
                       type: "ADD_TO_CART",

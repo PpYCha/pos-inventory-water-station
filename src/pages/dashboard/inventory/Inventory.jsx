@@ -13,7 +13,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import SpeedialComponent from "../../../components/SpeedialComponent";
 import { useValue } from "../../../context/ContextProvider";
@@ -32,12 +32,20 @@ import FormInput from "../../../components/form/FormInput";
 import { LoadingButton } from "@mui/lab";
 import DialogComponent from "../../../components/form/DialogComponent";
 import { ExportToCsv } from "export-to-csv";
+import RemoveStockDialog from "../products/RemoveStockDialog";
 
 const Inventory = ({ setSelectedLink, link }) => {
   const [stockList, setStockList] = useState([{}]);
   const [rowSelection, setRowSelection] = useState({});
   const [currentStockValue, setCurrentStockValue] = useState("");
+  const [openStock, setOpenStock] = useState(false);
+  const [openRemoveStock, setOpenRemoveStock] = useState(false);
   const [currentStock, setCurrentStock] = useState();
+
+  const addStockRef = useRef("");
+  const removeStockRef = useRef("");
+  const remarksRef = useRef("");
+
   const {
     state: { openLogin, loading, inventory, product },
     dispatch,
@@ -62,7 +70,7 @@ const Inventory = ({ setSelectedLink, link }) => {
 
           inventoryIn: doc.data().inventoryIn,
           inventoryOut: doc.data().inventoryOut,
-          stock: doc.data().inventoryIn - doc.data().inventoryOut,
+          stock: doc.data().stock,
         });
       });
 
@@ -74,12 +82,14 @@ const Inventory = ({ setSelectedLink, link }) => {
   };
 
   const handleClose = () => {
+    dispatch({ type: "RESET_PRODUCT" });
+    dispatch({ type: "RESET_INVENTORY" });
     dispatch({ type: "CLOSE_LOGIN" });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("submit");
+    console.log("submit", inventory);
     try {
       const rowUserId = convertUserId();
       const washingtonRef = doc(db_firestore, "products", rowUserId);
@@ -87,8 +97,10 @@ const Inventory = ({ setSelectedLink, link }) => {
       await updateDoc(washingtonRef, {
         inventoryIn: parseInt(inventory.inventoryIn),
         inventoryOut: parseInt(inventory.inventoryOut),
-        stock:
-          parseInt(inventory.inventoryIn) - parseInt(inventory.inventoryOut),
+        stock: inventory.inventoryQuantity + product.stock,
+        // +
+        // (parseInt(inventory.inventoryQuantity) -
+        //   parseInt(inventory.inventoryOut)),
       })
         .then((result) => {
           Swal.fire({
@@ -220,6 +232,43 @@ const Inventory = ({ setSelectedLink, link }) => {
 
   const csvExporter = new ExportToCsv(csvOptions);
 
+  const handleShowAddStock = () => {
+    console.log("add stock show");
+    setOpenStock(true);
+  };
+  const handleShowRemoveStock = () => {
+    console.log("remove stock show");
+    setOpenRemoveStock(true);
+  };
+
+  const handleAddStock = () => {
+    let newStock =
+      parseInt(product.stock) + parseInt(addStockRef.current.value);
+    product.stock = newStock;
+    inventory.inventoryIn = parseInt(addStockRef.current.value);
+    console.log(newStock);
+    setOpenStock(false);
+  };
+
+  const handleCloseStock = () => {
+    setOpenStock(false);
+  };
+
+  const handleRemoveStock = () => {
+    let newStock =
+      parseInt(product.stock) - parseInt(removeStockRef.current.value);
+    product.stock = newStock;
+    inventory.inventoryOut = parseInt(removeStockRef.current.value);
+    console.log(newStock);
+    setOpenRemoveStock(false);
+
+    console.log(newStock);
+  };
+
+  const handleRemoveCloseStock = () => {
+    setOpenRemoveStock(false);
+  };
+
   return (
     <>
       <Box display="flex" flexDirection="column">
@@ -325,9 +374,12 @@ const Inventory = ({ setSelectedLink, link }) => {
                   value={inventory.inventoryQuantity}
                   xs={6}
                   sm={6}
+                  InputProps={{
+                    readOnly: true,
+                  }}
                   // inputRef={nameRef}
                 />
-                <FormInput
+                {/* <FormInput
                   fullWidth
                   required
                   type="number"
@@ -351,8 +403,13 @@ const Inventory = ({ setSelectedLink, link }) => {
                   value={inventory.inventoryOut}
                   xs={6}
                   sm={6}
-                  // inputRef={nameRef}
+                  // inputRef={nameRef} 
                 />
+                  */}
+                <Grid item xs={2}>
+                  <Button onClick={handleShowAddStock}>Add</Button>
+                  <Button onClick={handleShowRemoveStock}>Remove</Button>
+                </Grid>
               </Grid>
             </DialogContent>
             <DialogActions sx={{ px: "19px" }}>
@@ -369,6 +426,48 @@ const Inventory = ({ setSelectedLink, link }) => {
             </DialogActions>
           </form>
         </Dialog>
+
+        <Dialog
+          open={openStock}
+          onClose={handleCloseStock}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Adding Stock"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Enter quantity of stock to be added and it's remark
+            </DialogContentText>
+            <Grid>
+              <FormInput
+                id="stockQuantity"
+                label="Quantity"
+                name="stockQuantity"
+                required={true}
+                inputRef={addStockRef}
+              />
+              <FormInput
+                id="remarks"
+                label="Remark"
+                name="remarks"
+                required={true}
+                inputRef={remarksRef}
+              />
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleAddStock}>Add</Button>
+            <Button onClick={handleCloseStock}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+
+        <RemoveStockDialog
+          openRemoveStock={openRemoveStock}
+          handleRemoveCloseStock={handleRemoveCloseStock}
+          handleRemoveStock={handleRemoveStock}
+          removeStockRef={removeStockRef}
+          remarks={remarksRef}
+        />
 
         <SpeedialComponent handleAction={handleAction} noAdd={true} />
       </Box>
