@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -26,10 +27,11 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { Close, SaveOutlined } from "@mui/icons-material";
+import { Close, FileDownload, SaveOutlined } from "@mui/icons-material";
 import FormInput from "../../../components/form/FormInput";
 import { LoadingButton } from "@mui/lab";
 import DialogComponent from "../../../components/form/DialogComponent";
+import { ExportToCsv } from "export-to-csv";
 
 const Inventory = ({ setSelectedLink, link }) => {
   const [stockList, setStockList] = useState([{}]);
@@ -192,6 +194,32 @@ const Inventory = ({ setSelectedLink, link }) => {
     return rowUserId;
   };
 
+  const handleExportData = () => {
+    const filteredStockList = stockList.map((item) => {
+      return {
+        id: item.id,
+        productName: item.productName,
+        inventoryIn: item.inventoryIn,
+        inventoryOut: item.inventoryOut,
+        stock: item.stock,
+      };
+    });
+
+    csvExporter.generateCsv(filteredStockList);
+  };
+
+  const csvOptions = {
+    fieldSeparator: ",",
+    quoteStrings: '"',
+    decimalSeparator: ".",
+    showLabels: true,
+    useBom: true,
+    useKeysAsHeaders: false,
+    headers: columns.map((c) => c.header),
+  };
+
+  const csvExporter = new ExportToCsv(csvOptions);
+
   return (
     <>
       <Box display="flex" flexDirection="column">
@@ -227,6 +255,26 @@ const Inventory = ({ setSelectedLink, link }) => {
                       },
                     })}
                     state={{ rowSelection }}
+                    renderTopToolbarCustomActions={({ table }) => (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: "1rem",
+                          p: "0.5rem",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <Button
+                          color="primary"
+                          //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+                          onClick={handleExportData}
+                          startIcon={<FileDownload />}
+                          variant="contained"
+                        >
+                          Export Inventory
+                        </Button>
+                      </Box>
+                    )}
                   />
                 </>
               </>

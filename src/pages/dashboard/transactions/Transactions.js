@@ -1,4 +1,4 @@
-import { Close, Delete, Edit, Send } from "@mui/icons-material";
+import { Close, Delete, Edit, FileDownload, Send } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -45,6 +45,7 @@ import {
 import { db_firestore } from "../../../api/firebase";
 import InvoiceComponent from "../../../components/InvoiceComponent";
 import InvoiceDialogComponent from "../../../components/InvoiceDialogComponent";
+import { ExportToCsv } from "export-to-csv";
 
 const Transactions = ({ setSelectedLink, link }) => {
   const [transactionList, setTransactionList] = useState([{}]);
@@ -105,6 +106,7 @@ const Transactions = ({ setSelectedLink, link }) => {
     // { accessorKey: "taxRate", header: "Tax Rate" },
     // { accessorKey: "tax", header: "Tax" },
     { accessorKey: "total", header: "Total" },
+    { accessorKey: "paid", header: "Paid" },
     { accessorKey: "date", header: "Date" },
     {
       accessorKey: "time",
@@ -136,6 +138,7 @@ const Transactions = ({ setSelectedLink, link }) => {
           total: doc.data().total,
           date: dateString,
           time: convertTo12Hour(doc.data().time),
+          paid: doc.data().paid,
         });
       });
       list.sort((a, b) => a.id - b.id);
@@ -151,11 +154,37 @@ const Transactions = ({ setSelectedLink, link }) => {
     fetchTransactionList();
   }, []);
 
+  const handleExportData = () => {
+    const transactionExport = transactionList.map((item) => {
+      return {
+        id: item.id,
+        total: item.total,
+        paid: item.paid,
+        date: item.date,
+        time: item.time,
+      };
+    });
+    console.log(transactionExport);
+    csvExporter.generateCsv(transactionExport);
+  };
+
+  const csvOptions = {
+    fieldSeparator: ",",
+    quoteStrings: '"',
+    decimalSeparator: ".",
+    showLabels: true,
+    useBom: true,
+    useKeysAsHeaders: false,
+    headers: columns.map((c) => c.header),
+  };
+
+  const csvExporter = new ExportToCsv(csvOptions);
+
   return (
     <Box display="flex" flexDirection="column">
       <Paper elevation={3}>
         <Stack direction="row" spacing={2} m={3} justifyContent="space-between">
-          <Typography variant="h5">Transaction List</Typography>
+          <Typography variant="h5">Sales List</Typography>
         </Stack>
         {/* Start Dialog */}
         <InvoiceDialogComponent
@@ -187,6 +216,25 @@ const Transactions = ({ setSelectedLink, link }) => {
                       cursor: "pointer",
                     },
                   })}
+                  renderTopToolbarCustomActions={({ table }) => (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: "1rem",
+                        p: "0.5rem",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <Button
+                        color="primary"
+                        onClick={handleExportData}
+                        startIcon={<FileDownload />}
+                        variant="contained"
+                      >
+                        Export Sales
+                      </Button>
+                    </Box>
+                  )}
                 />
               </>
             </>

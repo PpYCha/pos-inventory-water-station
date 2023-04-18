@@ -16,6 +16,7 @@ import {
   AccountCircle,
   ArrowCircleLeftOutlined,
   ArrowCircleRightOutlined,
+  Cast,
   DeleteOutline,
   TextFieldsOutlined,
 } from "@mui/icons-material";
@@ -146,6 +147,7 @@ export default function Cart({ handleClickOpen, openCart, handleClickClose }) {
         address: customerInvoice.address,
         phone: customerInvoice.phone,
         email: customerInvoice.email,
+        paid: cash,
       });
 
       handleClose();
